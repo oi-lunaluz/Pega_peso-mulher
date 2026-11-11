@@ -154,7 +154,7 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
 <template>
 <div class="app" :class="{'on-home':view==='home','brazil-app':view!=='home'}">
 <header :class="{'home-header':view==='home','brazil-header':view!=='home'}">
-<div><small class="brand-wordmark"><span class="brand-mark"><AppIcon name="dumbbell" :size="17"/></span> PEGA PESO, MULHER!</small><h1 v-if="view!=='home'">{{view==='edit'?'Editar rotina':view==='list'?'Meus treinos':view==='stats'?'Minha evolução':view==='cycle'?'Meu ciclo':view==='routine'?'Minha semana':view==='profile'?'Meu perfil':view==='done'?'Missão cumprida!':view==='session'?'Treino em ação':view==='exercise'?exercise:workoutName||'Seu treino'}}</h1></div>
+<div><small class="brand-wordmark"><span class="brand-mark"><AppIcon name="dumbbell" :size="17"/></span> PEGA PESO, MULHER!</small><h1 v-if="view!=='home'">{{view==='edit'?'Minha sequência':view==='list'?'Meus treinos':view==='stats'?'Minha evolução':view==='cycle'?'Meu ciclo':view==='routine'?'Ordem dos treinos':view==='profile'?'Meu perfil':view==='done'?'Missão cumprida!':view==='session'?'Treino em ação':view==='exercise'?exercise:workoutName||'Seu treino'}}</h1></div>
 <button v-if="view!=='profile'" class="header-profile" title="Meu perfil" aria-label="Abrir meu perfil" @click="view='profile'"><AppIcon name="user" :size="21"/></button>
 <button v-else class="header-profile" aria-label="Voltar ao início" @click="view='home'"><AppIcon name="close" :size="20"/></button>
 </header>
@@ -164,34 +164,57 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
  <div class="greeting-copy"><span class="eyebrow">BORA PRA CIMA!</span><h2>{{homeGreeting}},<br/><em>mulher!</em></h2><p>A CaraMary tá de olho na sua evolução!</p></div>
  <img class="home-dog" src="/caramelo-treino.svg" alt="Mary, a caramela apelidada CaraMary, de óculos e bandana rosa, sorrindo"/><span class="mary-label">Mary, a CaraMary</span>
 </div>
-<div class="home-week"><div class="home-section-title"><strong>Sua semana</strong><button class="home-text-link" @click="view='routine'">Editar <span aria-hidden="true">›</span></button></div><div class="home-week-days"><button v-for="(d,i) in short" :key="i" :class="{active:day===i,hasWorkout:state.routine[i].name!=='Descanso'&&state.routine[i].name!=='Cardio'}" :aria-label="d+': '+state.routine[i].name" @click="day=i"><span>{{d}}</span><AppIcon v-if="state.routine[i].name!=='Descanso'&&state.routine[i].name!=='Cardio'" name="dumbbell" :size="15" :strokeWidth="2.6"/><span v-else class="week-rest-mark">{{state.routine[i].name==='Cardio'?'•':'–'}}</span></button></div></div>
+<div class="home-rotation">
+  <div class="home-section-title"><strong>Minha sequência</strong><button class="home-text-link" @click="view='routine'">Organizar <span aria-hidden="true">›</span></button></div>
+  <div v-if="rotation.length" class="home-rotation-steps">
+    <div v-for="(name,i) in rotation" :key="name" class="home-rotation-step" :class="{upcoming:i===rotationIndex}">
+      <span class="home-rotation-bubble"><AppIcon v-if="i===rotationIndex" name="dumbbell" :size="17"/><span v-else>{{i+1}}</span></span>
+      <span class="home-rotation-name">{{name}}</span>
+    </div>
+  </div>
+  <p v-else class="rotation-help">Escolha seus treinos na aba Rotina para começar.</p>
+  <p class="rotation-help">Sem dias fixos. Faltou? Seu próximo treino continua aqui.</p>
+</div>
 <div class="home-metrics">
  <button class="home-metric mint" @click="view='stats'"><small>Treinos no mês</small><strong>{{strengthThisMonth}}</strong><span class="metric-caption">Você tá construindo!</span></button>
  <button class="home-metric peach" @click="view='stats'"><small>Exercícios registrados</small><strong>{{personalRecords}}</strong><span class="metric-caption">Sua evolução conta!</span></button>
 </div>
 <section class="home-today">
- <div class="home-today-header"><span class="eyebrow">TREINO DO DIA</span><span class="today-pill">{{weekdays[day]}}</span></div>
- <div class="home-today-body"><div><h2>{{current.name}}</h2><p v-if="selectedWorkoutIsStrength">{{todayWorkout?.exercises.length || 0}} exercícios · no seu ritmo</p><p v-else>Hoje é dia de {{current.name==='Cardio'?'movimentar o corpo':'descansar e recuperar'}}</p></div></div>
- <button class="home-primary" v-if="selectedWorkoutIsStrength" @click="openToday">Iniciar treino <span aria-hidden="true">→</span></button>
- <button class="home-primary" v-else-if="current.cardio>0" @click="openCardioModal">Iniciar cardio <span aria-hidden="true">→</span></button>
- <button class="home-primary" v-else @click="view='list'">Ver meus treinos <span aria-hidden="true">→</span></button>
+  <div class="home-today-header"><span class="eyebrow">PRÓXIMO TREINO</span><span class="today-pill">{{rotation.length?'Treino '+(rotationIndex+1)+' de '+rotation.length:'Monte sua sequência'}}</span></div>
+  <div class="home-today-body"><div><h2>{{nextWorkoutName||'Defina sua ordem'}}</h2><p v-if="nextWorkout">{{nextWorkout.exercises.length}} exercícios · avança só depois de concluir</p><p v-else>Adicione suas fichas à sequência de treinos.</p></div></div>
+  <button class="home-primary" @click="openToday">{{nextWorkout?'Iniciar treino':'Organizar treinos'}} <span aria-hidden="true">→</span></button>
 </section>
 <div class="home-bottom-grid">
- <div class="home-cardio"><span class="eyebrow">SEU CARDIO</span><strong>{{current.cardio}} <small>min hoje</small></strong><span>{{weeklyCardio}} / 150 min planejados na semana</span><span class="home-progress"><i :style="{width:Math.min(100,weeklyCardio/150*100)+'%'}"></i></span><img src="/caramelo-descanso.svg" alt="" aria-hidden="true"/><button class="home-cardio-start" @click="openCardioModal">Iniciar cardio <AppIcon name="arrow" :size="15"/></button></div>
+ <div class="home-cardio"><span class="eyebrow">SEU CARDIO</span><strong>{{weeklyCardio}} <small>min na semana</small></strong><span>Meta: {{state.cardioGoal}} min na semana</span><span class="home-progress"><i :style="{width:Math.min(100,weeklyCardio/Math.max(1,state.cardioGoal)*100)+'%'}"></i></span><img src="/caramelo-descanso.svg" alt="" aria-hidden="true"/><button class="home-cardio-start" @click="openCardioModal">Iniciar cardio <AppIcon name="arrow" :size="15"/></button></div>
  <button class="home-cycle" @click="view='cycle'"><span class="eyebrow">SEU CICLO</span><strong>{{cycle.enabled&&cycleDay?'Dia '+cycleDay:'Meu ciclo'}}</strong><span>{{cycle.enabled?'Seu acompanhamento':'Acompanhe como se sente'}}</span><span class="cycle-more">Ver ciclo ↗</span></button>
 </div>
 <div class="home-footer-note">O peso varia. A evolução continua.</div>
 </template>
 <template v-else-if="view==='routine'">
-<div class="brazil-banner yellow"><div><span class="kicker"><AppIcon name="calendar" :size="17"/> SEU PLANEJAMENTO</span><h2>Uma semana<br/>do seu jeito!</h2><p>Treino forte, descanso também. <AppIcon name="heart" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
-<div class="brazil-summary"><div><small><AppIcon name="run" :size="17"/> CARDIO PLANEJADO</small><strong>{{weeklyCardio}} <em>min / semana</em></strong><span class="progress-track"><i :style="{width:Math.min(100,weeklyCardio/150*100)+'%'}"></i></span></div><small>150 min moderados é uma referência, não um limite.</small></div>
-<div class="brazil-row-title"><h3>Seus dias</h3><span>Toque para editar <AppIcon name="pencil" :size="17"/></span></div>
+<div class="brazil-banner yellow"><div><span class="kicker">SEU RITMO, SUA ORDEM</span><h2>Sem dia marcado!</h2><p>O próximo treino espera por você.</p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
+<div class="rotation-intro"><strong>Como funciona</strong><p>Você monta uma sequência e segue na ordem. Se não treinar hoje, nada muda. Somente concluir o treino da vez libera o próximo. Ao terminar a lista, ela recomeça.</p></div>
+<div class="brazil-row-title"><h3>Ordem dos treinos</h3><span>{{rotation.length}} fichas na sequência</span></div>
 <div class="brazil-list">
-<button v-for="(r,i) in state.routine" :key="i" class="brazil-list-row day-row" @click="edit(i)">
-<span class="row-icon" :class="i%2?'pink-icon':'mint-icon'"><AppIcon :name="r.name==='Descanso'?'palm':r.name==='Cardio'?'run':'dumbbell'"/></span>
-<span class="row-info"><strong>{{weekdays[i]}}</strong><small>{{r.name}} <span v-if="r.cardio">· <AppIcon name="run" :size="17"/> {{r.cardio}} min</span></small></span><span class="row-arrow">›</span>
-</button></div>
-<button class="outline brazil-outline" @click="view='list'"><AppIcon name="dumbbell" :size="17"/> Gerenciar minhas fichas</button></template>
+  <div v-for="(name,i) in rotation" :key="name" class="brazil-list-row rotation-list-row" :class="{is-next:i===rotationIndex}">
+    <span class="rotation-order-number">{{i+1}}</span>
+    <span class="row-info"><strong>{{name}}</strong><small>{{i===rotationIndex?'Próximo a fazer':'Treino '+(i+1)}}</small></span>
+    <div class="rotation-row-controls">
+      <button :disabled="i===0" :aria-label="'Mover '+name+' para cima'" @click="moveRotation(i,-1)">↑</button>
+      <button :disabled="i===rotation.length-1" :aria-label="'Mover '+name+' para baixo'" @click="moveRotation(i,1)">↓</button>
+      <button class="rotation-remove" :aria-label="'Retirar '+name+' da sequência'" @click="removeRotation(i)">×</button>
+    </div>
+  </div>
+</div>
+<div v-if="!rotation.length" class="brazil-empty">Sua sequência está vazia. Adicione uma ficha abaixo.</div>
+<div class="rotation-add"><label for="rotation-add-select">Adicionar treino à sequência</label><div><select id="rotation-add-select" v-model="addRotationName"><option value="">Selecione uma ficha</option><option v-for="w in availableForRotation" :value="w.name" :key="w.name">{{w.name}}</option></select><button :disabled="!addRotationName" @click="addRotation"><AppIcon name="plus" :size="17"/></button></div></div>
+<button class="outline brazil-outline" @click="view='list'">Gerenciar minhas fichas</button>
+<div class="cardio-goal-panel"><h3>Cardio sem dia fixo</h3><p>Você pode fazer cardio quando quiser; ele não muda a ordem da musculação.</p>
+  <div class="cardio-goal-fields"><div><label for="cardio-week-goal">Meta semanal (min)</label><input id="cardio-week-goal" type="number" min="1" v-model.number="state.cardioGoal"/></div>
+  <div><label for="cardio-session-goal">Referência por sessão (min)</label><input id="cardio-session-goal" type="number" min="1" v-model.number="state.cardioSessionTarget"/></div></div>
+  <div class="rotation-cardio-progress"><span>{{weeklyCardio}} de {{state.cardioGoal}} min realizados nesta semana</span><span class="progress-track"><i :style="{width:Math.min(100,weeklyCardio/Math.max(1,state.cardioGoal)*100)+'%'}"></i></span></div>
+  <button class="brazil-primary" @click="openCardioModal">Iniciar cardio</button>
+</div>
+</template>
 <template v-else-if="view==='stats'">
 <div class="brazil-banner pink-banner"><div><span class="kicker"><AppIcon name="chart" :size="17"/> O PESO VARIA...</span><h2>Sua evolução<br/>continua!</h2><p>Cada repetição conta. <AppIcon name="heart" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
 <div class="stats-workout-filter">
@@ -226,10 +249,6 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
 <div v-else class="brazil-empty with-dog"><img src="/caramelo-descanso.svg" alt="Mary, a caramela CaraMary, descansando na cadeira"/><strong>Seu ciclo, suas regras!</strong><p>Ative quando quiser registrar menstruação, energia e sintomas. Tudo é opcional.</p></div>
 <p class="privacy-note"><AppIcon name="lock" :size="17"/> Dados apenas neste navegador. Evite preencher em dispositivos compartilhados.</p>
 </template>
-<template v-else-if="view==='edit'">
-<button class="back" @click="view='routine'">← Voltar à semana</button>
-<div class="brazil-banner yellow"><div><span class="kicker"><AppIcon name="pencil" :size="17"/> PERSONALIZE</span><h2>Treino do dia</h2><p>A rotina é sua — mude sem culpa! <AppIcon name="sun" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
-<div class="brazil-form"><label class="brazil-label">Dia da semana</label><select v-model.number="editDay" @change="edit(editDay)"><option v-for="(d,i) in weekdays" :key="i" :value="i">{{d}}</option></select><label class="brazil-label">Treino de força</label><select v-model="editName"><option value="Descanso">Descanso</option><option v-for="w in state.workouts" :key="w.name" :value="w.name">{{w.name}}</option><option value="Cardio">Somente cardio</option></select><label class="brazil-label">Cardio planejado (minutos)</label><input v-model.number="editCardio" type="number" min="0" step="5"/><button class="brazil-primary" @click="saveRoutine"><AppIcon name="check" :size="17"/> Salvar alterações</button></div></template>
 <template v-else-if="view==='list'">
 <div class="brazil-banner workouts-banner"><div><span class="kicker"><AppIcon name="dumbbell" :size="17"/> SUAS FICHAS</span><h2>Treino de milhões!</h2><p>Um exercício de cada vez, gata. <AppIcon name="heart" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
 <div class="brazil-tabs cardio-tabs"><button :class="{active:workoutTab==='fichas'}" @click="workoutTab='fichas'">Musculação</button><button :class="{active:workoutTab==='cardio'}" @click="workoutTab='cardio'">Cardio</button><button :class="{active:workoutTab==='historico'}" @click="workoutTab='historico'">Histórico</button></div>
@@ -238,8 +257,8 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
 <button class="brazil-primary" @click="openCreateModal"><AppIcon name="plus" :size="17"/> Criar nova ficha</button><div class="dog-quote"><img src="/caramelo-descanso.svg" alt="CaraMary relaxando na cadeira"/><p>“Descanso também é treino, viu?!” — CaraMary <AppIcon name="palm" :size="17"/></p></div></template>
 <template v-else-if="workoutTab==='cardio'">
 <div class="cardio-training-panel">
-<div class="cardio-panel-head"><span>SESSÃO DE CARDIO</span><h3>Seu cardio, seu ritmo</h3><p>Inicie o cronômetro quando quiser, mesmo em dias de musculação.</p></div>
-<div class="cardio-session-goal"><div><small>Cardio previsto hoje</small><strong>{{current.cardio}} min</strong></div><div><small>Planejado na semana</small><strong>{{weeklyCardio}} min</strong></div></div>
+<div class="cardio-panel-head"><span>SESSÃO DE CARDIO</span><h3>Seu cardio, seu ritmo</h3><p>Faça seu cardio quando quiser. A ordem da musculação não muda.</p></div>
+<div class="cardio-session-goal"><div><small>Referência por sessão</small><strong>{{state.cardioSessionTarget}} min</strong></div><div><small>Realizado na semana</small><strong>{{weeklyCardio}} / {{state.cardioGoal}} min</strong></div></div>
 <button class="brazil-primary cardio-panel-start" @click="openCardioModal"><AppIcon name="timer" :size="18"/> Iniciar sessão de cardio</button>
 </div>
 <div class="brazil-row-title"><h3>Suas sessões de cardio</h3><span>{{cardioSessions.length}} concluídas</span></div>
@@ -254,7 +273,7 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
 <div class="brazil-banner workouts-banner"><div><span class="kicker"><AppIcon name="dumbbell" :size="17"/> SUA FICHA</span><h2>{{workoutName}}</h2><p>{{workout?.exercises.length||0}} exercícios preparados</p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
 <div class="brazil-row-title"><h3>Exercícios</h3><span>Escolha sua ordem depois</span></div><div class="brazil-list"><div class="brazil-list-row" v-for="(e,i) in (workout?.exercises||[])" :key="e"><span class="row-icon" :class="i%2?'purple-icon':'pink-icon'"><AppIcon name="dumbbell" :size="17"/></span><span class="row-info"><strong>{{e}}</strong><small><AppIcon name="trophy" :size="17"/> Recorde {{maxFor(e)}} kg</small></span></div></div>
 <div class="brazil-form"><label class="brazil-label">Adicionar exercício</label><div class="input-inline"><input v-model="newExercise" placeholder="Ex.: Agachamento livre" @keyup.enter="addExercise"/><button class="brazil-square-add" aria-label="Adicionar exercício" @click="addExercise"><AppIcon name="plus" :size="17"/></button></div></div>
-<button class="brazil-primary" @click="start('forca')"><AppIcon name="arrow" :size="17"/> Iniciar treino</button></template>
+<p v-if="workoutName!==nextWorkoutName" class="rotation-outside-note">Esta ficha está fora da sequência atual. Você pode treiná-la, mas ela não avança a ordem programada.</p><button class="brazil-primary" @click="start('forca')"><AppIcon name="arrow" :size="17"/> Iniciar treino</button></template>
 <template v-else-if="view==='session'">
 <div class="session-timer"><span><AppIcon name="timer" :size="17"/> {{kind==='cardio'?'CARDIO EM ANDAMENTO':'TREINO EM ANDAMENTO'}}</span><strong>{{time}}</strong><small>{{kind==='cardio'?'Bora movimentar!':'Você decide a ordem dos exercícios'}}</small></div>
 <template v-if="kind==='cardio'">
@@ -275,7 +294,7 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
 <div class="brazil-list"><div class="brazil-list-row" v-for="(s,i) in (sets[exercise]||[])" :key="i"><span class="row-icon mint-icon"><AppIcon name="check" :size="17"/></span><span class="row-info"><strong>{{i+1}}ª série</strong><small>{{s.kg}} kg × {{s.reps}} repetições</small></span><button class="remove-set" :aria-label="'Excluir série '+(i+1)" @click="sets[exercise].splice(i,1)">✕</button></div></div>
 <div class="brazil-form"><div class="two-fields"><div><label class="brazil-label">Peso (kg)</label><input type="number" min="0" v-model="kg" inputmode="decimal"/></div><div><label class="brazil-label">Repetições</label><input type="number" min="1" v-model="reps" inputmode="numeric"/></div></div><button class="brazil-primary" @click="addSet"><AppIcon name="plus" :size="17"/> Adicionar série</button></div>
 <button class="brazil-outline" @click="completed.includes(exercise)?null:completed.push(exercise);view='session'"><AppIcon name="check" :size="17"/> Concluir exercício</button></template>
-<template v-else-if="view==='done'"><div class="brazil-celebrate"><span v-if="kind==='cardio'" class="cardio-finished-type">{{activeCardioModality}}</span><span class="trophy"><AppIcon name="trophy" :size="42"/></span><h2>Mandou muito,<br/>mulher!</h2><p>A CaraMary tá orgulhosa de você!</p><img src="/caramelo-treino.svg" alt="Mary, a caramela CaraMary, comemorando"/><strong>{{time}}</strong><small>{{Object.values(sets).reduce((sum,s)=>sum+s.length,0)}} séries registradas</small></div><button class="brazil-primary" @click="view='home'">Voltar ao início ↗</button></template>
+<template v-else-if="view==='done'"><div class="brazil-celebrate"><span v-if="kind==='cardio'" class="cardio-finished-type">{{activeCardioModality}}</span><span class="trophy"><AppIcon name="trophy" :size="42"/></span><h2>Mandou muito,<br/>mulher!</h2><p>A CaraMary tá orgulhosa de você!</p><img src="/caramelo-treino.svg" alt="Mary, a caramela CaraMary, comemorando"/><strong>{{time}}</strong><small v-if="kind==='forca'">{{Object.values(sets).reduce((sum,s)=>sum+s.length,0)}} séries registradas · {{sessionWorkoutName===nextWorkoutName?'Registro salvo':'Próximo treino: '+(nextWorkoutName||'nenhum')}}</small><small v-else>Cardio registrado sem mudar sua sequência de musculação.</small></div><button class="brazil-primary" @click="view='home'">Voltar ao início ↗</button></template>
 <template v-else-if="view==='profile'"><div class="brazil-banner pink-banner"><div><span class="kicker"><AppIcon name="flower" :size="17"/> MINHA ÁREA</span><h2>Meu perfil</h2><p>Seu espaço, suas escolhas. <AppIcon name="heart" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div><div class="profile-card"><span class="profile-avatar"><AppIcon name="user" :size="34"/></span><div><strong>{{profile.nickname||'Mulher poderosa!'}}</strong><small>Pega Peso, Mulher! <AppIcon name="heart" :size="17"/></small></div></div><div class="brazil-form"><label class="brazil-label">Como quer ser chamada?</label><input v-model="profile.nickname" maxlength="40" placeholder="Seu apelido"/><label class="brazil-label">Seu objetivo</label><select v-model="profile.goal"><option>Ganhar força e massa muscular</option><option>Mais condicionamento</option><option>Manter a rotina</option><option>Saúde e bem-estar</option></select><small>As alterações ficam salvas neste navegador.</small></div><div class="brazil-list"><button class="brazil-list-row" @click="view='routine'"><span class="row-icon yellow-icon"><AppIcon name="calendar" :size="17"/></span><span class="row-info"><strong>Minha rotina</strong><small>Editar dias e treinos</small></span><span class="row-arrow">›</span></button><button class="brazil-list-row" @click="view='stats'"><span class="row-icon mint-icon"><AppIcon name="chart" :size="17"/></span><span class="row-info"><strong>Minha evolução</strong><small>Acompanhar os registros</small></span><span class="row-arrow">›</span></button></div><p class="privacy-note"><AppIcon name="lock" :size="17"/> Nesta versão, não há conta online. Os dados ficam somente neste dispositivo.</p></template>
 </main><div v-if="cardioModal" class="modal-backdrop" @click.self="cardioModal=false">
 <div class="modal-sheet cardio-modal" role="dialog" aria-modal="true" aria-labelledby="cardio-modal-title">
