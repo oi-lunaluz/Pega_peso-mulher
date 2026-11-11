@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import AppIcon from './AppIcon.vue'
 const key='pega-peso-mulher-mvp-v1'
 const initial={routine:[{name:'Descanso',cardio:0},{name:'Quadríceps',cardio:30},{name:'Superiores A',cardio:30},{name:'Descanso',cardio:0},{name:'Posterior e glúteos',cardio:30},{name:'Superiores B',cardio:30},{name:'Cardio',cardio:30}],workouts:[{name:'Quadríceps',exercises:['Agachamento livre','Leg press','Cadeira extensora']},{name:'Superiores A',exercises:['Puxada alta','Remada baixa']},{name:'Posterior e glúteos',exercises:['Stiff','Mesa flexora','Elevação pélvica']},{name:'Superiores B',exercises:['Supino máquina','Elevação lateral']}],history:[]}
@@ -25,6 +25,9 @@ const fromLocalDate=(value)=>{const [y,m,d]=String(value).split('-').map(Number)
 const weekNames=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
 const weekFullNames=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado']
 const calendarNow=ref(new Date())
+let calendarRefresh=null
+onMounted(()=>{calendarRefresh=setInterval(()=>calendarNow.value=new Date(),60000)})
+onUnmounted(()=>{if(calendarRefresh)clearInterval(calendarRefresh)})
 const dateToday=computed(()=>localDateKey(calendarNow.value))
 const legacyTrainingDays=(state.value.routine||[]).flatMap((slot,day)=>
   state.value.workouts.some(w=>w.name===slot?.name)?[day]:[])
@@ -68,14 +71,22 @@ const weekPlan=computed(()=>{
       past:date<now,scheduled:scheduledDays.value.includes(date.getDay())}
   })
   let nextOffset=0
-  return days.map(d=>{
-    const recorded=state.value.history.some(h=>h.kind==='forca'&&h.date===fromLocalDate(d.date).toLocaleDateString('pt-BR'))
-    const queued=d.scheduled&&!d.past
-    const name=queued&&rotation.value.length?rotation.value[(rotationIndex.value+nextOffset)%rotation.value.length]:''
+  const raw=days.map(d=>{
+    const lastLog=[...state.value.history].reverse().find(h=>h.kind==='forca'&&h.date===fromLocalDate(d.date).toLocaleDateString('pt-BR'))
+    const recorded=!!lastLog
+    const todayFinished=d.isToday&&dueWorkouts.value===0&&recorded
+    const queued=d.scheduled&&!d.past&&!todayFinished
+    const name=queued&&rotation.value.length?rotation.value[(rotationIndex.value+nextOffset)%rotation.value.length]:lastLog?.name||''
     if(queued)nextOffset++
-    const status=!d.scheduled?'livre':d.past?(recorded?'concluído':overdueWorkouts.value>0?'pendente':'reorganizado'):d.isToday?'hoje':'previsto'
+    const status=!d.scheduled?'livre':d.past?(recorded?'concluído':overdueWorkouts.value>0?'pendente':'reorganizado'):todayFinished?'concluído':d.isToday?'hoje':'previsto'
     return {...d,recorded,name,status}
   })
+  // O treino perdido continua visível no dia da falta e é repetido no próximo dia disponível.
+  const missed=raw.filter(d=>d.status==='pendente')
+  missed.slice(-overdueWorkouts.value).forEach((d,i)=>{
+    if(rotation.value.length)d.name=rotation.value[(rotationIndex.value+i)%rotation.value.length]
+  })
+  return raw
 })
 
 const view=ref('home')
