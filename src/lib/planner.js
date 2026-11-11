@@ -130,7 +130,7 @@ export function previewAfterDay({selected,today,days,rotation,nextIndex=0,histor
   const fallbackName=queue.length?queue[nextIndex%queue.length]:''
   return {
     selected,
-    selectedName:selectedLog?.name||(planned.has(selectedDate.getDay())?fallbackName:''),
+    selectedName:selectedLog?.name||(planned.has(selectedDate.getDay())&&queue.length?(futureOrToday&&steps>0?queue[(nextIndex+steps-1)%queue.length]:fallbackName):''),
     selectedComplete:!!selectedLog,
     selectedScheduled:planned.has(selectedDate.getDay()),
     nextDate:planned.size?dateKey(next):null,
