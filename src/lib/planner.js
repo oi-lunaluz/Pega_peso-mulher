@@ -69,7 +69,7 @@ export function createWeekPlan({today,days,history,rotation,nextIndex,anchor,com
     const hasFinishedToday= isToday && isComplete && todayDue===0
     let status='livre'
     if(planned){
-      if(past) status=isComplete?'concluído':'pendente'
+      if(past) status=isComplete?'concluído':oldPending>0?'pendente':'reorganizado'
       else if(hasFinishedToday) status='concluído'
       else status=isToday?'hoje':'previsto'
     }
