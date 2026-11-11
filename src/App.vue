@@ -19,6 +19,65 @@ if(!Array.isArray(state.value.rotation)){
 if(!Number.isInteger(state.value.rotationIndex))state.value.rotationIndex=0
 if(!Number.isFinite(state.value.cardioGoal))state.value.cardioGoal=150
 if(!Number.isFinite(state.value.cardioSessionTarget))state.value.cardioSessionTarget=30
+
+const localDateKey=(date)=>[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')
+const fromLocalDate=(value)=>{const [y,m,d]=String(value).split('-').map(Number);return new Date(y,m-1,d)}
+const weekNames=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
+const weekFullNames=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado']
+const calendarNow=ref(new Date())
+const dateToday=computed(()=>localDateKey(calendarNow.value))
+const legacyTrainingDays=(state.value.routine||[]).flatMap((slot,day)=>
+  state.value.workouts.some(w=>w.name===slot?.name)?[day]:[])
+if(!Array.isArray(state.value.scheduledDays))
+  state.value.scheduledDays=legacyTrainingDays.length?legacyTrainingDays:[1,2,3,4]
+if(!state.value.scheduleAnchor)state.value.scheduleAnchor=dateToday.value
+if(!Number.isInteger(state.value.scheduleCompleted))state.value.scheduleCompleted=0
+if(!Number.isInteger(state.value.scheduleCarry))state.value.scheduleCarry=0
+const scheduledDays=computed(()=>[...new Set(state.value.scheduledDays)].filter(d=>Number.isInteger(d)&&d>=0&&d<7).sort((a,b)=>a-b))
+const scheduledDayNames=computed(()=>scheduledDays.value.map(i=>weekNames[i]))
+// A dívida é calculada a partir da data de ativação da agenda. Histórico anterior permanece intacto.
+function plannedSessionsBefore(dateKey){
+  const start=fromLocalDate(state.value.scheduleAnchor)
+  const end=fromLocalDate(dateKey)
+  if(!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime()))return 0
+  let count=0
+  for(const day=new Date(start);day<end;day.setDate(day.getDate()+1)){
+    if(scheduledDays.value.includes(day.getDay()))count++
+    if(count>50000)break
+  }
+  return count
+}
+const overdueWorkouts=computed(()=>Math.max(0,state.value.scheduleCarry+plannedSessionsBefore(dateToday.value)-state.value.scheduleCompleted))
+const dueWorkouts=computed(()=>Math.max(0,state.value.scheduleCarry+plannedSessionsBefore((()=>{const d=fromLocalDate(dateToday.value);d.setDate(d.getDate()+1);return localDateKey(d)})())-state.value.scheduleCompleted))
+function toggleTrainingDay(day){
+  const oldOverdue=overdueWorkouts.value
+  const next=new Set(scheduledDays.value)
+  next.has(day)?next.delete(day):next.add(day)
+  state.value.scheduleCarry=oldOverdue
+  state.value.scheduleCompleted=0
+  state.value.scheduleAnchor=dateToday.value
+  state.value.scheduledDays=[...next].sort((a,b)=>a-b)
+}
+const weekPlan=computed(()=>{
+  const now=fromLocalDate(dateToday.value)
+  const monday=new Date(now);monday.setDate(monday.getDate()-(monday.getDay()+6)%7)
+  const days=Array.from({length:7},(_,i)=>{
+    const date=new Date(monday);date.setDate(date.getDate()+i)
+    return {day:date.getDay(),date:localDateKey(date),short:weekNames[date.getDay()],
+      full:weekFullNames[date.getDay()],isToday:localDateKey(date)===dateToday.value,
+      past:date<now,scheduled:scheduledDays.value.includes(date.getDay())}
+  })
+  let nextOffset=0
+  return days.map(d=>{
+    const recorded=state.value.history.some(h=>h.kind==='forca'&&h.date===fromLocalDate(d.date).toLocaleDateString('pt-BR'))
+    const queued=d.scheduled&&!d.past
+    const name=queued&&rotation.value.length?rotation.value[(rotationIndex.value+nextOffset)%rotation.value.length]:''
+    if(queued)nextOffset++
+    const status=!d.scheduled?'livre':d.past?(recorded?'concluído':overdueWorkouts.value>0?'pendente':'reorganizado'):d.isToday?'hoje':'previsto'
+    return {...d,recorded,name,status}
+  })
+})
+
 const view=ref('home')
 const rotation=computed(()=>state.value.rotation.filter(name=>state.value.workouts.some(w=>w.name===name)))
 const rotationIndex=computed(()=>rotation.value.length?((state.value.rotationIndex%rotation.value.length)+rotation.value.length)%rotation.value.length:0)
@@ -49,8 +108,10 @@ function addRotation(){
   addRotationName.value=''
 }
 function advanceRotation(completedName){
-  if(rotation.value.length&&completedName===nextWorkoutName.value)
+  if(rotation.value.length&&completedName===nextWorkoutName.value){
     state.value.rotationIndex=(rotationIndex.value+1)%rotation.value.length
+    state.value.scheduleCompleted++
+  }
 }
 
 const workoutName=ref(''),newWorkout=ref(''),newExercise=ref('')
@@ -99,6 +160,7 @@ function finish(){
     seconds:elapsed.value,sets:JSON.parse(JSON.stringify(sets.value))
   })
   if(kind.value==='forca'){sequenceAdvanced.value=completedName===nextWorkoutName.value;advanceRotation(completedName)}
+  calendarNow.value=new Date()
   view.value='done'
 }
 const workoutTab=ref('fichas')
@@ -166,23 +228,25 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
  <img class="home-dog" src="/caramelo-treino.svg" alt="Mary, a caramela apelidada CaraMary, de óculos e bandana rosa, sorrindo"/><span class="mary-label">Mary, a CaraMary</span>
 </div>
 <div class="home-rotation">
-  <div class="home-section-title"><strong>Minha sequência</strong><button class="home-text-link" @click="view='routine'">Organizar <span aria-hidden="true">›</span></button></div>
-  <div v-if="rotation.length" class="home-rotation-steps">
-    <div v-for="(name,i) in rotation" :key="name" class="home-rotation-step" :class="{upcoming:i===rotationIndex}">
-      <span class="home-rotation-bubble"><AppIcon v-if="i===rotationIndex" name="dumbbell" :size="17"/><span v-else>{{i+1}}</span></span>
-      <span class="home-rotation-name">{{name}}</span>
-    </div>
+  <div class="home-section-title"><strong>Sua semana</strong><button class="home-text-link" @click="view='routine'">Editar <span aria-hidden="true">›</span></button></div>
+  <div class="home-week-days">
+    <button v-for="d in weekPlan" :key="d.date" :class="{active:d.isToday,hasWorkout:d.scheduled,missed:d.status==='pendente'}"
+      :aria-label="d.full+': '+(d.scheduled?d.status:'Descanso ou cardio livre')" @click="view='routine'">
+      <span>{{d.short}}</span>
+      <AppIcon v-if="d.scheduled" :name="d.status==='concluído'?'check':'dumbbell'" :size="15" :strokeWidth="2.5"/>
+      <span v-else class="week-rest-mark">–</span>
+    </button>
   </div>
-  <p v-else class="rotation-help">Escolha seus treinos na aba Rotina para começar.</p>
-  <p class="rotation-help">Sem dias fixos. Faltou? Seu próximo treino continua aqui.</p>
+  <p v-if="overdueWorkouts>0" class="home-overdue" role="status"><AppIcon name="calendar" :size="15"/> {{overdueWorkouts}} {{overdueWorkouts===1?'treino pendente':'treinos pendentes'}}. A ordem foi ajustada para você não pular nenhum.</p>
+  <p v-else class="rotation-help">{{scheduledDayNames.join(', ')||'Nenhum dia marcado'}} · siga no seu ritmo.</p>
 </div>
 <div class="home-metrics">
  <button class="home-metric mint" @click="view='stats'"><small>Treinos no mês</small><strong>{{strengthThisMonth}}</strong><span class="metric-caption">Você tá construindo!</span></button>
  <button class="home-metric peach" @click="view='stats'"><small>Exercícios registrados</small><strong>{{personalRecords}}</strong><span class="metric-caption">Sua evolução conta!</span></button>
 </div>
 <section class="home-today">
-  <div class="home-today-header"><span class="eyebrow">PRÓXIMO TREINO</span><span class="today-pill">{{rotation.length?'Treino '+(rotationIndex+1)+' de '+rotation.length:'Monte sua sequência'}}</span></div>
-  <div class="home-today-body"><div><h2>{{nextWorkoutName||'Defina sua ordem'}}</h2><p v-if="nextWorkout">{{nextWorkout.exercises.length}} exercícios · avança só depois de concluir</p><p v-else>Adicione suas fichas à sequência de treinos.</p></div></div>
+  <div class="home-today-header"><span class="eyebrow">{{overdueWorkouts?'TREINO PENDENTE':'PRÓXIMO TREINO'}}</span><span class="today-pill">{{rotation.length?'Treino '+(rotationIndex+1)+' de '+rotation.length:'Monte sua sequência'}}</span></div>
+  <div class="home-today-body"><div><h2>{{nextWorkoutName||'Defina sua ordem'}}</h2><p v-if="nextWorkout">{{nextWorkout.exercises.length}} exercícios · {{overdueWorkouts?'recuperando treino atrasado':'avança ao concluir'}}</p><p v-else>Adicione suas fichas à sequência de treinos.</p></div></div>
   <button class="home-primary" @click="openToday">{{nextWorkout?'Iniciar treino':'Organizar treinos'}} <span aria-hidden="true">→</span></button>
 </section>
 <div class="home-bottom-grid">
@@ -192,9 +256,24 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
 <div class="home-footer-note">O peso varia. A evolução continua.</div>
 </template>
 <template v-else-if="view==='routine'">
-<div class="brazil-banner yellow"><div><span class="kicker">SEU RITMO, SUA ORDEM</span><h2>Sem dia marcado!</h2><p>O próximo treino espera por você.</p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
-<div class="rotation-intro"><strong>Como funciona</strong><p>Você monta uma sequência e segue na ordem. Se não treinar hoje, nada muda. Somente concluir o treino da vez libera o próximo. Ao terminar a lista, ela recomeça.</p></div>
-<div class="brazil-row-title"><h3>Ordem dos treinos</h3><span>{{rotation.length}} fichas na sequência</span></div>
+<div class="brazil-banner yellow"><div><span class="kicker">SEU PLANEJAMENTO</span><h2>Semana flexível!</h2><p>Os dias continuam. Os treinos se reorganizam.</p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
+<div v-if="overdueWorkouts" class="schedule-overdue" role="status"><strong>{{overdueWorkouts}} {{overdueWorkouts===1?'treino pendente':'treinos pendentes'}}</strong><p>Você perdeu um dia planejado. Vamos fazer {{nextWorkoutName}} no próximo dia de treino, sem pular sua sequência.</p></div>
+<div class="rotation-intro"><strong>Como funciona</strong><p>Escolha os dias em que costuma treinar. Se faltar, o treino não é perdido: ele passa para o próximo dia disponível e os demais seguem a ordem.</p></div>
+<div class="brazil-row-title"><h3>Meus dias de treino</h3><span>Toque para marcar ou desmarcar</span></div>
+<div class="schedule-day-picker">
+<button v-for="d in [{day:1,label:'Seg'},{day:2,label:'Ter'},{day:3,label:'Qua'},{day:4,label:'Qui'},{day:5,label:'Sex'},{day:6,label:'Sáb'},{day:0,label:'Dom'}]"
+:key="d.day" :aria-pressed="scheduledDays.includes(d.day)" :class="{selected:scheduledDays.includes(d.day)}" @click="toggleTrainingDay(d.day)">{{d.label}}</button>
+</div>
+<div class="brazil-row-title"><h3>Esta semana</h3><span>Reorganizada automaticamente</span></div>
+<div class="brazil-list">
+  <div v-for="d in weekPlan" :key="d.date" class="brazil-list-row schedule-day-row" :class="{isToday:d.isToday,isLate:d.status==='pendente'}">
+    <span class="schedule-date">{{d.short}}</span>
+    <span class="row-info"><strong>{{d.scheduled?(d.name|| (d.past?'Treino programado':nextWorkoutName)):'Descanso / cardio livre'}}</strong><small>{{d.full}} · {{d.status==='pendente'?'Faltou — treino mantido na sequência':d.status==='concluído'?'Treino registrado':d.status==='reorganizado'?'Treino já reorganizado':d.status==='hoje'?'Treino previsto para hoje':d.status==='previsto'?'Próximo na ordem':'Dia livre'}}</small></span>
+    <AppIcon v-if="d.status==='concluído'" name="check" :size="19"/>
+    <span v-else-if="d.status==='pendente'" class="schedule-late-tag">Pendente</span>
+  </div>
+</div>
+<div class="brazil-row-title"><h3>Ordem das fichas</h3><span>Arraste usando as setas</span></div>
 <div class="brazil-list">
   <div v-for="(name,i) in rotation" :key="name" class="brazil-list-row rotation-list-row" :class="{'is-next':i===rotationIndex}">
     <span class="rotation-order-number">{{i+1}}</span>
@@ -209,7 +288,7 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
 <div v-if="!rotation.length" class="brazil-empty">Sua sequência está vazia. Adicione uma ficha abaixo.</div>
 <div class="rotation-add"><label for="rotation-add-select">Adicionar treino à sequência</label><div><select id="rotation-add-select" v-model="addRotationName"><option value="">Selecione uma ficha</option><option v-for="w in availableForRotation" :value="w.name" :key="w.name">{{w.name}}</option></select><button :disabled="!addRotationName" @click="addRotation"><AppIcon name="plus" :size="17"/></button></div></div>
 <button class="outline brazil-outline" @click="view='list'">Gerenciar minhas fichas</button>
-<div class="cardio-goal-panel"><h3>Cardio sem dia fixo</h3><p>Você pode fazer cardio quando quiser; ele não muda a ordem da musculação.</p>
+<div class="cardio-goal-panel"><h3>Cardio independente</h3><p>Você pode fazer cardio em qualquer dia; isso não muda a ordem dos treinos de força.</p>
   <div class="cardio-goal-fields"><div><label for="cardio-week-goal">Meta semanal (min)</label><input id="cardio-week-goal" type="number" min="1" v-model.number="state.cardioGoal"/></div>
   <div><label for="cardio-session-goal">Referência por sessão (min)</label><input id="cardio-session-goal" type="number" min="1" v-model.number="state.cardioSessionTarget"/></div></div>
   <div class="rotation-cardio-progress"><span>{{weeklyCardio}} de {{state.cardioGoal}} min realizados nesta semana</span><span class="progress-track"><i :style="{width:Math.min(100,weeklyCardio/Math.max(1,state.cardioGoal)*100)+'%'}"></i></span></div>
