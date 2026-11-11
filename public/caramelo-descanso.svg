@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" role="img" aria-label="Cachorro caramelo relaxando numa cadeira de plástico com água de coco">
+<path d="M63 64h168l-12 85H86z" fill="#fff8e7" stroke="#2d2723" stroke-width="7" stroke-linejoin="round"/>
+<path d="M75 133l-14 72m153-72 17 72M79 138h139" fill="none" stroke="#2d2723" stroke-width="8" stroke-linecap="round"/>
+<path d="M42 67c-7-43 20-54 54-32" fill="none" stroke="#2d2723" stroke-width="9" stroke-linecap="round"/>
+<path d="M60 64c-5-36 18-46 41-35" fill="none" stroke="#fff8e7" stroke-width="16" stroke-linecap="round"/>
+<path d="M69 100c-10-40 26-66 71-58 50 3 90 33 90 66 0 37-36 53-82 52-48-1-70-25-79-60" fill="#e9a344" stroke="#57311d" stroke-width="7"/>
+<path d="M104 53c-10-33 5-47 23-34 11 8 8 34 2 44" fill="#a65e30" stroke="#57311d" stroke-width="6"/>
+<path d="M182 62c8-35 30-37 39-9 5 14-1 30-18 37" fill="#b46b30" stroke="#57311d" stroke-width="6"/>
+<ellipse cx="163" cy="94" rx="58" ry="43" fill="#ffbd60" stroke="#57311d" stroke-width="6"/>
+<path d="M135 79q14 11 26 0m28 0q12 10 21-1" stroke="#57311d" stroke-width="6" fill="none" stroke-linecap="round"/>
+<ellipse cx="178" cy="103" rx="12" ry="9" fill="#352923"/>
+<path d="M161 114q16 21 35 0" stroke="#57311d" stroke-width="5" fill="none" stroke-linecap="round"/>
+<path d="M108 130c32 9 72 11 98 4" stroke="#f12f80" stroke-width="15" fill="none" stroke-linecap="round"/>
+<path d="M119 149c-11 23-21 34-49 40m129-37c14 22 22 34 52 31" stroke="#b9752b" stroke-width="15" fill="none" stroke-linecap="round"/>
+<path d="M230 85h47l-9 58h-29z" fill="#8bd685" stroke="#57311d" stroke-width="5" stroke-linejoin="round"/>
+<path d="M247 84l16-40" stroke="#fa408e" stroke-width="6" stroke-linecap="round"/>
+<path d="M224 76q25-23 52 1" fill="#31946b" stroke="#57311d" stroke-width="4"/>
+<path d="M252 16v-9m-16 14-7-8m35 8 7-8" stroke="#ffd118" stroke-width="6" stroke-linecap="round"/>
+<text x="36" y="37" font-family="sans-serif" font-size="20" font-weight="900" fill="#ec2b78" transform="rotate(-9 36 37)">RELAX!</text>
+</svg>
