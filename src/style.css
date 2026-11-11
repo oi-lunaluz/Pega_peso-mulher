@@ -222,3 +222,47 @@ input,select,textarea{font-size:16px}
 .profile-card strong{font-size:17px;font-weight:950}
 .profile-card small{font-size:11px}
 @media(max-width:360px){.brazil-banner{min-height:105px;padding:12px}.banner-art{font-size:40px}.brazil-list-row{padding:8px;min-height:55px}.brazil-list-row .row-icon{flex-basis:38px;width:38px;height:38px}.row-info strong{font-size:12px}.row-info small{font-size:10px}.brazil-form{padding:11px}.chart-bars{gap:8px}.brazil-stats{gap:7px}}
+
+
+/* Sistema visual sem emoji: pictogramas vetoriais e mascote ilustrado */
+.app-icon{display:inline-block;flex:0 0 auto;vertical-align:middle;stroke:currentColor}
+.brand-wordmark{display:inline-flex!important;align-items:center;gap:7px;font-weight:1000!important;letter-spacing:.1px!important}
+.brand-mark{display:grid;place-items:center;width:26px;height:26px;border-radius:9px;background:#ed0b6b;color:white}
+.header-profile{color:#bc135d;display:grid;place-items:center}
+.brazil-banner{min-height:118px}
+.banner-dog{position:absolute;right:-11px;bottom:-45px;width:145px;height:160px;object-fit:contain;filter:drop-shadow(0 4px 0 #c4595330);z-index:1}
+.brazil-banner>div{max-width:68%}
+.brazil-banner.cycle-banner .banner-dog,.brazil-banner.pink-banner .banner-dog{width:136px}
+.brazil-banner.mint-banner .banner-dog{width:140px}
+.brazil-app .kicker,.brazil-app .eyebrow,.on-home .eyebrow{display:inline-flex;align-items:center;gap:5px}
+.brazil-app .kicker svg,.brazil-app .eyebrow svg,.on-home .eyebrow svg{width:15px;height:15px}
+.brazil-app .row-icon{color:#bc1b63}
+.brazil-app .row-icon svg{width:21px;height:21px}
+.brazil-app .row-icon.mint-icon{color:#14835d}
+.brazil-app .row-icon.purple-icon{color:#8051b7}
+.brazil-app .row-icon.yellow-icon{color:#a56a15}
+.home-metric-icon{display:grid;place-items:center;color:#c51668}
+.home-metric-icon svg{width:23px;height:23px}
+.today-symbol{color:#df1767;transform:rotate(-13deg)}
+.cycle-flower{color:#ef5592;opacity:.72}
+.greeting-copy p svg{width:13px;height:13px}
+.home-section-title strong{display:flex;align-items:center;gap:5px}
+.home-section-title strong svg{width:16px;height:16px;color:#d90b65}
+.home-footer-note{display:flex;justify-content:center;align-items:center;gap:5px}
+.home-footer-note svg{width:13px;height:13px}
+.brazil-list-row,.stat-tile,.brazil-banner,.home-metric,.home-today,.home-cardio,.home-cycle{transition:background-color .15s ease,transform .15s ease}
+button:active{transform:scale(.99)}
+.bottom-nav button{gap:4px}
+.bottom-nav button svg{display:block}
+.bottom-nav button.active svg{stroke:#d00060}
+.profile-avatar{display:grid;place-items:center;width:66px;height:66px;color:#d20b69}
+.brazil-celebrate .trophy{color:#d10b65;display:grid;place-items:center}
+.dog-quote{gap:3px}
+.dog-quote p svg{width:15px;height:15px}
+.calendar-legend span{display:inline-flex;align-items:center;gap:5px}
+.calendar-legend svg{width:14px;height:14px}
+.calendar-legend span:first-child svg{color:#ef598e}
+.calendar-legend span:last-child svg{color:#1aa875}
+.modal-head h2{display:flex;align-items:center;gap:7px}
+.modal-head h2 svg{color:#e5106b}
+@media(max-width:360px){.banner-dog{right:-17px;width:125px;height:145px;bottom:-40px}.brazil-banner>div{max-width:70%}}
