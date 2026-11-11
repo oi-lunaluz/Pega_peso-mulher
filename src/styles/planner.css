@@ -1,7 +1,7 @@
 /* Planejamento flexível: ordem de fichas + agenda semanal */
 .home-rotation{background:#fff;border:1px solid #f2dfe5;border-radius:17px;padding:12px 12px 11px}
 .home-rotation .home-section-title{margin-bottom:10px}
-.home-rotation-step.upcoming .rotation-help{font-size:10px;font-weight:650;color:#8a6274;line-height:1.35;margin:8px 0 0}
+.rotation-help{font-size:10px;font-weight:650;color:#8a6274;line-height:1.35;margin:8px 0 0}
 .rotation-intro{background:#fff;border:1px solid #f2dbe3;border-radius:15px;padding:13px}
 .rotation-intro strong{font-size:13px;color:#5c3447}
 .rotation-intro p{font-size:12px;line-height:1.5;color:#7d5c6c;margin:5px 0 0}
