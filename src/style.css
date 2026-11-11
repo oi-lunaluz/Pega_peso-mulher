@@ -330,3 +330,18 @@ button:active{transform:scale(.99)}
 .cardio-panel-start{display:flex;justify-content:center;align-items:center;gap:8px}
 .cardio-session-summary{background:#f5fff9;border:1px solid #d0eddb;padding:8px;border-radius:16px}
 @media(max-width:360px){.home-cardio,.home-cycle{height:179px;min-height:179px}.home-cardio img{max-width:95px;right:-30px;bottom:35px}.home-cardio-start{font-size:10px!important}.cardio-training-panel{padding:12px}}
+
+
+/* Escolha de modalidade antes de iniciar o cronômetro */
+.cardio-modal{display:grid;gap:13px;padding:19px 17px 18px}
+.cardio-modal .modal-head h2{font-size:23px;margin:4px 0}
+.cardio-modal>.muted{margin:0;font-size:12px}
+.cardio-modality-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cardio-modality-option{position:relative;display:flex;align-items:center;justify-content:space-between;gap:6px;border:1px solid #e4dedf;background:#fffdfa;padding:12px;border-radius:14px;cursor:pointer;min-height:52px;color:#493b43;font-size:13px;font-weight:800;margin:0;transition:background-color .15s,border-color .15s}
+.cardio-modality-option input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.cardio-modality-option.selected{background:#e1f8ec;border-color:#139563;box-shadow:inset 0 0 0 1px #139563;color:#176343}
+.cardio-modality-option.selected svg{color:#0b8d58}
+.cardio-modality-option:has(input:focus-visible){outline:3px solid #e9006c;outline-offset:2px}
+.cardio-modal-start{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:3px}
+.cardio-finished-type{display:inline-block;margin-top:5px;background:#d7f5e5;color:#16764c;border-radius:50px;padding:7px 14px;font-size:13px;font-weight:950}
+@media(max-width:360px){.cardio-modality-option{min-height:48px;padding:10px;font-size:12px}.cardio-modal{padding:15px;gap:10px}}
