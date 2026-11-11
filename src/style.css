@@ -293,3 +293,10 @@ button:active{transform:scale(.99)}
 .home-cycle .cycle-more{margin-top:auto}
 .home-footer-note{font-size:10px;font-weight:700;color:#aa6787;letter-spacing:.15px;padding-top:1px}
 @media(max-width:360px){.home-week-days button{min-height:52px;gap:4px}.home-greeting{min-height:132px}.home-cardio,.home-cycle{height:137px}}
+
+
+/* Filtro principal de treino na página Evolução */
+.stats-workout-filter{background:#fff;border:1px solid #f1d5df;border-radius:17px;padding:13px;display:grid;gap:7px}
+.stats-workout-filter label{font-size:12px;font-weight:900;color:#5f3448}
+.stats-workout-filter select{font-size:15px;font-weight:750;border-color:#eebcd1;background:#fffafc!important}
+.stats-workout-filter p{margin:0;font-size:11px;color:#8b6275;line-height:1.4}
