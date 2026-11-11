@@ -21,11 +21,13 @@ O build roda primeiro os testes Node (`node --test`) e depois compila o Vue. Se 
 
 ```text
 src/
-  App.vue                      # layout, navegação e modais globais
+  App.vue                      # portal: cadastro ou área autenticada
+  AppWorkspace.vue             # layout, navegação e modais do aplicativo
   AppIcon.vue                  # ícones SVG padronizados
   composables/
     useAppState.js             # estado, ações, sessões e persistência
   screens/
+    AuthScreen.vue             # cadastro básico e entrada local
     HomeScreen.vue             # início e semana
     RoutineScreen.vue          # planejamento flexível
     WorkoutsScreen.vue         # fichas e cardio
@@ -41,6 +43,8 @@ src/
     planner.test.js            # faltas, compensação, cardio
     trainingMath.js            # séries, volume, cronômetro
     trainingMath.test.js
+    localAuth.js               # cadastro local de demonstração
+    localAuth.test.js
     storage.js                 # leitura, escrita e migração seguras
     storage.test.js
   styles/                      # CSS por contexto, na ordem de precedência
@@ -72,4 +76,8 @@ Não limpe o armazenamento local sem uma cópia dos dados. Os dados **não acomp
 
 ## Limitações da versão atual
 
-Não há autenticação, backup remoto, sincronização, medição automática por sensores ou testes E2E de navegador. A compilação e os testes unitários verificam parte da qualidade, mas ainda é importante testar interações em um celular real.
+A tela de cadastro/login utiliza apenas armazenamento local do navegador: **não é autenticação segura de produção**, não há verificação de e-mail, recuperação de senha, backup remoto, sincronização, medição automática por sensores ou testes E2E de navegador. A senha não fica em texto puro, mas os dados salvos no navegador não são criptografados. Para lançar contas reais, integrar um provedor de identidade com backend. A compilação e os testes unitários verificam parte da qualidade, mas ainda é importante testar interações em um celular real.
+
+## Cadastro local de demonstração
+
+A primeira visita apresenta **Criar cadastro** (nome, e-mail, senha com 8+ caracteres e confirmação); também há **Já tenho cadastro**. Cada cadastro guarda treinos, ciclo e perfil em chaves separadas neste navegador. O primeiro cadastro herda os dados usados no aplicativo antes da existência de login. A opção **Sair do cadastro** está em Meu perfil. A sessão vale somente para a aba atual. **Não use senhas já usadas em outros sites**, pois não há servidor nem proteção real de contas. Para disponibilizar o aplicativo a outras pessoas, substituir esse protótipo por autenticação por servidor.
