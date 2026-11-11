@@ -1,5 +1,5 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { SHORT_DAYS, cleanDays, dateKey, pendingBefore, pendingIncludingToday, createWeekPlan, cardioMinutesThisWeek } from '../lib/planner.js'
+import { SHORT_DAYS, cleanDays, dateKey, pendingBefore, pendingIncludingToday, createWeekPlan, cardioMinutesThisWeek, previewAfterDay, LONG_DAYS, fromDateKey } from '../lib/planner.js'
 import { readJson, writeJson, normalizeTrainingState } from '../lib/storage.js'
 import { clockLabel, validSet, totalSetVolume, maximumWeight, lastWeight } from '../lib/trainingMath.js'
 
@@ -70,6 +70,23 @@ export function useAppState() {
     rotation:rotation.value,
     nextIndex:rotationIndex.value
   }))
+  // Seleção apenas visual: nunca altera o histórico ou a posição da fila.
+  const selectedWeekDate=ref(dateToday.value)
+  const selectedWeekDay=computed(()=>weekPlan.value.find(d=>d.date===selectedWeekDate.value))
+  const selectedWeekPreview=computed(()=>previewAfterDay({
+    selected:selectedWeekDate.value,
+    today:dateToday.value,
+    days:scheduledDays.value,
+    history:state.value.history,
+    rotation:rotation.value,
+    nextIndex:rotationIndex.value
+  }))
+  const predictedDayLabel=computed(()=>{
+    const date=fromDateKey(selectedWeekPreview.value?.nextDate)
+    return date?LONG_DAYS[date.getDay()]:''
+  })
+  function selectWeekDay(date){selectedWeekDate.value=date}
+
   
   const view=ref('home')
   const rotation=computed(()=>state.value.rotation.filter(name=>state.value.workouts.some(w=>w.name===name)))
@@ -214,6 +231,11 @@ export function useAppState() {
     dueWorkouts,
     toggleTrainingDay,
     weekPlan,
+    selectedWeekDate,
+    selectedWeekDay,
+    selectedWeekPreview,
+    predictedDayLabel,
+    selectWeekDay,
     view,
     rotation,
     rotationIndex,
