@@ -6,13 +6,53 @@ const initial={routine:[{name:'Descanso',cardio:0},{name:'Quadríceps',cardio:30
 let saved;try{saved=JSON.parse(localStorage.getItem(key))}catch{}
 const state=ref(saved&&saved.routine&&saved.workouts?saved:initial)
 watch(state,v=>localStorage.setItem(key,JSON.stringify(v)),{deep:true})
-const view=ref('home'),today=new Date().getDay(),day=ref(today),editDay=ref(today)
-const weekdays=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado']
-const short=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
-const current=computed(()=>state.value.routine[day.value])
-const editName=ref(''),editCardio=ref(0)
-function edit(d){editDay.value=d;editName.value=state.value.routine[d].name;editCardio.value=state.value.routine[d].cardio;view.value='edit'}
-function saveRoutine(){state.value.routine[editDay.value]={name:editName.value.trim()||'Descanso',cardio:Math.max(0,Number(editCardio.value)||0)};day.value=editDay.value;view.value='home'}
+// Migração: preserva fichas, histórico e preferências anteriores sem manter dias fixos.
+const workoutNames=()=>state.value.workouts.map(w=>w.name)
+if(!Array.isArray(state.value.rotation)){
+  const existing=new Set(workoutNames())
+  const legacyOrder=[1,2,3,4,5,6,0].map(i=>state.value.routine?.[i]?.name)
+    .filter(n=>existing.has(n))
+  state.value.rotation=[...new Set([...legacyOrder,...workoutNames()])]
+  const last=[...state.value.history].reverse().find(h=>h.kind==='forca'&&state.value.rotation.includes(h.name))
+  state.value.rotationIndex=last?(state.value.rotation.indexOf(last.name)+1)%state.value.rotation.length:0
+}
+if(!Number.isInteger(state.value.rotationIndex))state.value.rotationIndex=0
+if(!Number.isFinite(state.value.cardioGoal))state.value.cardioGoal=150
+if(!Number.isFinite(state.value.cardioSessionTarget))state.value.cardioSessionTarget=30
+const view=ref('home')
+const rotation=computed(()=>state.value.rotation.filter(name=>state.value.workouts.some(w=>w.name===name)))
+const rotationIndex=computed(()=>rotation.value.length?((state.value.rotationIndex%rotation.value.length)+rotation.value.length)%rotation.value.length:0)
+const nextWorkoutName=computed(()=>rotation.value[rotationIndex.value]||'')
+const nextWorkout=computed(()=>state.value.workouts.find(w=>w.name===nextWorkoutName.value))
+const addRotationName=ref('')
+const availableForRotation=computed(()=>state.value.workouts.filter(w=>!state.value.rotation.includes(w.name)))
+function preserveNextRotation(nextNames,preferred=nextWorkoutName.value){
+  state.value.rotation=nextNames
+  state.value.rotationIndex=Math.max(0,nextNames.indexOf(preferred))
+}
+function moveRotation(i,direction){
+  const names=[...rotation.value],j=i+direction
+  if(j<0||j>=names.length)return
+  ;[names[i],names[j]]=[names[j],names[i]]
+  preserveNextRotation(names)
+}
+function removeRotation(i){
+  const names=[...rotation.value],removed=names.splice(i,1)[0]
+  preserveNextRotation(names,removed===nextWorkoutName.value?names[i%Math.max(names.length,1)]:nextWorkoutName.value)
+}
+function addRotation(){
+  const name=addRotationName.value
+  if(!name||state.value.rotation.includes(name)||!state.value.workouts.some(w=>w.name===name))return
+  const previous=nextWorkoutName.value
+  state.value.rotation=[...rotation.value,name]
+  state.value.rotationIndex=previous?state.value.rotation.indexOf(previous):0
+  addRotationName.value=''
+}
+function advanceRotation(completedName){
+  if(rotation.value.length&&completedName===nextWorkoutName.value)
+    state.value.rotationIndex=(rotationIndex.value+1)%rotation.value.length
+}
+
 const workoutName=ref(''),newWorkout=ref(''),newExercise=ref('')
 const createModal=ref(false),createError=ref('')
 function openCreateModal(){newWorkout.value='';createError.value='';createModal.value=true}
@@ -33,14 +73,33 @@ const activeCardioArt=computed(()=>'/mary-cardio-'+(cardioIllustrations[activeCa
 function openCardioModal(){cardioModal.value=true}
 function confirmCardioStart(){activeCardioModality.value=selectedCardioModality.value;cardioModal.value=false;start('cardio')}
 const clock=ref(Date.now());let ticker=null
-function start(k){kind.value=k;started.value=Date.now();clock.value=Date.now();finished.value=null;sets.value={};completed.value=[];view.value='session';if(ticker)clearInterval(ticker);ticker=setInterval(()=>clock.value=Date.now(),1000)}
+const sessionWorkoutName=ref('')
+function start(k){
+  kind.value=k;sessionWorkoutName.value=k==='forca'?workoutName.value:''
+  started.value=Date.now();clock.value=Date.now();finished.value=null
+  sets.value={};completed.value=[];view.value='session'
+  if(ticker)clearInterval(ticker)
+  ticker=setInterval(()=>clock.value=Date.now(),1000)
+}
 const elapsed=computed(()=>started.value?Math.max(0,Math.floor(((finished.value||clock.value)-started.value)/1000)):0)
 const time=computed(()=>[Math.floor(elapsed.value/3600),Math.floor(elapsed.value%3600/60),elapsed.value%60].map(n=>String(n).padStart(2,'0')).join(':'))
 function maxFor(e){return Math.max(0,...state.value.history.flatMap(h=>(h.sets[e]||[]).map(s=>s.kg)),...(sets.value[e]||[]).map(s=>s.kg))}
 function lastFor(e){const a=state.value.history.flatMap(h=>h.sets[e]||[]);return a.length?a[a.length-1].kg:0}
 function choose(e){exercise.value=e;kg.value=String(lastFor(e)||'');reps.value='10';view.value='exercise'}
 function addSet(){const k=Number(kg.value),r=Number(reps.value);if(!(k>=0&&r>0&&kg.value!==''))return;sets.value={...sets.value,[exercise.value]:[...(sets.value[exercise.value]||[]),{kg:k,reps:r}]}}
-function finish(){finished.value=Date.now();if(ticker){clearInterval(ticker);ticker=null}state.value.history.push({date:new Date().toLocaleDateString('pt-BR'),name:kind.value==='cardio'?'Cardio':workoutName.value,kind:kind.value,modality:kind.value==='cardio'?activeCardioModality.value:null,seconds:elapsed.value,sets:JSON.parse(JSON.stringify(sets.value))});view.value='done'}
+function finish(){
+  if(!started.value||finished.value!==null)return
+  finished.value=Date.now()
+  if(ticker){clearInterval(ticker);ticker=null}
+  const completedName=kind.value==='cardio'?'Cardio':sessionWorkoutName.value
+  state.value.history.push({
+    date:new Date().toLocaleDateString('pt-BR'),name:completedName,kind:kind.value,
+    modality:kind.value==='cardio'?activeCardioModality.value:null,
+    seconds:elapsed.value,sets:JSON.parse(JSON.stringify(sets.value))
+  })
+  if(kind.value==='forca')advanceRotation(completedName)
+  view.value='done'
+}
 const workoutTab=ref('fichas')
 const cardioSessions=computed(()=>state.value.history.filter(h=>h.kind==='cardio'))
 const cardioTotalMinutes=computed(()=>Math.floor(cardioSessions.value.reduce((sum,h)=>sum+(Number(h.seconds)||0),0)/60))
@@ -63,7 +122,17 @@ watch(cycle,v=>localStorage.setItem(cycleKey,JSON.stringify(v)),{deep:true})
 const noteDate=ref(new Date().toISOString().slice(0,10)),noteEnergy=ref('normal'),noteSymptoms=ref(''),noteDifficulty=ref('normal')
 const cycleDay=computed(()=>{if(!cycle.value.start)return null;const diff=Math.floor((new Date().setHours(12,0,0,0)-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);return ((diff%Math.max(1,cycle.value.length))+Math.max(1,cycle.value.length))%Math.max(1,cycle.value.length)+1})
 function addNote(){cycle.value.notes.unshift({date:noteDate.value,energy:noteEnergy.value,symptoms:noteSymptoms.value,difficulty:noteDifficulty.value});noteSymptoms.value=''}
-const weeklyCardio=computed(()=>state.value.routine.reduce((a,r)=>a+Number(r.cardio||0),0))
+const weeklyCardio=computed(()=>{
+  const now=new Date(),dow=(now.getDay()+6)%7
+  const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow)
+  monday.setHours(0,0,0,0)
+  return Math.round(state.value.history.filter(h=>h.kind==='cardio').reduce((sum,h)=>{
+    const parts=h.date?.split('/')
+    if(!parts||parts.length!==3)return sum
+    const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]))
+    return d>=monday&&d<=now?sum+(Number(h.seconds)||0):sum
+  },0)/60)
+})
 const cycleCalendarMonth=ref(new Date().getMonth())
 const cycleCalendarYear=ref(new Date().getFullYear())
 function moveCycleMonth(delta){const d=new Date(cycleCalendarYear.value,cycleCalendarMonth.value+delta,1);cycleCalendarMonth.value=d.getMonth();cycleCalendarYear.value=d.getFullYear()}
@@ -77,12 +146,10 @@ let profileSaved;try{profileSaved=JSON.parse(localStorage.getItem(profileKey))}c
 const profile=ref(profileSaved||{nickname:'',goal:'Ganhar força e massa muscular'})
 watch(profile,value=>localStorage.setItem(profileKey,JSON.stringify(value)),{deep:true})
 
-const todayWorkout=computed(()=>state.value.workouts.find(w=>w.name===current.value.name))
 const strengthThisMonth=computed(()=>{const prefix=new Date().toLocaleDateString('pt-BR').slice(3);return state.value.history.filter(h=>h.kind==='forca'&&h.date?.slice(3)===prefix).length})
 const personalRecords=computed(()=>new Set(state.value.history.flatMap(h=>Object.keys(h.sets||{})).filter(e=>state.value.history.some(h=>(h.sets?.[e]||[]).length)) ).size)
 const homeGreeting=computed(()=>{const hour=new Date().getHours();return hour<12?'Bom dia':hour<18?'Boa tarde':'Boa noite'})
-const selectedWorkoutIsStrength=computed(()=>current.value.name!=='Descanso'&&current.value.name!=='Cardio')
-function openToday(){if(todayWorkout.value)openWorkout(todayWorkout.value.name);else view.value='list'}
+function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);else view.value='routine'}
 </script>
 <template>
 <div class="app" :class="{'on-home':view==='home','brazil-app':view!=='home'}">
