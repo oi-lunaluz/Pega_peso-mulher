@@ -78,27 +78,26 @@ function openToday(){if(todayWorkout.value)openWorkout(todayWorkout.value.name);
 <main>
 <template v-if="view==='home'">
 <div class="home-greeting">
- <div class="greeting-copy"><span class="eyebrow"><AppIcon name="sparkles" :size="17"/> BORA PRA CIMA!</span><h2>{{homeGreeting}},<br/><em>mulher!</em> <AppIcon name="sun" :size="17"/></h2><p>O caramelo tá de olho na sua evolução! <AppIcon name="dumbbell" :size="17"/></p></div>
- <img class="home-dog" src="/caramelo-treino.svg" alt="Cachorro caramelo de óculos e bandana rosa, sorrindo" />
- <span class="greeting-spark spark-one"><AppIcon name="sparkles" :size="28"/></span><span class="greeting-spark spark-two"><AppIcon name="sun" :size="20"/></span>
+ <div class="greeting-copy"><span class="eyebrow">BORA PRA CIMA!</span><h2>{{homeGreeting}},<br/><em>mulher!</em></h2><p>O caramelo tá de olho na sua evolução!</p></div>
+ <img class="home-dog" src="/caramelo-treino.svg" alt="Cachorro caramelo de óculos e bandana rosa, sorrindo"/>
 </div>
-<div class="home-week"><div class="home-section-title"><strong><AppIcon name="calendar" :size="17"/> Sua semana</strong><button class="home-text-link" @click="view='routine'">Editar <span aria-hidden="true">›</span></button></div><div class="home-week-days"><button v-for="(d,i) in short" :key="i" :class="{active:day===i,hasWorkout:state.routine[i].name!=='Descanso'&&state.routine[i].name!=='Cardio'}" @click="day=i"><span>{{d}}</span><b>{{i===today?'●':state.routine[i].name==='Descanso'?'–':'♥'}}</b></button></div></div>
+<div class="home-week"><div class="home-section-title"><strong>Sua semana</strong><button class="home-text-link" @click="view='routine'">Editar <span aria-hidden="true">›</span></button></div><div class="home-week-days"><button v-for="(d,i) in short" :key="i" :class="{active:day===i,hasWorkout:state.routine[i].name!=='Descanso'&&state.routine[i].name!=='Cardio'}" :aria-label="d+': '+state.routine[i].name" @click="day=i"><span>{{d}}</span><AppIcon v-if="state.routine[i].name!=='Descanso'&&state.routine[i].name!=='Cardio'" name="dumbbell" :size="15" :strokeWidth="2.6"/><span v-else class="week-rest-mark">{{state.routine[i].name==='Cardio'?'•':'–'}}</span></button></div></div>
 <div class="home-metrics">
- <button class="home-metric mint" @click="view='stats'"><span class="home-metric-icon"><AppIcon name="dumbbell" :size="17"/></span><small>Treinos no mês</small><strong>{{strengthThisMonth}}</strong><span class="metric-caption">Você tá construindo! <AppIcon name="sparkles" :size="17"/></span></button>
- <button class="home-metric peach" @click="view='stats'"><span class="home-metric-icon"><AppIcon name="trophy" :size="17"/></span><small>Exercícios registrados</small><strong>{{personalRecords}}</strong><span class="metric-caption">Sua evolução conta!</span></button>
+ <button class="home-metric mint" @click="view='stats'"><small>Treinos no mês</small><strong>{{strengthThisMonth}}</strong><span class="metric-caption">Você tá construindo!</span></button>
+ <button class="home-metric peach" @click="view='stats'"><small>Exercícios registrados</small><strong>{{personalRecords}}</strong><span class="metric-caption">Sua evolução conta!</span></button>
 </div>
 <section class="home-today">
- <div class="home-today-header"><span class="eyebrow"><AppIcon name="dumbbell" :size="17"/> TREINO DO DIA</span><span class="today-pill">{{weekdays[day]}}</span></div>
- <div class="home-today-body"><div><h2>{{current.name}}</h2><p v-if="selectedWorkoutIsStrength">{{todayWorkout?.exercises.length || 0}} exercícios · no seu ritmo</p><p v-else>Hoje é dia de {{current.name==='Cardio'?'movimentar o corpo':'descansar e recuperar'}} <AppIcon name="heart" :size="17"/></p></div><span class="today-symbol" aria-hidden="true"><AppIcon name="dumbbell" :size="37"/></span></div>
- <button class="home-primary" v-if="selectedWorkoutIsStrength" @click="openToday">Iniciar treino <span aria-hidden="true">➜</span></button>
- <button class="home-primary" v-else-if="current.cardio>0" @click="start('cardio')">Iniciar cardio <span aria-hidden="true">➜</span></button>
- <button class="home-primary" v-else @click="view='list'">Ver meus treinos <span aria-hidden="true">➜</span></button>
+ <div class="home-today-header"><span class="eyebrow">TREINO DO DIA</span><span class="today-pill">{{weekdays[day]}}</span></div>
+ <div class="home-today-body"><div><h2>{{current.name}}</h2><p v-if="selectedWorkoutIsStrength">{{todayWorkout?.exercises.length || 0}} exercícios · no seu ritmo</p><p v-else>Hoje é dia de {{current.name==='Cardio'?'movimentar o corpo':'descansar e recuperar'}}</p></div></div>
+ <button class="home-primary" v-if="selectedWorkoutIsStrength" @click="openToday">Iniciar treino <span aria-hidden="true">→</span></button>
+ <button class="home-primary" v-else-if="current.cardio>0" @click="start('cardio')">Iniciar cardio <span aria-hidden="true">→</span></button>
+ <button class="home-primary" v-else @click="view='list'">Ver meus treinos <span aria-hidden="true">→</span></button>
 </section>
 <div class="home-bottom-grid">
- <button class="home-cardio" @click="view='routine'"><span class="eyebrow"><AppIcon name="run" :size="17"/> SEU CARDIO</span><strong>{{weeklyCardio}} <small>min</small></strong><span>Meta semanal: 150 min</span><span class="home-progress"><i :style="{width:Math.min(100,weeklyCardio/150*100)+'%'}"></i></span><img src="/caramelo-descanso.svg" alt="" aria-hidden="true"/></button>
- <button class="home-cycle" @click="view='cycle'"><span class="eyebrow"><AppIcon name="flower" :size="17"/> SEU CICLO</span><strong>{{cycle.enabled&&cycleDay?'Dia '+cycleDay:'Meu ciclo'}}</strong><span>{{cycle.enabled?'Seu acompanhamento':'Acompanhe como se sente'}}</span><span class="cycle-flower" aria-hidden="true"><AppIcon name="flower" :size="59" :strokeWidth="1.6"/></span><span class="cycle-more">Ver ciclo ↗</span></button>
+ <button class="home-cardio" @click="view='routine'"><span class="eyebrow">SEU CARDIO</span><strong>{{weeklyCardio}} <small>min</small></strong><span>Meta semanal: 150 min</span><span class="home-progress"><i :style="{width:Math.min(100,weeklyCardio/150*100)+'%'}"></i></span><img src="/caramelo-descanso.svg" alt="" aria-hidden="true"/></button>
+ <button class="home-cycle" @click="view='cycle'"><span class="eyebrow">SEU CICLO</span><strong>{{cycle.enabled&&cycleDay?'Dia '+cycleDay:'Meu ciclo'}}</strong><span>{{cycle.enabled?'Seu acompanhamento':'Acompanhe como se sente'}}</span><span class="cycle-more">Ver ciclo ↗</span></button>
 </div>
-<div class="home-footer-note"><span><AppIcon name="leaf" :size="17"/></span> O peso varia. A evolução continua. <span><AppIcon name="heart" :size="17"/></span></div>
+<div class="home-footer-note">O peso varia. A evolução continua.</div>
 </template>
 <template v-else-if="view==='routine'">
 <div class="brazil-banner yellow"><div><span class="kicker"><AppIcon name="calendar" :size="17"/> SEU PLANEJAMENTO</span><h2>Uma semana<br/>do seu jeito!</h2><p>Treino forte, descanso também. <AppIcon name="heart" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
