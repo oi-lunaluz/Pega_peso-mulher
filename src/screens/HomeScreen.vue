@@ -7,6 +7,11 @@ const {
   scheduledDayNames,
   overdueWorkouts,
   weekPlan,
+  selectedWeekDate,
+  selectedWeekDay,
+  selectedWeekPreview,
+  predictedDayLabel,
+  selectWeekDay,
   view,
   rotation,
   rotationIndex,
@@ -32,8 +37,8 @@ const {
 <div class="home-rotation">
   <div class="home-section-title"><strong>Sua semana</strong><button class="home-text-link" @click="view='list'">Ver treinos <span aria-hidden="true">›</span></button></div>
   <div class="home-week-days">
-    <button v-for="d in weekPlan" :key="d.date" :class="{active:d.isToday,hasWorkout:d.scheduled,missed:d.status==='pendente'}"
-      :aria-label="d.full+': '+(d.scheduled?d.status:'Descanso ou cardio livre')+'. Ver treinos'" @click="view='list'">
+    <button v-for="d in weekPlan" :key="d.date" :class="{active:d.date===selectedWeekDate,hasWorkout:d.scheduled,missed:d.status==='pendente'}"
+      :aria-label="d.full+': '+(d.scheduled?d.status:'Descanso ou cardio livre')+'. Ver previsão'" :aria-pressed="d.date===selectedWeekDate" @click="selectWeekDay(d.date)">
       <span>{{d.short}}</span>
       <AppIcon v-if="d.scheduled" :name="d.status==='concluído'?'check':'dumbbell'" :size="15" :strokeWidth="2.5"/>
       <span v-else class="week-rest-mark">–</span>
@@ -47,9 +52,21 @@ const {
  <button class="home-metric peach" @click="view='stats'"><small>Exercícios registrados</small><strong>{{personalRecords}}</strong><span class="metric-caption">Sua evolução conta!</span></button>
 </div>
 <section class="home-today">
-  <div class="home-today-header"><span class="eyebrow">{{overdueWorkouts?'TREINO PENDENTE':'PRÓXIMO TREINO'}}</span><span class="today-pill">{{rotation.length?'Treino '+(rotationIndex+1)+' de '+rotation.length:'Monte sua sequência'}}</span></div>
-  <div class="home-today-body"><div><h2>{{nextWorkoutName||'Defina sua ordem'}}</h2><p v-if="nextWorkout">{{nextWorkout.exercises.length}} exercícios · {{overdueWorkouts?'recuperando treino atrasado':'avança ao concluir'}}</p><p v-else>Adicione suas fichas à sequência de treinos.</p></div></div>
-  <button class="home-primary" @click="openToday">{{nextWorkout?'Iniciar treino':'Organizar treinos'}} <span aria-hidden="true">→</span></button>
+  <div class="home-today-header"><span class="eyebrow">{{selectedWeekDate===weekPlan.find(d=>d.isToday)?.date?'PRÓXIMO TREINO':'PREVISÃO DA SEMANA'}}</span><span class="today-pill">{{selectedWeekDay?.full||'Sua semana'}}</span></div>
+  <div v-if="selectedWeekPreview" class="home-today-body"><div>
+    <p class="home-selected-label">{{selectedWeekDay?.scheduled?'Treino do dia selecionado':'Dia livre selecionado'}}</p>
+    <h2>{{selectedWeekDay?.recorded?selectedWeekDay.name:selectedWeekPreview.selectedName||'Descanso / cardio livre'}}</h2>
+    <p v-if="selectedWeekDay?.recorded">Treino concluído e registrado neste dia.</p>
+    <p v-else-if="selectedWeekDay?.scheduled">Planejado · {{selectedWeekDay?.status==='pendente'?'treino pendente':'sem registrar como concluído'}}</p>
+    <p v-else>Sem musculação programada nesse dia.</p>
+  </div></div>
+  <div v-if="selectedWeekPreview?.nextDate" class="home-next-forecast">
+    <span>PRÓXIMO DIA DE TREINO · {{predictedDayLabel}}</span>
+    <strong>{{selectedWeekPreview.nextName||'Configure sua sequência'}}</strong>
+    <small>{{selectedWeekPreview.simulated?'Previsão se os treinos planejados forem concluídos':'Previsão com base nos treinos registrados'}}</small>
+  </div>
+  <p class="home-forecast-disclaimer">Selecionar um dia apenas mostra a previsão. Para registrar que treinou, conclua uma sessão.</p>
+  <button class="home-primary" @click="openToday">{{nextWorkout?'Iniciar treino pendente / atual':'Organizar treinos'}} <span aria-hidden="true">→</span></button>
 </section>
 <div class="home-bottom-grid">
  <div class="home-cardio"><span class="eyebrow">SEU CARDIO</span><strong>{{weeklyCardio}} <small>min na semana</small></strong><span>Meta: {{state.cardioGoal}} min na semana</span><span class="home-progress"><i :style="{width:Math.min(100,weeklyCardio/Math.max(1,state.cardioGoal)*100)+'%'}"></i></span><img src="/caramelo-descanso.svg" alt="" aria-hidden="true"/><button class="home-cardio-start" @click="openCardioModal">Iniciar cardio <AppIcon name="arrow" :size="15"/></button></div>
