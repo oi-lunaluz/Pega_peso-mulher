@@ -305,3 +305,28 @@ button:active{transform:scale(.99)}
 /* Identidade da mascote: Mary, a CaraMary */
 .home-greeting .mary-label{position:absolute;right:9px;bottom:8px;z-index:3;max-width:50%;background:#fffdf2e8;border:1px solid #e8ae91;border-radius:100px;padding:5px 9px;color:#a51d5e;font-size:10px;line-height:1.1;font-weight:950;letter-spacing:.1px;box-shadow:0 2px 0 #da8f7430;white-space:nowrap}
 @media(max-width:360px){.home-greeting .mary-label{right:6px;bottom:6px;padding:4px 6px;font-size:9px}}
+
+
+/* Cardio independente da musculação: ação direta na home */
+.home-bottom-grid{align-items:stretch}
+.home-cardio{height:183px;min-height:183px;padding:12px 10px 11px!important;overflow:hidden}
+.home-cardio>strong{font-size:25px;margin-top:5px;line-height:1.07;position:relative;z-index:2}
+.home-cardio>strong small{font-size:10px}
+.home-cardio>span:not(.eyebrow):not(.home-progress){font-size:9px;max-width:98%;position:relative;z-index:2;line-height:1.2}
+.home-cardio .home-progress{width:74%;margin-top:6px}
+.home-cardio img{max-width:110px;width:65%;right:-28px;bottom:37px;opacity:.7;pointer-events:none}
+.home-cardio-start{display:flex;justify-content:center;align-items:center;gap:5px;margin-top:auto;position:relative;z-index:3;width:100%;min-height:38px;white-space:nowrap;background:#126c4d!important;color:white!important;font-size:11px!important;font-weight:900;padding:8px 5px!important;border-radius:999px;box-shadow:0 2px 0 #0d563b}
+.home-cycle{height:183px;min-height:183px}
+.brazil-tabs.cardio-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.brazil-tabs.cardio-tabs button{font-size:11px;padding:10px 3px}
+.cardio-training-panel{border-radius:20px;padding:16px;background:linear-gradient(140deg,#d6f9e7,#bdefd7);border:1px solid #a4dcc2;display:grid;gap:13px}
+.cardio-panel-head span{font-size:10px;font-weight:950;letter-spacing:.5px;color:#16704e}
+.cardio-panel-head h3{font-size:22px!important;letter-spacing:-.6px;margin:5px 0}
+.cardio-panel-head p{font-size:12px;line-height:1.35;color:#3e6556;margin:0}
+.cardio-session-goal,.cardio-session-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cardio-session-goal>div,.cardio-session-summary>div{display:flex;flex-direction:column;gap:5px;padding:12px;background:#ffffffc7;border-radius:13px;min-width:0}
+.cardio-session-goal small,.cardio-session-summary small{font-size:10px;color:#61776a;font-weight:750}
+.cardio-session-goal strong,.cardio-session-summary strong{font-size:21px;font-weight:950;color:#174e3a}
+.cardio-panel-start{display:flex;justify-content:center;align-items:center;gap:8px}
+.cardio-session-summary{background:#f5fff9;border:1px solid #d0eddb;padding:8px;border-radius:16px}
+@media(max-width:360px){.home-cardio,.home-cycle{height:179px;min-height:179px}.home-cardio img{max-width:95px;right:-30px;bottom:35px}.home-cardio-start{font-size:10px!important}.cardio-training-panel{padding:12px}}
