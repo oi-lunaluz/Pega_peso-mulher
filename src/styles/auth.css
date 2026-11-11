@@ -36,3 +36,45 @@
 .auth-switch{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;text-align:center;padding:1px 0 4px;font-size:13px;color:#775663}
 .auth-switch button{background:transparent!important;color:#d10a66!important;font-size:13px;font-weight:950;text-decoration:underline;text-underline-offset:3px;padding:6px!important}
 .auth-switch button:focus-visible,.auth-back:focus-visible{outline:2px solid #dc0d66;outline-offset:3px}
+
+/* Correção de rolagem mobile: body é travado pelo shell principal.
+   O cadastro precisa de um painel rolável próprio quando o teclado aparece. */
+.auth-page{
+  width:100%;
+  height:100vh;
+  height:100dvh;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.auth-page .auth-header{
+  flex:0 0 auto;
+  padding-top:max(12px,env(safe-area-inset-top));
+}
+.auth-page .auth-content{
+  flex:1 1 auto;
+  min-height:0;
+  min-width:0;
+  width:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  scroll-padding-top:12px;
+  scroll-padding-bottom:100px;
+  padding-bottom:max(38px,env(safe-area-inset-bottom));
+}
+.auth-page .auth-content > *{
+  flex:0 0 auto;
+  min-width:0;
+}
+.auth-page .auth-form-card{overflow:visible;}
+.auth-page .auth-form input{scroll-margin-top:20px;scroll-margin-bottom:110px;}
+@media(max-height:650px){
+  .auth-page .auth-header{padding-block:8px;}
+  .auth-page .auth-content{gap:10px;padding-top:3px;}
+  .auth-hero{min-height:115px;padding:11px 12px!important;}
+  .auth-hero h1{font-size:23px;margin:5px 0;}
+  .auth-hero p{font-size:10px;}
+}
