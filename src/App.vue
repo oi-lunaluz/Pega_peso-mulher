@@ -25,6 +25,11 @@ const cardioModal=ref(false)
 const cardioModalities=['Esteira','Bike','Crosstraining','Escadas','Hyrox','Corrida']
 const selectedCardioModality=ref('Esteira')
 const activeCardioModality=ref('')
+const cardioIllustrations={
+  'Esteira':'esteira','Bike':'bike','Crosstraining':'crosstraining',
+  'Escadas':'escadas','Hyrox':'hyrox','Corrida':'corrida'
+}
+const activeCardioArt=computed(()=>'/mary-cardio-'+(cardioIllustrations[activeCardioModality.value]||'corrida')+'.svg')
 function openCardioModal(){cardioModal.value=true}
 function confirmCardioStart(){activeCardioModality.value=selectedCardioModality.value;cardioModal.value=false;start('cardio')}
 const clock=ref(Date.now());let ticker=null
@@ -185,7 +190,12 @@ function openToday(){if(todayWorkout.value)openWorkout(todayWorkout.value.name);
 <button class="brazil-primary" @click="start('forca')"><AppIcon name="arrow" :size="17"/> Iniciar treino</button></template>
 <template v-else-if="view==='session'">
 <div class="session-timer"><span><AppIcon name="timer" :size="17"/> {{kind==='cardio'?'CARDIO EM ANDAMENTO':'TREINO EM ANDAMENTO'}}</span><strong>{{time}}</strong><small>{{kind==='cardio'?'Bora movimentar!':'Você decide a ordem dos exercícios'}}</small></div>
-<template v-if="kind==='cardio'"><div class="brazil-banner mint-banner"><div><span class="kicker">CARDIO EM ANDAMENTO</span><h2>{{activeCardioModality||'Cardio'}}</h2><p>A CaraMary tá torcendo por você.</p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div></template>
+<template v-if="kind==='cardio'">
+<section class="cardio-mary-stage" aria-label="CaraMary fazendo o exercício escolhido">
+<div class="cardio-mary-copy"><span class="cardio-mary-kicker">VOCÊ E A CARAMARY EM MOVIMENTO</span><h2>{{activeCardioModality||'Cardio'}}</h2><p>A Mary entrou no ritmo com você!</p></div>
+<img class="cardio-mary-art" :src="activeCardioArt" :alt="'CaraMary praticando '+(activeCardioModality||'cardio')+' em quatro patas'"/>
+</section>
+</template>
 <template v-else><div class="brazil-row-title"><h3>Seus exercícios</h3><span>{{completed.length}} / {{workout?.exercises.length||0}} concluídos</span></div>
 <div class="brazil-list"><button v-for="(e,i) in (workout?.exercises||[])" :key="e" class="brazil-list-row" @click="choose(e)"><span class="row-icon" :class="completed.includes(e)?'mint-icon':i%2?'purple-icon':'pink-icon'"><AppIcon :name="completed.includes(e)?'check':'dumbbell'"/></span><span class="row-info"><strong>{{e}}</strong><small>{{(sets[e]||[]).length}} séries · Recorde {{maxFor(e)}} kg</small></span><span class="row-arrow">›</span></button></div></template>
 <button class="brazil-complete" @click="finish"><AppIcon name="check" :size="17"/> Concluir treino</button></template>
