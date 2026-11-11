@@ -32,14 +32,16 @@ function addSet(){const k=Number(kg.value),r=Number(reps.value);if(!(k>=0&&r>0&&
 function finish(){finished.value=Date.now();if(ticker){clearInterval(ticker);ticker=null}state.value.history.push({date:new Date().toLocaleDateString('pt-BR'),name:kind.value==='cardio'?'Cardio':workoutName.value,kind:kind.value,seconds:elapsed.value,sets:JSON.parse(JSON.stringify(sets.value))});view.value='done'}
 const workoutTab=ref('fichas')
 const selectedStat=ref('all')
-const statsPeriod=ref('all')
-const statsSessions=computed(()=>state.value.history.filter(h=>statsPeriod.value==='all'||h.kind===statsPeriod.value))
-const allExercises=computed(()=>[...new Set(state.value.workouts.flatMap(w=>w.exercises))])
-const exerciseStats=computed(()=>state.value.history.flatMap(h=>Object.entries(h.sets||{}).flatMap(([name,ss])=>ss.map(s=>({name,kg:s.kg,reps:s.reps,date:h.date})))))
+const selectedWorkoutStat=ref('all')
+const workoutStatNames=computed(()=>[...new Set([...state.value.workouts.map(w=>w.name),...state.value.history.map(h=>h.name)].filter(Boolean))])
+const statsSessions=computed(()=>state.value.history.filter(h=>selectedWorkoutStat.value==='all'||h.name===selectedWorkoutStat.value))
+const allExercises=computed(()=>[...new Set(statsSessions.value.flatMap(h=>Object.keys(h.sets||{})).concat(selectedWorkoutStat.value==='all'?state.value.workouts.flatMap(w=>w.exercises):(state.value.workouts.find(w=>w.name===selectedWorkoutStat.value)?.exercises||[])))])
+const exerciseStats=computed(()=>statsSessions.value.flatMap(h=>Object.entries(h.sets||{}).flatMap(([name,ss])=>ss.map(s=>({name,kg:Number(s.kg)||0,reps:Number(s.reps)||0,date:h.date})))))
 const bestExercise=computed(()=>exerciseStats.value.filter(s=>selectedStat.value==='all'||s.name===selectedStat.value))
 const maxLoad=computed(()=>Math.max(0,...bestExercise.value.map(s=>s.kg)))
 const totalVolume=computed(()=>bestExercise.value.reduce((a,s)=>a+s.kg*s.reps,0))
 const completedSessions=computed(()=>statsSessions.value.length)
+function onWorkoutStatChange(){selectedStat.value='all'}
 const cycleKey='pega-peso-mulher-cycle-v1'
 let cycleSaved;try{cycleSaved=JSON.parse(localStorage.getItem(cycleKey))}catch{}
 const cycle=ref(cycleSaved||{enabled:false,start:'',length:28,period:5,notes:[]})
@@ -54,7 +56,7 @@ function moveCycleMonth(delta){const d=new Date(cycleCalendarYear.value,cycleCal
 function dateISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 const calendarMonthName=computed(()=>new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'}))
 const cycleCalendarDays=computed(()=>{const first=new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1);const offset=first.getDay();return Array.from({length:42},(_,i)=>{const d=new Date(first.getFullYear(),first.getMonth(),1-offset+i);let phase='';if(cycle.value.start){const n=Math.max(1,Number(cycle.value.length)||28);const diff=Math.round((new Date(dateISO(d)+'T12:00:00').getTime()-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);if(diff>=0){const step=diff%n;phase=step<Number(cycle.value.period||5)?'period':Math.abs(step-(n-14))<=2?'fertile':''}}return {date:dateISO(d),number:d.getDate(),outside:d.getMonth()!==cycleCalendarMonth.value,phase,today:dateISO(d)===dateISO(new Date())}})})
-const chartWeeks=computed(()=>{const now=new Date();return Array.from({length:4},(_,i)=>{const newest=3-i;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()-newest*7,23,59,59);const start=new Date(end.getFullYear(),end.getMonth(),end.getDate()-6);const value=state.value.history.reduce((total,h)=>{const parts=h.date?.split('/');if(!parts||parts.length!==3)return total;const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]));return d>=start&&d<=end?total+Object.values(h.sets||{}).flat().reduce((sum,s)=>sum+(Number(s.kg)||0)*(Number(s.reps)||0),0):total},0);return {label:'S'+(i+1),value}})})
+const chartWeeks=computed(()=>{const now=new Date();return Array.from({length:4},(_,i)=>{const newest=3-i;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()-newest*7,23,59,59);const start=new Date(end.getFullYear(),end.getMonth(),end.getDate()-6);const value=statsSessions.value.reduce((total,h)=>{const parts=h.date?.split('/');if(!parts||parts.length!==3)return total;const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]));return d>=start&&d<=end?total+Object.values(h.sets||{}).flat().reduce((sum,s)=>sum+(Number(s.kg)||0)*(Number(s.reps)||0),0):total},0);return {label:'S'+(i+1),value}})})
 const chartMax=computed(()=>Math.max(1,...chartWeeks.value.map(x=>x.value)))
 const profileKey='pega-peso-mulher-profile-v1'
 let profileSaved;try{profileSaved=JSON.parse(localStorage.getItem(profileKey))}catch{}
@@ -111,14 +113,22 @@ function openToday(){if(todayWorkout.value)openWorkout(todayWorkout.value.name);
 <button class="outline brazil-outline" @click="view='list'"><AppIcon name="dumbbell" :size="17"/> Gerenciar minhas fichas</button></template>
 <template v-else-if="view==='stats'">
 <div class="brazil-banner pink-banner"><div><span class="kicker"><AppIcon name="chart" :size="17"/> O PESO VARIA...</span><h2>Sua evolução<br/>continua!</h2><p>Cada repetição conta. <AppIcon name="heart" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
-<div class="brazil-stats"><div class="stat-tile yellow-tile"><span><AppIcon name="dumbbell" :size="17"/> VOLUME TOTAL</span><strong>{{totalVolume.toLocaleString('pt-BR')}}<small> kg</small></strong></div><div class="stat-tile mint-tile"><span><AppIcon name="trophy" :size="17"/> MAIOR CARGA</span><strong>{{maxLoad}}<small> kg</small></strong></div></div>
+<div class="stats-workout-filter">
+<label class="brazil-label" for="filter-workout">Filtrar por treino</label>
+<select id="filter-workout" class="brazil-select" v-model="selectedWorkoutStat" @change="onWorkoutStatChange">
+<option value="all">Todos os treinos</option>
+<option v-for="name in workoutStatNames" :key="name" :value="name">{{name}}</option>
+</select>
+<p>Os números abaixo consideram {{selectedWorkoutStat==='all'?'todos os treinos registrados':'somente o treino '+selectedWorkoutStat}}.</p>
+</div>
+<div class="brazil-stats"><div class="stat-tile yellow-tile"><span><AppIcon name="dumbbell" :size="17"/> VOLUME REGISTRADO</span><strong>{{totalVolume.toLocaleString('pt-BR')}}<small> kg</small></strong></div><div class="stat-tile mint-tile"><span><AppIcon name="trophy" :size="17"/> MAIOR CARGA</span><strong>{{maxLoad}}<small> kg</small></strong></div></div>
 <section class="chart-card"><div class="brazil-row-title"><h3>Volume de treino</h3><span>Últimas 4 semanas</span></div><div class="chart-bars"><div v-for="w in chartWeeks" :key="w.label" class="chart-column"><strong>{{w.value>0?w.value.toLocaleString('pt-BR'):'–'}}</strong><div class="chart-rail"><div :style="{height:Math.max(3,w.value/chartMax*100)+'%'}"></div></div><small>{{w.label}}</small></div></div><p class="chart-footnote">Volume = peso × repetições das séries registradas.</p></section>
-<div class="brazil-row-title"><h3>Seu histórico</h3><span>{{state.history.length}} sessões</span></div>
+<div class="brazil-row-title"><h3>Seu histórico</h3><span>{{completedSessions}} sessões</span></div>
 <label class="brazil-label" for="filter-exercise">Filtrar por exercício</label>
 <select id="filter-exercise" class="brazil-select" v-model="selectedStat"><option value="all">Todos os exercícios</option><option v-for="e in allExercises" :key="e" :value="e">{{e}}</option></select>
-<div v-if="!bestExercise.length" class="brazil-empty"><strong><AppIcon name="smile" :size="17"/> Começou agora?</strong><p>Registre suas séries e veja sua evolução crescer por aqui!</p></div>
+<div v-if="!bestExercise.length" class="brazil-empty"><strong><AppIcon name="smile" :size="17"/> Começou agora?</strong><p>{{selectedWorkoutStat==='all'?'Registre suas séries e veja sua evolução crescer por aqui!':'Ainda não há séries registradas para este treino.'}}</p></div>
 <div class="brazil-list"><div v-for="(s,i) in [...bestExercise].reverse().slice(0,20)" :key="i" class="brazil-list-row"><span class="row-icon pink-icon"><AppIcon name="dumbbell" :size="17"/></span><span class="row-info"><strong>{{s.name}}</strong><small>{{s.date}}</small></span><span class="row-value">{{s.kg}} kg × {{s.reps}}</span></div></div>
-<div class="brazil-row-title"><h3>Treinos concluídos</h3></div><div class="brazil-list"><div v-for="(h,i) in [...state.history].reverse().slice(0,10)" :key="i" class="brazil-list-row"><span class="row-icon mint-icon"><AppIcon name="check" :size="17"/></span><span class="row-info"><strong>{{h.name}}</strong><small>{{h.date}}</small></span><span class="row-value">{{Math.round(h.seconds/60)}} min</span></div></div>
+<div class="brazil-row-title"><h3>Treinos concluídos</h3></div><div v-if="!statsSessions.length" class="brazil-empty">Nenhuma sessão concluída neste filtro.</div><div class="brazil-list"><div v-for="(h,i) in [...statsSessions].reverse().slice(0,10)" :key="i" class="brazil-list-row"><span class="row-icon mint-icon"><AppIcon name="check" :size="17"/></span><span class="row-info"><strong>{{h.name}}</strong><small>{{h.date}}</small></span><span class="row-value">{{Math.round(h.seconds/60)}} min</span></div></div>
 </template>
 <template v-else-if="view==='cycle'">
 <div class="brazil-banner cycle-banner"><div><span class="kicker"><AppIcon name="flower" :size="17"/> SEU CORPO, SEU RITMO</span><h2>Meu ciclo</h2><p>Seu bem-estar também faz parte do treino.</p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
