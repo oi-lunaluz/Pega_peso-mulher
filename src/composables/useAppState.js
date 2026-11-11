@@ -8,10 +8,13 @@ import { clockLabel, validSet, totalSetVolume, maximumWeight, lastWeight } from 
  * Mantém os dados anteriores (localStorage) e centraliza as regras do MVP.
  * A matemática do calendário vive em lib/planner.js e tem testes de regressão.
  */
-export function useAppState() {
-  const key='pega-peso-mulher-mvp-v1'
+export function useAppState({accountId,accountName,migrateLegacy=false}={}) {
+  if(!accountId)throw new Error('Cadastro local obrigatório para iniciar o aplicativo.')
+  const scopedKey=(base)=>`${base}-${accountId}`
+  const key=scopedKey('pega-peso-mulher-mvp-v1')
   const initial={routine:[{name:'Descanso',cardio:0},{name:'Quadríceps',cardio:30},{name:'Superiores A',cardio:30},{name:'Descanso',cardio:0},{name:'Posterior e glúteos',cardio:30},{name:'Superiores B',cardio:30},{name:'Cardio',cardio:30}],workouts:[{name:'Quadríceps',exercises:['Agachamento livre','Leg press','Cadeira extensora']},{name:'Superiores A',exercises:['Puxada alta','Remada baixa']},{name:'Posterior e glúteos',exercises:['Stiff','Mesa flexora','Elevação pélvica']},{name:'Superiores B',exercises:['Supino máquina','Elevação lateral']}],history:[]}
-  const state=ref(normalizeTrainingState(readJson(key,initial),initial))
+  const previousState=migrateLegacy?readJson('pega-peso-mulher-mvp-v1',initial):initial
+  const state=ref(normalizeTrainingState(readJson(key,previousState),initial))
   watch(state,v=>writeJson(key,v),{deep:true})
   // Migração: preserva fichas, histórico e preferências anteriores sem manter dias fixos.
   const workoutNames=()=>state.value.workouts.map(w=>w.name)
@@ -192,10 +195,10 @@ export function useAppState() {
   const totalVolume=computed(()=>bestExercise.value.reduce((a,s)=>a+s.kg*s.reps,0))
   const completedSessions=computed(()=>statsSessions.value.length)
   function onWorkoutStatChange(){selectedStat.value='all'}
-  const cycleKey='pega-peso-mulher-cycle-v1'
+  const cycleKey=scopedKey('pega-peso-mulher-cycle-v1')
   const cycle=ref({
     enabled:false,start:'',length:28,period:5,notes:[],
-    ...readJson(cycleKey,{})
+    ...readJson(cycleKey,migrateLegacy?readJson('pega-peso-mulher-cycle-v1',{}):{})
   })
   if(!Array.isArray(cycle.value.notes))cycle.value.notes=[]
   watch(cycle,v=>writeJson(cycleKey,v),{deep:true})
@@ -211,8 +214,9 @@ export function useAppState() {
   const cycleCalendarDays=computed(()=>{const first=new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1);const offset=first.getDay();return Array.from({length:42},(_,i)=>{const d=new Date(first.getFullYear(),first.getMonth(),1-offset+i);let phase='';if(cycle.value.start){const n=Math.max(1,Number(cycle.value.length)||28);const diff=Math.round((new Date(dateISO(d)+'T12:00:00').getTime()-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);if(diff>=0){const step=diff%n;phase=step<Number(cycle.value.period||5)?'period':Math.abs(step-(n-14))<=2?'fertile':''}}return {date:dateISO(d),number:d.getDate(),outside:d.getMonth()!==cycleCalendarMonth.value,phase,today:dateISO(d)===dateISO(new Date())}})})
   const chartWeeks=computed(()=>{const now=new Date();return Array.from({length:4},(_,i)=>{const newest=3-i;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()-newest*7,23,59,59);const start=new Date(end.getFullYear(),end.getMonth(),end.getDate()-6);const value=statsSessions.value.reduce((total,h)=>{const parts=h.date?.split('/');if(!parts||parts.length!==3)return total;const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]));return d>=start&&d<=end?total+totalSetVolume(h.sets):total},0);return {label:'S'+(i+1),value}})})
   const chartMax=computed(()=>Math.max(1,...chartWeeks.value.map(x=>x.value)))
-  const profileKey='pega-peso-mulher-profile-v1'
-  const profile=ref({nickname:'',goal:'Ganhar força e massa muscular',...readJson(profileKey,{})})
+  const profileKey=scopedKey('pega-peso-mulher-profile-v1')
+  const legacyProfile=migrateLegacy?readJson('pega-peso-mulher-profile-v1',{}):{}
+  const profile=ref({nickname:accountName||'',goal:'Ganhar força e massa muscular',...readJson(profileKey,legacyProfile)})
   watch(profile,value=>writeJson(profileKey,value),{deep:true})
   
   const strengthThisMonth=computed(()=>{const prefix=new Date().toLocaleDateString('pt-BR').slice(3);return state.value.history.filter(h=>h.kind==='forca'&&h.date?.slice(3)===prefix).length})
