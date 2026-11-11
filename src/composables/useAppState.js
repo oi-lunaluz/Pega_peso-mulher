@@ -1,5 +1,6 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { SHORT_DAYS, cleanDays, dateKey, fromDateKey, pendingBefore, pendingIncludingToday, createWeekPlan, cardioMinutesThisWeek } from '../lib/planner.js'
+import { SHORT_DAYS, cleanDays, dateKey, pendingBefore, pendingIncludingToday, createWeekPlan, cardioMinutesThisWeek } from '../lib/planner.js'
+import { readJson, writeJson, normalizeTrainingState } from '../lib/storage.js'
 
 /** 
  * Estado e ações da aplicação.
@@ -9,9 +10,8 @@ import { SHORT_DAYS, cleanDays, dateKey, fromDateKey, pendingBefore, pendingIncl
 export function useAppState() {
   const key='pega-peso-mulher-mvp-v1'
   const initial={routine:[{name:'Descanso',cardio:0},{name:'Quadríceps',cardio:30},{name:'Superiores A',cardio:30},{name:'Descanso',cardio:0},{name:'Posterior e glúteos',cardio:30},{name:'Superiores B',cardio:30},{name:'Cardio',cardio:30}],workouts:[{name:'Quadríceps',exercises:['Agachamento livre','Leg press','Cadeira extensora']},{name:'Superiores A',exercises:['Puxada alta','Remada baixa']},{name:'Posterior e glúteos',exercises:['Stiff','Mesa flexora','Elevação pélvica']},{name:'Superiores B',exercises:['Supino máquina','Elevação lateral']}],history:[]}
-  let saved;try{saved=JSON.parse(localStorage.getItem(key))}catch{}
-  const state=ref(saved&&saved.routine&&saved.workouts?saved:initial)
-  watch(state,v=>localStorage.setItem(key,JSON.stringify(v)),{deep:true})
+  const state=ref(normalizeTrainingState(readJson(key,initial),initial))
+  watch(state,v=>writeJson(key,v),{deep:true})
   // Migração: preserva fichas, histórico e preferências anteriores sem manter dias fixos.
   const workoutNames=()=>state.value.workouts.map(w=>w.name)
   if(!Array.isArray(state.value.rotation)){
@@ -137,8 +137,8 @@ export function useAppState() {
   }
   const elapsed=computed(()=>started.value?Math.max(0,Math.floor(((finished.value||clock.value)-started.value)/1000)):0)
   const time=computed(()=>[Math.floor(elapsed.value/3600),Math.floor(elapsed.value%3600/60),elapsed.value%60].map(n=>String(n).padStart(2,'0')).join(':'))
-  function maxFor(e){return Math.max(0,...state.value.history.flatMap(h=>(h.sets[e]||[]).map(s=>s.kg)),...(sets.value[e]||[]).map(s=>s.kg))}
-  function lastFor(e){const a=state.value.history.flatMap(h=>h.sets[e]||[]);return a.length?a[a.length-1].kg:0}
+  function maxFor(e){return Math.max(0,...state.value.history.flatMap(h=>(h.sets?.[e]||[]).map(s=>s.kg)),...(sets.value[e]||[]).map(s=>s.kg))}
+  function lastFor(e){const a=state.value.history.flatMap(h=>h.sets?.[e]||[]);return a.length?a[a.length-1].kg:0}
   function choose(e){exercise.value=e;kg.value=String(lastFor(e)||'');reps.value='10';view.value='exercise'}
   function addSet(){const k=Number(kg.value),r=Number(reps.value);if(!(k>=0&&r>0&&kg.value!==''))return;sets.value={...sets.value,[exercise.value]:[...(sets.value[exercise.value]||[]),{kg:k,reps:r}]}}
   function finish(){
@@ -171,25 +171,27 @@ export function useAppState() {
   const completedSessions=computed(()=>statsSessions.value.length)
   function onWorkoutStatChange(){selectedStat.value='all'}
   const cycleKey='pega-peso-mulher-cycle-v1'
-  let cycleSaved;try{cycleSaved=JSON.parse(localStorage.getItem(cycleKey))}catch{}
-  const cycle=ref(cycleSaved||{enabled:false,start:'',length:28,period:5,notes:[]})
-  watch(cycle,v=>localStorage.setItem(cycleKey,JSON.stringify(v)),{deep:true})
-  const noteDate=ref(new Date().toISOString().slice(0,10)),noteEnergy=ref('normal'),noteSymptoms=ref(''),noteDifficulty=ref('normal')
+  const cycle=ref({
+    enabled:false,start:'',length:28,period:5,notes:[],
+    ...readJson(cycleKey,{})
+  })
+  if(!Array.isArray(cycle.value.notes))cycle.value.notes=[]
+  watch(cycle,v=>writeJson(cycleKey,v),{deep:true})
+  const noteDate=ref(dateKey(new Date())),noteEnergy=ref('normal'),noteSymptoms=ref(''),noteDifficulty=ref('normal')
   const cycleDay=computed(()=>{if(!cycle.value.start)return null;const diff=Math.floor((new Date().setHours(12,0,0,0)-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);return ((diff%Math.max(1,cycle.value.length))+Math.max(1,cycle.value.length))%Math.max(1,cycle.value.length)+1})
   function addNote(){cycle.value.notes.unshift({date:noteDate.value,energy:noteEnergy.value,symptoms:noteSymptoms.value,difficulty:noteDifficulty.value});noteSymptoms.value=''}
   const weeklyCardio=computed(()=>cardioMinutesThisWeek(state.value.history,calendarNow.value))
   const cycleCalendarMonth=ref(new Date().getMonth())
   const cycleCalendarYear=ref(new Date().getFullYear())
   function moveCycleMonth(delta){const d=new Date(cycleCalendarYear.value,cycleCalendarMonth.value+delta,1);cycleCalendarMonth.value=d.getMonth();cycleCalendarYear.value=d.getFullYear()}
-  function dateISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+  const dateISO=dateKey
   const calendarMonthName=computed(()=>new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'}))
   const cycleCalendarDays=computed(()=>{const first=new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1);const offset=first.getDay();return Array.from({length:42},(_,i)=>{const d=new Date(first.getFullYear(),first.getMonth(),1-offset+i);let phase='';if(cycle.value.start){const n=Math.max(1,Number(cycle.value.length)||28);const diff=Math.round((new Date(dateISO(d)+'T12:00:00').getTime()-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);if(diff>=0){const step=diff%n;phase=step<Number(cycle.value.period||5)?'period':Math.abs(step-(n-14))<=2?'fertile':''}}return {date:dateISO(d),number:d.getDate(),outside:d.getMonth()!==cycleCalendarMonth.value,phase,today:dateISO(d)===dateISO(new Date())}})})
   const chartWeeks=computed(()=>{const now=new Date();return Array.from({length:4},(_,i)=>{const newest=3-i;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()-newest*7,23,59,59);const start=new Date(end.getFullYear(),end.getMonth(),end.getDate()-6);const value=statsSessions.value.reduce((total,h)=>{const parts=h.date?.split('/');if(!parts||parts.length!==3)return total;const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]));return d>=start&&d<=end?total+Object.values(h.sets||{}).flat().reduce((sum,s)=>sum+(Number(s.kg)||0)*(Number(s.reps)||0),0):total},0);return {label:'S'+(i+1),value}})})
   const chartMax=computed(()=>Math.max(1,...chartWeeks.value.map(x=>x.value)))
   const profileKey='pega-peso-mulher-profile-v1'
-  let profileSaved;try{profileSaved=JSON.parse(localStorage.getItem(profileKey))}catch{}
-  const profile=ref(profileSaved||{nickname:'',goal:'Ganhar força e massa muscular'})
-  watch(profile,value=>localStorage.setItem(profileKey,JSON.stringify(value)),{deep:true})
+  const profile=ref({nickname:'',goal:'Ganhar força e massa muscular',...readJson(profileKey,{})})
+  watch(profile,value=>writeJson(profileKey,value),{deep:true})
   
   const strengthThisMonth=computed(()=>{const prefix=new Date().toLocaleDateString('pt-BR').slice(3);return state.value.history.filter(h=>h.kind==='forca'&&h.date?.slice(3)===prefix).length})
   const personalRecords=computed(()=>new Set(state.value.history.flatMap(h=>Object.keys(h.sets||{})).filter(e=>state.value.history.some(h=>(h.sets?.[e]||[]).length)) ).size)
