@@ -4,7 +4,7 @@ import AppIcon from '../AppIcon.vue'
 import { registerLocalAccount, loginLocalAccount } from '../lib/localAuth.js'
 
 const emit=defineEmits(['authenticated'])
-const mode=ref('signup')
+const mode=ref('login')
 const name=ref('')
 const email=ref('')
 const password=ref('')
@@ -53,13 +53,10 @@ async function submit(){
     </section>
 
     <section class="auth-form-card" aria-label="Acesso ao aplicativo">
-      <div class="auth-tabs" role="tablist" aria-label="Cadastro ou entrada">
-        <button type="button" role="tab" :aria-selected="mode==='signup'" :class="{active:mode==='signup'}" @click="switchMode('signup')">Criar cadastro</button>
-        <button type="button" role="tab" :aria-selected="mode==='login'" :class="{active:mode==='login'}" @click="switchMode('login')">Já tenho cadastro</button>
-      </div>
+      <button v-if="mode==='signup'" class="auth-back" type="button" @click="switchMode('login')"><AppIcon name="chevron" :size="16"/> Voltar para login</button>
       <div class="auth-form-heading">
-        <h2>{{mode==='signup'?'Bora começar, mulher!':'Que bom te ver de volta!'}}</h2>
-        <p>{{mode==='signup'?'Faça seu cadastro básico para entrar no aplicativo.':'Entre com o cadastro salvo neste navegador.'}}</p>
+        <h2>{{mode==='signup'?'Crie seu cadastro':'Bem-vinda de volta!'}}</h2>
+        <p>{{mode==='signup'?'Preencha seus dados para começar.':'Entre com seu usuário e senha para continuar.'}}</p>
       </div>
       <form class="auth-form" @submit.prevent="submit">
         <div v-if="mode==='signup'" class="auth-field">
@@ -67,13 +64,13 @@ async function submit(){
           <input id="auth-name" v-model.trim="name" autocomplete="name" placeholder="Seu nome ou apelido" maxlength="60" required minlength="2"/>
         </div>
         <div class="auth-field">
-          <label for="auth-email">E-mail</label>
+          <label for="auth-email">{{mode==='login'?'Usuário (e-mail)':'E-mail'}}</label>
           <input id="auth-email" v-model.trim="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required/>
         </div>
         <div class="auth-field">
           <label for="auth-password">Senha</label>
           <div class="auth-password-field">
-            <input id="auth-password" v-model="password" :type="revealPassword?'text':'password'" :autocomplete="mode==='signup'?'new-password':'current-password'" placeholder="Mínimo de 8 caracteres" minlength="8" required/>
+            <input id="auth-password" v-model="password" :type="revealPassword?'text':'password'" :autocomplete="mode==='signup'?'new-password':'current-password'"  :placeholder="mode==='signup'?'Mínimo de 8 caracteres':'Sua senha'" minlength="8" required/>
             <button type="button" :aria-label="revealPassword?'Ocultar senha':'Mostrar senha'" @click="revealPassword=!revealPassword"><AppIcon :name="revealPassword?'lock':'user'" :size="18"/></button>
           </div>
         </div>
@@ -83,10 +80,20 @@ async function submit(){
         </div>
         <p v-if="error" class="auth-error" role="alert">{{error}}</p>
         <button class="auth-submit" type="submit" :disabled="busy">
-          {{busy?'Verificando...':mode==='signup'?'Criar meu cadastro':'Entrar no aplicativo'}}
+          {{busy?'Verificando...':mode==='signup'?'Criar cadastro':'Entrar'}}
           <AppIcon v-if="!busy" name="arrow" :size="18"/>
         </button>
       </form>
+      <div class="auth-switch">
+        <template v-if="mode==='login'">
+          <span>Ainda não tem cadastro?</span>
+          <button type="button" @click="switchMode('signup')">Me cadastrar</button>
+        </template>
+        <template v-else>
+          <span>Já possui cadastro?</span>
+          <button type="button" @click="switchMode('login')">Fazer login</button>
+        </template>
+      </div>
       <p class="auth-privacy"><AppIcon name="lock" :size="16"/> Protótipo de acesso local: cadastro e treinos ficam somente neste navegador. Não há sincronização, recuperação de senha nem conta online. Use uma senha exclusiva de teste.</p>
     </section>
   </main>
