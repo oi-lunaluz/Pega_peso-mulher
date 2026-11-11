@@ -405,3 +405,27 @@ button:active{transform:scale(.99)}
 .rotation-cardio-progress .progress-track i{display:block;height:100%;border-radius:99px;background:#0ca76c}
 .rotation-outside-note{padding:10px 12px;border-radius:11px;background:#fff1d8;font-size:11px;color:#855a2a;line-height:1.4;margin:0}
 @media(max-width:360px){.home-rotation{padding:10px}.home-rotation-step{flex-basis:90px}.rotation-list-row{padding:8px!important}.rotation-row-controls button{min-width:26px;padding:5px!important}.rotation-order-number{flex-basis:28px;width:28px;height:28px}}
+
+
+/* Calendário semanal flexível com indicação de treinos pendentes */
+.home-week-days button.missed{border-color:#e1a36a;background:#fff2df}
+.home-week-days button.missed svg{color:#c77a2f}
+.home-week-days button.active.missed{background:#ee146d;border-color:#ee146d}
+.home-week-days button.active.missed svg{color:white}
+.home-overdue{display:flex;align-items:flex-start;gap:7px;background:#fff0d6;border:1px solid #f3d3a6;border-radius:10px;margin:10px 0 0;padding:9px;color:#9d4e26;font-size:11px;font-weight:850;line-height:1.4}
+.home-overdue svg{flex:0 0 auto;margin-top:1px}
+.schedule-overdue{background:#fff0d8;border:1px solid #eac59e;border-radius:16px;padding:13px;color:#924e27}
+.schedule-overdue strong{font-size:14px;font-weight:950}
+.schedule-overdue p{font-size:12px;line-height:1.45;margin:5px 0 0}
+.schedule-day-picker{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;padding:3px 0}
+.schedule-day-picker button{min-height:44px;min-width:0;padding:9px 2px;border-radius:12px;border:1px solid #edd3dc;background:#fff;color:#805f6d;font-size:11px;font-weight:900}
+.schedule-day-picker button.selected{background:#ec146d;border-color:#ec146d;color:white;box-shadow:0 2px 0 #af0c50}
+.schedule-day-row{padding:10px!important}
+.schedule-day-row.isToday{background:#fff4d9;border-color:#efd29c}
+.schedule-day-row.isLate{background:#fff8ef}
+.schedule-date{width:40px;height:40px;flex:0 0 40px;border-radius:12px;background:#fae6ef;display:grid;place-items:center;font-size:11px;font-weight:950;color:#a52b67}
+.schedule-day-row.isToday .schedule-date{background:#ed146d;color:#fff}
+.schedule-day-row .row-info strong{font-size:12px}
+.schedule-day-row .row-info small{font-size:10px}
+.schedule-late-tag{font-size:9px;font-weight:900;border-radius:999px;background:#fff0d4;color:#a45b25;padding:5px 7px}
+@media(max-width:360px){.schedule-day-picker{gap:3px}.schedule-day-picker button{font-size:10px;min-height:40px}.schedule-date{width:35px;height:35px;flex-basis:35px}.schedule-day-row{padding:8px!important}}
