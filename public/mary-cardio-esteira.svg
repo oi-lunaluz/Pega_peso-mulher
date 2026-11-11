@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="360" height="260" viewBox="0 0 360 260"><defs><linearGradient id="fur" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffc668"/><stop offset=".6" stop-color="#e69b42"/><stop offset="1" stop-color="#c6762c"/></linearGradient></defs><title>CaraMary fazendo Esteira como cachorrinha de quatro patas</title><g stroke="#48302a" stroke-width="5" stroke-linejoin="round"><path d="M15 210H335L346 239H6Z" fill="#4a4350"/><path d="M30 209H318L323 223H24Z" fill="#f44c96"/><path d="M260 205L303 78H319L291 205Z" fill="#bab4bb"/><path d="M278 78H339Q352 78 348 92L340 117H265Z" fill="#4b4453"/><rect x="282" y="90" width="46" height="16" rx="6" fill="#f3529c" stroke="none"/><path d="M0 239H354" stroke="#292631" stroke-width="6"/></g><g transform="translate(12 19) scale(0.92)" stroke="#48302a" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+<!-- cauda de cachorrinha e corpo em quatro patas -->
+<path d="M81 126Q26 89 53 61Q68 44 79 70Q69 95 100 102" fill="#d98736"/>
+<path d="M67 71Q49 83 73 103" fill="none" stroke="#f5bc62" stroke-width="9"/>
+<ellipse cx="152" cy="133" rx="88" ry="47" fill="url(#fur)"/>
+<path d="M91 131Q88 163 75 198" fill="none" stroke="#bd6c2c" stroke-width="19"/>
+<path d="M135 145Q121 162 124 201" fill="none" stroke="#d98739" stroke-width="18"/>
+<path d="M185 148Q198 168 205 194" fill="none" stroke="#d88836" stroke-width="18"/>
+<path d="M201 143Q229 161 253 171" fill="none" stroke="#e89a41" stroke-width="18"/>
+<path d="M62 195Q77 196 90 201L89 214Q69 222 55 207Z" fill="#ed498c"/>
+<path d="M113 198Q124 194 142 199L141 213Q121 220 109 210Z" fill="#f35194"/>
+<path d="M197 191Q207 187 218 194L221 206Q211 217 193 210Z" fill="#f35194"/>
+<path d="M241 169Q256 168 267 177L264 188Q250 196 239 183Z" fill="#f35194"/>
+<path d="M81 122Q150 105 203 133L199 150Q150 169 89 150Z" fill="#fffdf4" opacity=".92"/>
+<path d="M134 155Q157 163 181 156" stroke="#e65b92" fill="none" stroke-width="5"/>
+<path d="M175 103L201 134L189 156L165 137" fill="#f23f8d"/>
+<!-- cabeça feminina caramela -->
+<path d="M176 103Q179 59 220 49Q263 36 284 69Q299 89 283 116Q260 147 221 143Q188 138 176 103Z" fill="url(#fur)"/>
+<path d="M193 73Q181 44 164 55Q145 69 166 98Q171 103 182 98Z" fill="#b76b31"/>
+<path d="M254 62Q276 28 291 48Q306 71 272 95Z" fill="#b97230"/>
+<ellipse cx="248" cy="103" rx="40" ry="27" fill="#ffd184" stroke="none"/>
+<path d="M235 119Q253 144 273 116" fill="#f37289" stroke-width="3"/>
+<path d="M238 119Q252 131 265 119" fill="none" stroke="#4e302b" stroke-width="4"/>
+<ellipse cx="266" cy="107" rx="10" ry="8" fill="#382727" stroke="none"/>
+<ellipse cx="215" cy="87" rx="9" ry="12" fill="#fff" stroke-width="3"/><ellipse cx="218" cy="89" rx="5" ry="8" fill="#48312d" stroke="none"/>
+<ellipse cx="250" cy="82" rx="9" ry="12" fill="#fff" stroke-width="3"/><ellipse cx="253" cy="84" rx="5" ry="8" fill="#48312d" stroke="none"/>
+<path d="M208 75L204 69M245 70L242 65" stroke="#42302a" stroke-width="3"/>
+<!-- bandana rosa -->
+<path d="M184 128Q208 145 237 137L229 156L210 149L201 172L192 146Z" fill="#f43383"/>
+<path d="M211 145L210 156M206 150H216" stroke="#fff" stroke-width="3"/>
+</g></svg>
