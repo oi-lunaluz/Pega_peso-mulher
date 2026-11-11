@@ -363,3 +363,45 @@ button:active{transform:scale(.99)}
 @media(min-height:760px){.cardio-mary-stage{min-height:300px}.cardio-mary-art{height:210px}}
 @media(max-height:650px){.cardio-mary-stage{min-height:204px;padding:10px 8px 1px!important}.cardio-mary-art{height:128px}.cardio-mary-copy h2{font-size:23px!important}}
 @media(max-width:360px){.cardio-mary-stage{min-height:238px}.cardio-mary-art{height:150px}.cardio-mary-copy h2{font-size:23px!important}}
+
+
+/* Treinos em sequência: sem calendário de musculação ou dias fixos */
+.home-rotation{background:#fff;border:1px solid #f2dfe5;border-radius:17px;padding:12px 12px 11px}
+.home-rotation .home-section-title{margin-bottom:10px}
+.home-rotation-steps{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 5px;scrollbar-width:thin}
+.home-rotation-step{display:flex;flex:0 0 100px;min-width:0;flex-direction:column;align-items:center;gap:6px;text-align:center;color:#9c7a88}
+.home-rotation-bubble{width:37px;height:37px;border-radius:50%;border:1px solid #f4d7e3;background:#fff4f8;display:grid;place-items:center;font-size:14px;font-weight:950;color:#ba7191}
+.home-rotation-name{font-size:11px;font-weight:800;line-height:1.17;overflow-wrap:anywhere}
+.home-rotation-step.upcoming{color:#d50866}
+.home-rotation-step.upcoming .home-rotation-bubble{background:#ed146c;border-color:#ed146c;color:#fff;box-shadow:0 3px 0 #b20c5044}
+.rotation-help{font-size:10px;font-weight:650;color:#8a6274;line-height:1.35;margin:8px 0 0}
+.rotation-intro{background:#fff;border:1px solid #f2dbe3;border-radius:15px;padding:13px}
+.rotation-intro strong{font-size:13px;color:#5c3447}
+.rotation-intro p{font-size:12px;line-height:1.5;color:#7d5c6c;margin:5px 0 0}
+.rotation-list-row{gap:9px!important}
+.rotation-list-row.is-next{background:#fff1ca;border:1px solid #efcd85}
+.rotation-order-number{flex:0 0 32px;width:32px;height:32px;background:#fce3ed;color:#b90a57;font-size:16px;font-weight:950;border-radius:50%;display:grid;place-items:center}
+.rotation-list-row.is-next .rotation-order-number{background:#ed116c;color:white}
+.rotation-row-controls{display:flex;gap:4px;align-items:center}
+.rotation-row-controls button{font-size:18px;line-height:1;background:#fff3f8;border:1px solid #f0cede;border-radius:8px;color:#a21c57;padding:7px!important;min-width:29px;min-height:32px}
+.rotation-row-controls .rotation-remove{color:#b6465a;background:#fff0f2}
+.rotation-row-controls button:disabled{opacity:.28;cursor:not-allowed}
+.rotation-add{background:#fff;border:1px solid #f2dbe3;border-radius:15px;padding:13px;display:grid;gap:7px}
+.rotation-add label{font-size:12px;color:#684356;font-weight:900;margin:0}
+.rotation-add>div{display:flex;gap:8px;align-items:stretch}
+.rotation-add select{flex:1;min-width:0}
+.rotation-add button{flex:0 0 45px;display:grid;place-items:center;background:#e70d6b;color:white}
+.rotation-add button:disabled{opacity:.4}
+.cardio-goal-panel{background:linear-gradient(145deg,#e0f9eb,#d2f3e0);border:1px solid #b5dfc6;padding:14px;border-radius:18px;display:grid;gap:11px}
+.cardio-goal-panel h3{font-size:17px!important;color:#1a6744}
+.cardio-goal-panel>p{margin:0;font-size:12px;color:#41725a;line-height:1.4}
+.cardio-goal-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cardio-goal-fields>div{min-width:0}
+.cardio-goal-fields label{display:block;min-height:28px;font-size:10px;line-height:1.2;font-weight:850;color:#326a4d}
+.cardio-goal-fields input{width:100%;border-color:#a8d5ba}
+.rotation-cardio-progress{display:grid;gap:6px}
+.rotation-cardio-progress>span:first-child{font-size:10px;color:#376f51;font-weight:800}
+.rotation-cardio-progress .progress-track{display:block;height:8px;border-radius:99px;overflow:hidden;background:#a6d7ba}
+.rotation-cardio-progress .progress-track i{display:block;height:100%;border-radius:99px;background:#0ca76c}
+.rotation-outside-note{padding:10px 12px;border-radius:11px;background:#fff1d8;font-size:11px;color:#855a2a;line-height:1.4;margin:0}
+@media(max-width:360px){.home-rotation{padding:10px}.home-rotation-step{flex-basis:90px}.rotation-list-row{padding:8px!important}.rotation-row-controls button{min-width:26px;padding:5px!important}.rotation-order-number{flex-basis:28px;width:28px;height:28px}}
