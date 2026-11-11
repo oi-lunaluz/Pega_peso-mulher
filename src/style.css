@@ -266,3 +266,30 @@ button:active{transform:scale(.99)}
 .modal-head h2{display:flex;align-items:center;gap:7px}
 .modal-head h2 svg{color:#e5106b}
 @media(max-width:360px){.banner-dog{right:-17px;width:125px;height:145px;bottom:-40px}.brazil-banner>div{max-width:70%}}
+
+
+/* Home mais limpa: apenas pequenos pesos na agenda e ilustrações do caramelo */
+.on-home>main{gap:13px}
+.home-greeting{min-height:148px}
+.home-greeting .greeting-copy{width:61%}
+.home-greeting .greeting-copy .eyebrow{letter-spacing:1px;color:#b92b61}
+.home-greeting .greeting-copy h2{margin:9px 0 8px}
+.home-section-title{margin-bottom:9px}
+.home-section-title strong{font-size:15px}
+.home-week-days button{gap:7px;min-height:57px;justify-content:center}
+.home-week-days button svg{display:block;color:#d82e70}
+.home-week-days button.active svg{color:#fff}
+.week-rest-mark{display:grid;place-items:center;height:15px;color:#c4a9b5;font-size:17px;font-weight:700}
+.home-week-days button.active .week-rest-mark{color:#fff}
+.home-metric{min-height:96px!important;padding:13px 14px!important;gap:3px}
+.home-metric small{max-width:100%;font-size:11px}
+.home-metric strong{font-size:31px}
+.home-metric .metric-caption{font-size:10px}
+.home-today{padding-block:16px!important}
+.home-today-body{margin-top:11px;margin-bottom:13px}
+.home-today-body h2{line-height:1.1}
+.home-cardio,.home-cycle{height:143px}
+.home-cycle{background:linear-gradient(140deg,#ffe6ed,#ffecdd)}
+.home-cycle .cycle-more{margin-top:auto}
+.home-footer-note{font-size:10px;font-weight:700;color:#aa6787;letter-spacing:.15px;padding-top:1px}
+@media(max-width:360px){.home-week-days button{min-height:52px;gap:4px}.home-greeting{min-height:132px}.home-cardio,.home-cycle{height:137px}}
