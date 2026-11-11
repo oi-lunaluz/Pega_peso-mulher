@@ -31,6 +31,9 @@ function choose(e){exercise.value=e;kg.value=String(lastFor(e)||'');reps.value='
 function addSet(){const k=Number(kg.value),r=Number(reps.value);if(!(k>=0&&r>0&&kg.value!==''))return;sets.value={...sets.value,[exercise.value]:[...(sets.value[exercise.value]||[]),{kg:k,reps:r}]}}
 function finish(){finished.value=Date.now();if(ticker){clearInterval(ticker);ticker=null}state.value.history.push({date:new Date().toLocaleDateString('pt-BR'),name:kind.value==='cardio'?'Cardio':workoutName.value,kind:kind.value,seconds:elapsed.value,sets:JSON.parse(JSON.stringify(sets.value))});view.value='done'}
 const workoutTab=ref('fichas')
+const cardioSessions=computed(()=>state.value.history.filter(h=>h.kind==='cardio'))
+const cardioTotalMinutes=computed(()=>Math.floor(cardioSessions.value.reduce((sum,h)=>sum+(Number(h.seconds)||0),0)/60))
+const cardioLastSession=computed(()=>cardioSessions.value.length?cardioSessions.value[cardioSessions.value.length-1]:null)
 const selectedStat=ref('all')
 const selectedWorkoutStat=ref('all')
 const workoutStatNames=computed(()=>[...new Set([...state.value.workouts.map(w=>w.name),...state.value.history.map(h=>h.name)].filter(Boolean))])
@@ -96,7 +99,7 @@ function openToday(){if(todayWorkout.value)openWorkout(todayWorkout.value.name);
  <button class="home-primary" v-else @click="view='list'">Ver meus treinos <span aria-hidden="true">→</span></button>
 </section>
 <div class="home-bottom-grid">
- <button class="home-cardio" @click="view='routine'"><span class="eyebrow">SEU CARDIO</span><strong>{{weeklyCardio}} <small>min</small></strong><span>Meta semanal: 150 min</span><span class="home-progress"><i :style="{width:Math.min(100,weeklyCardio/150*100)+'%'}"></i></span><img src="/caramelo-descanso.svg" alt="" aria-hidden="true"/></button>
+ <div class="home-cardio"><span class="eyebrow">SEU CARDIO</span><strong>{{current.cardio}} <small>min hoje</small></strong><span>{{weeklyCardio}} / 150 min planejados na semana</span><span class="home-progress"><i :style="{width:Math.min(100,weeklyCardio/150*100)+'%'}"></i></span><img src="/caramelo-descanso.svg" alt="" aria-hidden="true"/><button class="home-cardio-start" @click="start('cardio')">Iniciar cardio <AppIcon name="arrow" :size="15"/></button></div>
  <button class="home-cycle" @click="view='cycle'"><span class="eyebrow">SEU CICLO</span><strong>{{cycle.enabled&&cycleDay?'Dia '+cycleDay:'Meu ciclo'}}</strong><span>{{cycle.enabled?'Seu acompanhamento':'Acompanhe como se sente'}}</span><span class="cycle-more">Ver ciclo ↗</span></button>
 </div>
 <div class="home-footer-note">O peso varia. A evolução continua.</div>
@@ -151,10 +154,21 @@ function openToday(){if(todayWorkout.value)openWorkout(todayWorkout.value.name);
 <div class="brazil-form"><label class="brazil-label">Dia da semana</label><select v-model.number="editDay" @change="edit(editDay)"><option v-for="(d,i) in weekdays" :key="i" :value="i">{{d}}</option></select><label class="brazil-label">Treino de força</label><select v-model="editName"><option value="Descanso">Descanso</option><option v-for="w in state.workouts" :key="w.name" :value="w.name">{{w.name}}</option><option value="Cardio">Somente cardio</option></select><label class="brazil-label">Cardio planejado (minutos)</label><input v-model.number="editCardio" type="number" min="0" step="5"/><button class="brazil-primary" @click="saveRoutine"><AppIcon name="check" :size="17"/> Salvar alterações</button></div></template>
 <template v-else-if="view==='list'">
 <div class="brazil-banner workouts-banner"><div><span class="kicker"><AppIcon name="dumbbell" :size="17"/> SUAS FICHAS</span><h2>Treino de milhões!</h2><p>Um exercício de cada vez, gata. <AppIcon name="heart" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
-<div class="brazil-tabs"><button :class="{active:workoutTab==='fichas'}" @click="workoutTab='fichas'">Minhas fichas</button><button :class="{active:workoutTab==='historico'}" @click="workoutTab='historico'">Histórico</button></div>
+<div class="brazil-tabs cardio-tabs"><button :class="{active:workoutTab==='fichas'}" @click="workoutTab='fichas'">Musculação</button><button :class="{active:workoutTab==='cardio'}" @click="workoutTab='cardio'">Cardio</button><button :class="{active:workoutTab==='historico'}" @click="workoutTab='historico'">Histórico</button></div>
 <template v-if="workoutTab==='fichas'"><div class="brazil-row-title"><h3>{{state.workouts.length}} fichas cadastradas</h3></div>
 <div class="brazil-list"><button v-for="(w,i) in state.workouts" :key="w.name" class="brazil-list-row" @click="openWorkout(w.name)"><span class="row-icon" :class="i%2?'purple-icon':'pink-icon'"><AppIcon name="dumbbell"/></span><span class="row-info"><strong>{{w.name}}</strong><small>{{w.exercises.length}} exercícios</small></span><span class="row-arrow">›</span></button></div>
 <button class="brazil-primary" @click="openCreateModal"><AppIcon name="plus" :size="17"/> Criar nova ficha</button><div class="dog-quote"><img src="/caramelo-descanso.svg" alt="CaraMary relaxando na cadeira"/><p>“Descanso também é treino, viu?!” — CaraMary <AppIcon name="palm" :size="17"/></p></div></template>
+<template v-else-if="workoutTab==='cardio'">
+<div class="cardio-training-panel">
+<div class="cardio-panel-head"><span>SESSÃO DE CARDIO</span><h3>Seu cardio, seu ritmo</h3><p>Inicie o cronômetro quando quiser, mesmo em dias de musculação.</p></div>
+<div class="cardio-session-goal"><div><small>Cardio previsto hoje</small><strong>{{current.cardio}} min</strong></div><div><small>Planejado na semana</small><strong>{{weeklyCardio}} min</strong></div></div>
+<button class="brazil-primary cardio-panel-start" @click="start('cardio')"><AppIcon name="timer" :size="18"/> Iniciar sessão de cardio</button>
+</div>
+<div class="brazil-row-title"><h3>Suas sessões de cardio</h3><span>{{cardioSessions.length}} concluídas</span></div>
+<div class="cardio-session-summary"><div><small>Tempo total registrado</small><strong>{{cardioTotalMinutes}} min</strong></div><div><small>Última sessão</small><strong>{{cardioLastSession?Math.round(cardioLastSession.seconds/60)+' min':'—'}}</strong></div></div>
+<div v-if="!cardioSessions.length" class="brazil-empty">Seu histórico de cardio aparece aqui depois de finalizar a primeira sessão.</div>
+<div v-else class="brazil-list"><div v-for="(h,i) in [...cardioSessions].reverse()" :key="i" class="brazil-list-row"><span class="row-icon mint-icon"><AppIcon name="timer" :size="19"/></span><span class="row-info"><strong>Cardio concluído</strong><small>{{h.date}}</small></span><span class="row-value">{{Math.round(h.seconds/60)}} min</span></div></div>
+</template>
 <template v-else><div class="brazil-row-title"><h3>Treinos finalizados</h3><span>{{state.history.length}} registros</span></div><div v-if="!state.history.length" class="brazil-empty"><AppIcon name="smile" :size="17"/> Quando você concluir um treino, ele aparecerá aqui!</div><div class="brazil-list"><div v-for="(h,i) in [...state.history].reverse()" :key="i" class="brazil-list-row"><span class="row-icon mint-icon"><AppIcon name="check" :size="17"/></span><span class="row-info"><strong>{{h.name}}</strong><small>{{h.date}}</small></span><span class="row-value">{{Math.round(h.seconds/60)}} min</span></div></div></template>
 </template>
 <template v-else-if="view==='workout'">
