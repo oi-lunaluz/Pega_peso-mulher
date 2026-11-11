@@ -58,7 +58,7 @@ const createModal=ref(false),createError=ref('')
 function openCreateModal(){newWorkout.value='';createError.value='';createModal.value=true}
 const workout=computed(()=>state.value.workouts.find(w=>w.name===workoutName.value))
 function openWorkout(name){workoutName.value=name;view.value='workout'}
-function addWorkout(){const n=newWorkout.value.trim();if(!n){createError.value='Digite o nome do treino.';return}if(state.value.workouts.some(w=>w.name.toLowerCase()===n.toLowerCase())){createError.value='Você já tem um treino com esse nome.';return}state.value.workouts.push({name:n,exercises:[]});createModal.value=false;newWorkout.value='';createError.value='';openWorkout(n)}
+function addWorkout(){const n=newWorkout.value.trim();if(!n){createError.value='Digite o nome do treino.';return}if(state.value.workouts.some(w=>w.name.toLowerCase()===n.toLowerCase())){createError.value='Você já tem um treino com esse nome.';return}const previous=nextWorkoutName.value;state.value.workouts.push({name:n,exercises:[]});state.value.rotation=[...rotation.value,n];state.value.rotationIndex=previous?state.value.rotation.indexOf(previous):0;createModal.value=false;newWorkout.value='';createError.value='';openWorkout(n)}
 function addExercise(){let n=newExercise.value.trim();if(!n||!workout.value)return;workout.value.exercises.push(n);newExercise.value=''}
 const started=ref(null),finished=ref(null),kind=ref('forca'),exercise=ref(''),kg=ref(''),reps=ref('10'),sets=ref({}),completed=ref([])
 const cardioModal=ref(false)
@@ -74,8 +74,9 @@ function openCardioModal(){cardioModal.value=true}
 function confirmCardioStart(){activeCardioModality.value=selectedCardioModality.value;cardioModal.value=false;start('cardio')}
 const clock=ref(Date.now());let ticker=null
 const sessionWorkoutName=ref('')
+const sequenceAdvanced=ref(false)
 function start(k){
-  kind.value=k;sessionWorkoutName.value=k==='forca'?workoutName.value:''
+  kind.value=k;sessionWorkoutName.value=k==='forca'?workoutName.value:'';sequenceAdvanced.value=false
   started.value=Date.now();clock.value=Date.now();finished.value=null
   sets.value={};completed.value=[];view.value='session'
   if(ticker)clearInterval(ticker)
@@ -97,7 +98,7 @@ function finish(){
     modality:kind.value==='cardio'?activeCardioModality.value:null,
     seconds:elapsed.value,sets:JSON.parse(JSON.stringify(sets.value))
   })
-  if(kind.value==='forca')advanceRotation(completedName)
+  if(kind.value==='forca'){sequenceAdvanced.value=completedName===nextWorkoutName.value;advanceRotation(completedName)}
   view.value='done'
 }
 const workoutTab=ref('fichas')
@@ -294,7 +295,7 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
 <div class="brazil-list"><div class="brazil-list-row" v-for="(s,i) in (sets[exercise]||[])" :key="i"><span class="row-icon mint-icon"><AppIcon name="check" :size="17"/></span><span class="row-info"><strong>{{i+1}}ª série</strong><small>{{s.kg}} kg × {{s.reps}} repetições</small></span><button class="remove-set" :aria-label="'Excluir série '+(i+1)" @click="sets[exercise].splice(i,1)">✕</button></div></div>
 <div class="brazil-form"><div class="two-fields"><div><label class="brazil-label">Peso (kg)</label><input type="number" min="0" v-model="kg" inputmode="decimal"/></div><div><label class="brazil-label">Repetições</label><input type="number" min="1" v-model="reps" inputmode="numeric"/></div></div><button class="brazil-primary" @click="addSet"><AppIcon name="plus" :size="17"/> Adicionar série</button></div>
 <button class="brazil-outline" @click="completed.includes(exercise)?null:completed.push(exercise);view='session'"><AppIcon name="check" :size="17"/> Concluir exercício</button></template>
-<template v-else-if="view==='done'"><div class="brazil-celebrate"><span v-if="kind==='cardio'" class="cardio-finished-type">{{activeCardioModality}}</span><span class="trophy"><AppIcon name="trophy" :size="42"/></span><h2>Mandou muito,<br/>mulher!</h2><p>A CaraMary tá orgulhosa de você!</p><img src="/caramelo-treino.svg" alt="Mary, a caramela CaraMary, comemorando"/><strong>{{time}}</strong><small v-if="kind==='forca'">{{Object.values(sets).reduce((sum,s)=>sum+s.length,0)}} séries registradas · {{sessionWorkoutName===nextWorkoutName?'Registro salvo':'Próximo treino: '+(nextWorkoutName||'nenhum')}}</small><small v-else>Cardio registrado sem mudar sua sequência de musculação.</small></div><button class="brazil-primary" @click="view='home'">Voltar ao início ↗</button></template>
+<template v-else-if="view==='done'"><div class="brazil-celebrate"><span v-if="kind==='cardio'" class="cardio-finished-type">{{activeCardioModality}}</span><span class="trophy"><AppIcon name="trophy" :size="42"/></span><h2>Mandou muito,<br/>mulher!</h2><p>A CaraMary tá orgulhosa de você!</p><img src="/caramelo-treino.svg" alt="Mary, a caramela CaraMary, comemorando"/><strong>{{time}}</strong><small v-if="kind==='forca'">{{Object.values(sets).reduce((sum,s)=>sum+s.length,0)}} séries registradas · {{sequenceAdvanced?'Próximo: '+(nextWorkoutName||'nenhum'):'Registro salvo, sequência mantida'}}</small><small v-else>Cardio registrado sem mudar sua sequência de musculação.</small></div><button class="brazil-primary" @click="view='home'">Voltar ao início ↗</button></template>
 <template v-else-if="view==='profile'"><div class="brazil-banner pink-banner"><div><span class="kicker"><AppIcon name="flower" :size="17"/> MINHA ÁREA</span><h2>Meu perfil</h2><p>Seu espaço, suas escolhas. <AppIcon name="heart" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div><div class="profile-card"><span class="profile-avatar"><AppIcon name="user" :size="34"/></span><div><strong>{{profile.nickname||'Mulher poderosa!'}}</strong><small>Pega Peso, Mulher! <AppIcon name="heart" :size="17"/></small></div></div><div class="brazil-form"><label class="brazil-label">Como quer ser chamada?</label><input v-model="profile.nickname" maxlength="40" placeholder="Seu apelido"/><label class="brazil-label">Seu objetivo</label><select v-model="profile.goal"><option>Ganhar força e massa muscular</option><option>Mais condicionamento</option><option>Manter a rotina</option><option>Saúde e bem-estar</option></select><small>As alterações ficam salvas neste navegador.</small></div><div class="brazil-list"><button class="brazil-list-row" @click="view='routine'"><span class="row-icon yellow-icon"><AppIcon name="calendar" :size="17"/></span><span class="row-info"><strong>Minha rotina</strong><small>Editar dias e treinos</small></span><span class="row-arrow">›</span></button><button class="brazil-list-row" @click="view='stats'"><span class="row-icon mint-icon"><AppIcon name="chart" :size="17"/></span><span class="row-info"><strong>Minha evolução</strong><small>Acompanhar os registros</small></span><span class="row-arrow">›</span></button></div><p class="privacy-note"><AppIcon name="lock" :size="17"/> Nesta versão, não há conta online. Os dados ficam somente neste dispositivo.</p></template>
 </main><div v-if="cardioModal" class="modal-backdrop" @click.self="cardioModal=false">
 <div class="modal-sheet cardio-modal" role="dialog" aria-modal="true" aria-labelledby="cardio-modal-title">
