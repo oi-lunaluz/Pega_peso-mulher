@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "npm run test && vite build",
+    "preview": "vite preview",
+    "test": "node --test src/lib/*.test.js"
   },
   "dependencies": {
     "vue": "^3.5.0",
