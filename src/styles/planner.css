@@ -56,3 +56,13 @@
 .schedule-day-row .row-info small{font-size:10px}
 .schedule-late-tag{font-size:9px;font-weight:900;border-radius:999px;background:#fff0d4;color:#a45b25;padding:5px 7px}
 @media(max-width:360px){.schedule-day-picker{gap:3px}.schedule-day-picker button{font-size:10px;min-height:40px}.schedule-date{width:35px;height:35px;flex-basis:35px}.schedule-day-row{padding:8px!important}}
+
+
+/* Calendário inicial: seleção de dia somente para consultar a previsão */
+.home-week-days button[aria-pressed="true"]{outline:2px solid #e7176d;outline-offset:2px}
+.home-today .home-selected-label{font-size:10px;color:#a94a78;font-weight:950;letter-spacing:.3px;margin:0 0 5px}
+.home-next-forecast{display:flex;flex-direction:column;gap:5px;background:#fff2d9;border:1px solid #eec88f;border-radius:13px;padding:11px 12px;margin:4px 0 11px}
+.home-next-forecast span{font-size:10px;color:#9b5a20;font-weight:950;letter-spacing:.3px}
+.home-next-forecast strong{font-size:17px;line-height:1.2;color:#6b3a26}
+.home-next-forecast small{font-size:10px;color:#815d48;line-height:1.35}
+.home-forecast-disclaimer{font-size:10px;color:#916476;line-height:1.4;margin:0 0 11px}
