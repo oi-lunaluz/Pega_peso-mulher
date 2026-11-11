@@ -100,3 +100,41 @@ export function cardioMinutesThisWeek(history, now) {
       ?sum+Math.max(0,Number(entry.seconds)||0):sum
   },0)/60)
 }
+
+/**
+ * Prévia sem efeitos colaterais. Selecionar um dia não registra treino.
+ * Assume que os dias planejados, de hoje até o escolhido, serão concluídos
+ * para projetar qual ficha aparece no próximo dia de treino.
+ */
+export function previewAfterDay({selected,today,days,rotation,nextIndex=0,history=[]}) {
+  const selectedDate=fromDateKey(selected)
+  const todayDate=fromDateKey(today)
+  if(!selectedDate||!todayDate)return null
+  const planned=new Set(cleanDays(days))
+  const queue=Array.isArray(rotation)?rotation:[]
+  const completedToday= sessionOnDate(history,today).length>0
+  const selectedLog=sessionOnDate(history,selected).at(-1)
+  const futureOrToday=selectedDate>=todayDate
+  let steps=0
+  if(futureOrToday){
+    // Só uma sessão planejada ainda não feita pode avançar a fila.
+    for(let d=new Date(todayDate);d<=selectedDate;d.setDate(d.getDate()+1)){
+      if(planned.has(d.getDay()) && !(dateKey(d)===today && completedToday))steps++
+    }
+  }
+  const next=new Date(selectedDate)
+  next.setDate(next.getDate()+1)
+  let searched=0
+  while(!planned.has(next.getDay())&&searched<7){next.setDate(next.getDate()+1);searched++}
+  const index=queue.length?((nextIndex+steps)%queue.length):0
+  const fallbackName=queue.length?queue[nextIndex%queue.length]:''
+  return {
+    selected,
+    selectedName:selectedLog?.name||(planned.has(selectedDate.getDay())?fallbackName:''),
+    selectedComplete:!!selectedLog,
+    selectedScheduled:planned.has(selectedDate.getDay()),
+    nextDate:planned.size?dateKey(next):null,
+    nextName:queue.length?(futureOrToday?queue[index]:fallbackName):'',
+    simulated:futureOrToday&&steps>0
+  }
+}
