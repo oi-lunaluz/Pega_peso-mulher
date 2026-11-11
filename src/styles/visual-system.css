@@ -1,0 +1,231 @@
+/* Componentes visuais, cores e identidade da CaraMary. */
+/* Home brasileira ilustrada - versão 1 */
+.on-home{background:#fff9f4}
+.on-home>.home-header{background:#fff9f4;padding:12px 17px 10px;border-bottom:1px solid #fce5e2;display:flex;align-items:center}
+.home-header small{display:block;color:#282029;font-family:system-ui,sans-serif;font-size:14px;font-weight:1000;letter-spacing:-.5px}
+.home-logo-mark{font-size:25px;filter:drop-shadow(0 2px 1px #d9497530)}
+.on-home>main{background:linear-gradient(180deg,#fff9f4 0%,#fff6f2 60%,#fffdf8 100%);gap:12px;padding-top:12px}
+.on-home>main button{color:inherit}
+.on-home>main .eyebrow{font-size:10px;letter-spacing:.5px;font-weight:1000;color:#6a2c40}
+.home-greeting{position:relative;overflow:hidden;min-height:142px;border-radius:21px;background:linear-gradient(125deg,#ffe0cf 0%,#ffebdc 56%,#ffd9bd 100%);border:2px solid #ffe2ce;padding:17px 14px;isolation:isolate}
+.home-greeting:before{content:"";position:absolute;width:150px;height:150px;right:-20px;top:-40px;border-radius:50%;background:#ffd34170;z-index:-1}
+.greeting-copy{position:relative;z-index:2;width:60%}
+.greeting-copy h2{margin:7px 0 6px;font-family:system-ui,sans-serif;font-weight:1000;letter-spacing:-1.1px;font-size:clamp(23px,6.8vw,32px)!important;line-height:1.01;color:#271b20}
+.greeting-copy h2 em{font-style:normal;color:#e90066}
+.greeting-copy p{max-width:170px;margin:6px 0 0;font-size:12px;line-height:1.3;font-weight:650;color:#402d35}
+.home-dog{position:absolute;bottom:-34px;right:-19px;width:56%;max-width:210px;height:auto;z-index:1;filter:drop-shadow(1px 5px 0 #d5726133)}
+.greeting-spark{position:absolute;color:#f8b600;font-size:35px;font-weight:1000;z-index:2}.spark-one{right:13px;top:1px}.spark-two{right:50%;bottom:7px;font-size:20px}
+.home-section-title{display:flex;justify-content:space-between;align-items:center;padding:0 2px;margin-bottom:7px}.home-section-title strong{font-size:14px;color:#2d2529}.home-text-link{padding:3px 5px!important;background:transparent!important;color:#e80a69!important;font-size:12px!important;font-weight:900}
+.home-week-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.home-week-days button{background:#fff;border:1px solid #f0dfe0;border-radius:13px;padding:8px 0 6px!important;min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;color:#5a424e!important;box-shadow:0 2px 0 #e9d5d633}
+.home-week-days button b{font-size:13px;color:#f58da7}
+.home-week-days button.active{background:#ee146d;border-color:#ee146d;color:#fff!important;box-shadow:0 3px 0 #aa0d51}
+.home-week-days button.active b{color:#fff}
+.home-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.home-metric{position:relative;min-width:0;text-align:left;border-radius:18px;min-height:102px;padding:11px 12px!important;display:flex;flex-direction:column;align-items:flex-start;overflow:hidden}
+.home-metric.mint{background:#d9f7e4}.home-metric.peach{background:#fff0ca}
+.home-metric-icon{font-size:20px;position:absolute;right:12px;top:10px}
+.home-metric small{font-size:11px;font-weight:850;color:#403039;max-width:77%}
+.home-metric strong{font-size:32px;line-height:1.1;letter-spacing:-1.5px;color:#211a1b}
+.metric-caption{font-size:9px;line-height:1.2;font-weight:650;color:#604f55}
+.on-home>main .home-today{padding:14px 15px 13px!important;background:linear-gradient(125deg,#ffeab1,#ffd493);border:1px solid #edbb6f;border-radius:21px;box-shadow:0 3px 0 #e9b77b33}
+.home-today-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.today-pill{background:#fff8e5;color:#784b27;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:900}
+.home-today-body{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:5px 0 9px}
+.home-today-body h2{font-size:clamp(21px,6vw,28px)!important;font-weight:1000;color:#2b2020;letter-spacing:-.8px;margin:2px 0 3px;line-height:1.05}
+.home-today-body p{margin:0;font-size:11px;font-weight:650;color:#6c4d34}
+.today-symbol{font-size:32px;transform:rotate(-12deg);filter:drop-shadow(2px 3px 0 #f09e6260)}
+.home-primary{background:linear-gradient(180deg,#ff3a91,#df005e)!important;color:white!important;border:0!important;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;padding:12px 15px!important;font-size:14px!important;font-weight:950;box-shadow:0 3px 0 #a4074c}
+.home-bottom-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.home-cardio,.home-cycle{position:relative;border-radius:19px;text-align:left;min-width:0;height:146px;overflow:hidden;padding:12px!important;display:flex;flex-direction:column;align-items:flex-start;background:#d6f5e3;color:#242125!important;border:1px solid #b7e7ca;isolation:isolate}
+.home-cardio{background:linear-gradient(145deg,#e2ffed,#c4f3dd)}
+.home-cardio strong{font-size:27px;margin-top:7px;line-height:1;color:#1c3326;font-weight:1000;z-index:2}
+.home-cardio strong small{font-size:13px;color:#1c3326}
+.home-cardio>span:not(.eyebrow):not(.home-progress){font-size:10px;font-weight:750;color:#4b6957;z-index:2}
+.home-progress{display:block;width:55%;height:7px;border-radius:10px;background:#a4d7b6;overflow:hidden;margin-top:9px;z-index:2}
+.home-progress i{display:block;height:100%;background:#e9006c;border-radius:10px}
+.home-cardio img{position:absolute;right:-33px;bottom:-21px;width:72%;max-width:153px;z-index:1}
+.home-cycle{background:linear-gradient(140deg,#ffe4ec,#ffe6d8);border-color:#ffc4d3}
+.home-cycle strong{font-size:20px;font-weight:1000;letter-spacing:-.7px;color:#432433;margin-top:10px;z-index:2}
+.home-cycle>span:not(.eyebrow):not(.cycle-flower):not(.cycle-more){max-width:97px;font-size:10px;line-height:1.2;color:#795066;font-weight:750;z-index:2}
+.cycle-flower{position:absolute;right:1px;bottom:23px;font-size:53px;opacity:.88}
+.cycle-more{font-size:11px;font-weight:900;color:#cf0059;margin-top:auto;z-index:2}
+.home-footer-note{font-size:11px;font-weight:900;color:#9a416c;text-align:center;padding:4px 0 9px}
+.on-home>.bottom-nav{background:#fff;border-top:1px solid #f6ccd9}.on-home .bottom-nav button.active{background:#ffe4ee}
+@media(max-width:360px){.home-greeting{min-height:128px;padding:13px}.home-dog{width:53%}.home-metric{min-height:95px}.home-cardio,.home-cycle{height:135px;padding:10px!important}.home-week-days{gap:3px}.home-week-days button{padding:7px 0 5px!important}.greeting-copy p{font-size:11px}}
+@media(min-height:760px){.home-greeting{min-height:160px}.home-cardio,.home-cycle{height:160px}}
+
+
+/* Brazilian tropical identity shared by the app's remaining screens */
+.brazil-app{background:#fffaf4}
+.brazil-app>.brazil-header{background:linear-gradient(110deg,#ffcf39,#ffe888);border-bottom:2px solid #f1c457;min-height:70px;gap:10px}
+.brazil-app>.brazil-header small{font-size:10px;letter-spacing:.8px;color:#69421a;font-weight:900}
+.brazil-app>.brazil-header h1{font-size:clamp(19px,5.5vw,25px);margin:3px 0 0;line-height:1.1;font-weight:1000;color:#321d20}
+.brazil-app>main{background:linear-gradient(180deg,#fff9f3,#fff3f3 65%,#fffbf4);gap:12px;padding-top:14px}
+.header-profile{border:2px solid #ffffffa0;background:#fff4cb;border-radius:50%;width:39px;height:39px;padding:4px;font-size:21px;display:grid;place-items:center;flex:0 0 auto}
+.brazil-app>.bottom-nav{background:#fffdfd;border-top:1px solid #f3c5d6}
+.brazil-app>.bottom-nav button.active{background:#ffe5f0;color:#d00060}
+.brazil-app .back{font-size:12px;font-weight:900;color:#c30059;align-self:flex-start;padding:5px 0}
+.brazil-app main h3{font-size:16px;margin:0;color:#2d2026}
+.brazil-app .eyebrow,.brazil-app .kicker{font-size:10px;letter-spacing:.5px;font-weight:1000}
+.brazil-banner{position:relative;display:flex;align-items:center;overflow:hidden;min-height:119px;border-radius:21px;padding:16px;isolation:isolate}
+.brazil-banner>div{position:relative;z-index:2;max-width:78%}
+.brazil-banner h2{font-size:clamp(22px,6.5vw,28px)!important;font-weight:1000;letter-spacing:-1px;line-height:1.03;margin:7px 0 5px;color:#2b2021}
+.brazil-banner p{font-size:11px;font-weight:700;line-height:1.25;margin:0;max-width:200px}
+.brazil-banner .kicker{color:#73384e}
+.brazil-banner:after{content:"";position:absolute;width:135px;height:135px;border:16px solid #ffffff57;border-radius:50%;right:-54px;top:-42px;z-index:0}
+.brazil-banner.yellow{background:linear-gradient(120deg,#ffe497,#ffca46);border:1px solid #ecbc54}
+.brazil-banner.pink-banner{background:linear-gradient(120deg,#ffd9e8,#ffb8d4);border:1px solid #ffadc8}
+.brazil-banner.workouts-banner{background:linear-gradient(120deg,#ffd4e3,#fbc8ea 58%,#fce6c3);border:1px solid #ffc0d6}
+.brazil-banner.cycle-banner{background:linear-gradient(115deg,#ffd8e3,#ffbede);border:1px solid #f3b1d2}
+.brazil-banner.mint-banner{background:linear-gradient(115deg,#cdf5df,#a4e7c9);border:1px solid #a6dfc1}
+.banner-art{font-size:clamp(39px,12vw,62px);position:absolute;right:10px;bottom:12px;transform:rotate(-13deg);filter:drop-shadow(2px 3px 0 #ffffff82);white-space:nowrap;z-index:1}
+.brazil-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;background:#f8e8eb;border:1px solid #f4dce3;padding:4px;border-radius:999px}
+.brazil-tabs button{background:transparent;color:#513a49;font-size:12px;padding:10px 6px;border-radius:999px;font-weight:850}
+.brazil-tabs button.active{background:linear-gradient(180deg,#ff3a91,#e20768);color:#fff;box-shadow:0 3px 8px #bf155a35}
+.brazil-row-title{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:2px}
+.brazil-row-title span{font-size:10px;color:#a35d7b;font-weight:750;text-align:right}
+.brazil-list{display:grid;gap:8px}
+.brazil-list-row{width:100%;display:flex;align-items:center;gap:10px;background:#fffdfd;border:1px solid #f2dce3;border-radius:16px;padding:10px 11px;min-height:61px;box-shadow:0 2px 0 #ebc5d022;text-align:left;color:#31242c}
+.brazil-list-row .row-icon{flex:0 0 43px;width:43px;height:43px;border-radius:14px;display:grid;place-items:center;font-size:19px;font-weight:1000}
+.pink-icon{background:#ffdfeb;color:#cb0759}
+.purple-icon{background:#ede1fe;color:#7539bb}
+.mint-icon{background:#d5f7e4;color:#009b5f}
+.yellow-icon{background:#fff0c3;color:#a76b00}
+.row-info{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}
+.row-info strong{font-size:13px;font-weight:900;color:#2e2229;overflow-wrap:anywhere}
+.row-info small{font-size:11px;font-weight:600;color:#8e6d7c;overflow-wrap:anywhere}
+.row-arrow{font-size:25px;font-weight:900;color:#d60064}
+.row-value{font-size:11px;font-weight:900;color:#ad3e75;white-space:nowrap}
+.brazil-primary,.brazil-complete{width:100%;border-radius:999px;color:white!important;background:linear-gradient(180deg,#ff3b92,#dd0060)!important;box-shadow:0 3px 0 #a40b4d;padding:13px!important;font-size:14px;font-weight:950}
+.brazil-complete{background:linear-gradient(180deg,#0bbf80,#07995d)!important;box-shadow:0 3px 0 #08784c}
+.brazil-outline{border-radius:999px!important;border:2px solid #f2bad0!important;background:#fff!important;color:#c80b62!important;padding:12px!important;font-size:13px;font-weight:950}
+.brazil-empty{background:#fff0dc;border:1px dashed #eac5a0;padding:16px;border-radius:18px;font-size:13px;text-align:center;color:#563747;font-weight:700}
+.brazil-empty strong{display:block;font-size:17px;font-weight:1000}
+.brazil-empty p{line-height:1.35;margin:6px 0}
+.brazil-empty.with-dog img{width:140px;max-width:70%;display:block;margin:-10px auto 0}
+.dog-quote{position:relative;display:flex;align-items:center;overflow:hidden;min-height:108px;background:#fff0c5;border-radius:18px;border:1px solid #f3d283}
+.dog-quote img{width:47%;max-width:170px;align-self:end;margin-left:-22px;margin-bottom:-18px}
+.dog-quote p{font-size:14px;line-height:1.15;font-weight:1000;transform:rotate(-5deg);margin:0 12px 0 0;color:#4c302a}
+.brazil-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat-tile{border-radius:18px;padding:14px 12px;min-height:94px;display:flex;flex-direction:column;justify-content:space-between}
+.yellow-tile{background:linear-gradient(120deg,#ffe3ac,#fff0d0)}
+.mint-tile{background:linear-gradient(120deg,#d2f9e4,#bcf1d2)}
+.stat-tile>span{font-size:10px;font-weight:1000;color:#60434b}
+.stat-tile strong{font-size:clamp(23px,6.5vw,31px);font-weight:1000;letter-spacing:-1px;color:#291e25;overflow-wrap:anywhere}
+.stat-tile strong small{font-size:12px;font-weight:850}
+.chart-card{background:#fff;border:1px solid #f2dce4;border-radius:19px;padding:13px!important}
+.chart-bars{height:165px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;align-items:end;padding:15px 8px 3px;background:repeating-linear-gradient(0deg,transparent,transparent 33px,#f8e9ef 34px);margin-top:10px}
+.chart-column{height:100%;min-width:0;display:flex;align-items:center;flex-direction:column;justify-content:flex-end;gap:5px}
+.chart-column>strong{font-size:9px;color:#9f3b69;line-height:1;white-space:nowrap}
+.chart-column>small{font-size:10px;font-weight:800;color:#6e515e}
+.chart-rail{width:100%;height:115px;display:flex;align-items:flex-end;justify-content:center}
+.chart-rail>div{width:65%;min-height:3px;border-radius:8px 8px 2px 2px;background:linear-gradient(180deg,#ff3c97,#fa99c2);box-shadow:inset 0 0 0 1px #fa65a6}
+.chart-footnote{font-size:10px;line-height:1.3;color:#a1768a;margin:7px 0 0}
+.brazil-label{font-size:11px;font-weight:900;color:#5f3448;display:block;margin:0}
+.brazil-select,.brazil-form select,.brazil-form input,.brazil-form-grid input{background:#fff!important;border:1px solid #eecdda!important;border-radius:12px;min-height:45px;color:#3c2933;font:inherit;font-size:16px;padding:11px 12px}
+.brazil-form,.brazil-form-grid{background:#fff;border:1px solid #f2dce3;border-radius:18px;padding:14px;display:grid;gap:10px}
+.brazil-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.brazil-form-grid>div{min-width:0}
+.brazil-form-grid>div:first-child{grid-column:1/-1}
+.brazil-form-grid label{margin:0 0 6px}
+.brazil-form-grid input{width:100%}
+.brazil-form>small{font-size:11px;color:#98758a}
+.two-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.two-fields>div{min-width:0}
+.two-fields label{margin-bottom:6px}
+.brazil-form textarea{border:1px solid #eecdda;border-radius:12px}
+.input-inline{display:flex;gap:9px}
+.input-inline input{min-width:0;flex:1}
+.brazil-square-add{flex:0 0 46px;background:#f01472;color:#fff;border-radius:12px;font-size:24px;padding:4px}
+.remove-set{background:#ffe5ef;color:#ac2459;font-size:13px;padding:8px}
+.session-timer{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px;border-radius:20px;background:linear-gradient(130deg,#ffcc45,#ffe99b);border:1px solid #f0c766}
+.session-timer span{font-size:10px;font-weight:1000;color:#85436a}
+.session-timer strong{font-size:39px;line-height:1.1;font-weight:1000;font-variant-numeric:tabular-nums;color:#30202a}
+.session-timer small{font-size:11px;font-weight:750;color:#755c45}
+.session-timer.compact{padding:10px}
+.session-timer.compact strong{font-size:29px}
+.cycle-toggle{display:flex;align-items:center;gap:12px;justify-content:space-between;background:#fff;border:1px solid #f6cfdf;border-radius:16px;padding:13px}
+.cycle-toggle>div{display:flex;flex-direction:column;gap:3px}
+.cycle-toggle strong{font-size:13px}
+.cycle-toggle small{font-size:10px}
+.cycle-switch{position:relative;display:flex;flex:0 0 48px;width:48px;height:28px}
+.cycle-switch input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.cycle-switch>span{position:absolute;inset:0;background:#e7d6dd;border-radius:99px;pointer-events:none;transition:.2s}
+.cycle-switch>span:before{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 2px #0003}
+.cycle-switch input:checked+span{background:#f01570}
+.cycle-switch input:checked+span:before{transform:translateX(20px)}
+.cycle-switch input:focus-visible+span{outline:3px solid #704eab;outline-offset:2px}
+.calendar-card{background:#fff;border:1px solid #f1d5df;border-radius:19px;padding:14px!important}
+.month-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.month-nav strong{text-transform:capitalize;font-size:14px}
+.month-nav button{background:#ffe9f0;color:#bb1659;padding:3px 10px;border-radius:10px;font-size:23px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.calendar-grid .weekday{font-size:10px;font-weight:900;color:#7c5870;margin:0 0 5px}
+.calendar-cell{min-height:33px;display:grid;place-items:center;font-size:11px;font-weight:750;border-radius:9px;color:#32252d}
+.calendar-cell.outside{opacity:.32}
+.calendar-cell.period{background:#ffc4d6;color:#991e51}
+.calendar-cell.fertile{background:#c4f4dc;color:#166746}
+.calendar-cell.today{outline:2px solid #f41471;outline-offset:-2px}
+.calendar-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:12px;font-size:10px;font-weight:750;color:#775b68}
+.cycle-info{background:#ffe7f1;border:1px solid #f6ccdd;border-radius:17px;padding:13px;display:flex;flex-direction:column;gap:4px}
+.cycle-info strong{font-size:14px;color:#712954}
+.cycle-info span{font-size:11px;color:#7b5771;line-height:1.35}
+.privacy-note{font-size:11px;line-height:1.4;color:#8a6075;background:#ffecf2;padding:10px;border-radius:11px}
+.brazil-celebrate{text-align:center;background:#fff1cd;border-radius:23px;padding:16px 10px;display:flex;flex-direction:column;align-items:center}
+.brazil-celebrate .trophy{font-size:31px}
+.brazil-celebrate h2{font-size:28px;font-weight:1000;line-height:1.06;margin:5px 0;color:#dc0c63}
+.brazil-celebrate p{font-size:12px;font-weight:750}
+.brazil-celebrate img{width:145px;max-width:75%;margin:-9px 0 -12px}
+.brazil-celebrate strong{font-size:30px;font-weight:1000}
+.brazil-celebrate small{font-size:11px}
+.profile-card{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #f2dce3;border-radius:18px;padding:13px}
+.profile-avatar{font-size:38px;border-radius:50%;background:#ffe2ef;padding:11px}
+.profile-card>div{display:flex;flex-direction:column;gap:3px}
+.profile-card strong{font-size:17px;font-weight:950}
+.profile-card small{font-size:11px}
+@media(max-width:360px){.brazil-banner{min-height:105px;padding:12px}.banner-art{font-size:40px}.brazil-list-row{padding:8px;min-height:55px}.brazil-list-row .row-icon{flex-basis:38px;width:38px;height:38px}.row-info strong{font-size:12px}.row-info small{font-size:10px}.brazil-form{padding:11px}.chart-bars{gap:8px}.brazil-stats{gap:7px}}
+
+
+/* Sistema visual sem emoji: pictogramas vetoriais e mascote ilustrado */
+.app-icon{display:inline-block;flex:0 0 auto;vertical-align:middle;stroke:currentColor}
+.brand-wordmark{display:inline-flex!important;align-items:center;gap:7px;font-weight:1000!important;letter-spacing:.1px!important}
+.brand-mark{display:grid;place-items:center;width:26px;height:26px;border-radius:9px;background:#ed0b6b;color:white}
+.header-profile{color:#bc135d;display:grid;place-items:center}
+.brazil-banner{min-height:118px}
+.banner-dog{position:absolute;right:-11px;bottom:-45px;width:145px;height:160px;object-fit:contain;filter:drop-shadow(0 4px 0 #c4595330);z-index:1}
+.brazil-banner>div{max-width:68%}
+.brazil-banner.cycle-banner .banner-dog,.brazil-banner.pink-banner .banner-dog{width:136px}
+.brazil-banner.mint-banner .banner-dog{width:140px}
+.brazil-app .kicker,.brazil-app .eyebrow,.on-home .eyebrow{display:inline-flex;align-items:center;gap:5px}
+.brazil-app .kicker svg,.brazil-app .eyebrow svg,.on-home .eyebrow svg{width:15px;height:15px}
+.brazil-app .row-icon{color:#bc1b63}
+.brazil-app .row-icon svg{width:21px;height:21px}
+.brazil-app .row-icon.mint-icon{color:#14835d}
+.brazil-app .row-icon.purple-icon{color:#8051b7}
+.brazil-app .row-icon.yellow-icon{color:#a56a15}
+.home-metric-icon{display:grid;place-items:center;color:#c51668}
+.home-metric-icon svg{width:23px;height:23px}
+.today-symbol{color:#df1767;transform:rotate(-13deg)}
+.cycle-flower{color:#ef5592;opacity:.72}
+.greeting-copy p svg{width:13px;height:13px}
+.home-section-title strong{display:flex;align-items:center;gap:5px}
+.home-section-title strong svg{width:16px;height:16px;color:#d90b65}
+.home-footer-note{display:flex;justify-content:center;align-items:center;gap:5px}
+.home-footer-note svg{width:13px;height:13px}
+.brazil-list-row,.stat-tile,.brazil-banner,.home-metric,.home-today,.home-cardio,.home-cycle{transition:background-color .15s ease,transform .15s ease}
+button:active{transform:scale(.99)}
+.bottom-nav button{gap:4px}
+.bottom-nav button svg{display:block}
+.bottom-nav button.active svg{stroke:#d00060}
+.profile-avatar{display:grid;place-items:center;width:66px;height:66px;color:#d20b69}
+.brazil-celebrate .trophy{color:#d10b65;display:grid;place-items:center}
+.dog-quote{gap:3px}
+.dog-quote p svg{width:15px;height:15px}
+.calendar-legend span{display:inline-flex;align-items:center;gap:5px}
+.calendar-legend svg{width:14px;height:14px}
+.calendar-legend span:first-child svg{color:#ef598e}
+.calendar-legend span:last-child svg{color:#1aa875}
+.modal-head h2{display:flex;align-items:center;gap:7px}
+.modal-head h2 svg{color:#e5106b}
+@media(max-width:360px){.banner-dog{right:-17px;width:125px;height:145px;bottom:-40px}.brazil-banner>div{max-width:70%}}
