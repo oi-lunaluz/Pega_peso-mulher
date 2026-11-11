@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import AppIcon from './AppIcon.vue'
+import { SHORT_DAYS, cleanDays, dateKey, fromDateKey, pendingBefore, pendingIncludingToday, createWeekPlan, cardioMinutesThisWeek } from './lib/planner.js'
 const key='pega-peso-mulher-mvp-v1'
 const initial={routine:[{name:'Descanso',cardio:0},{name:'Quadríceps',cardio:30},{name:'Superiores A',cardio:30},{name:'Descanso',cardio:0},{name:'Posterior e glúteos',cardio:30},{name:'Superiores B',cardio:30},{name:'Cardio',cardio:30}],workouts:[{name:'Quadríceps',exercises:['Agachamento livre','Leg press','Cadeira extensora']},{name:'Superiores A',exercises:['Puxada alta','Remada baixa']},{name:'Posterior e glúteos',exercises:['Stiff','Mesa flexora','Elevação pélvica']},{name:'Superiores B',exercises:['Supino máquina','Elevação lateral']}],history:[]}
 let saved;try{saved=JSON.parse(localStorage.getItem(key))}catch{}
@@ -20,15 +21,16 @@ if(!Number.isInteger(state.value.rotationIndex))state.value.rotationIndex=0
 if(!Number.isFinite(state.value.cardioGoal))state.value.cardioGoal=150
 if(!Number.isFinite(state.value.cardioSessionTarget))state.value.cardioSessionTarget=30
 
-const localDateKey=(date)=>[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')
-const fromLocalDate=(value)=>{const [y,m,d]=String(value).split('-').map(Number);return new Date(y,m-1,d)}
-const weekNames=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
-const weekFullNames=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado']
+// A agenda mostra dias fixos; a sequência das fichas só avança ao concluir.
+const weekNames=SHORT_DAYS
 const calendarNow=ref(new Date())
 let calendarRefresh=null
-onMounted(()=>{calendarRefresh=setInterval(()=>calendarNow.value=new Date(),60000)})
-onUnmounted(()=>{if(calendarRefresh)clearInterval(calendarRefresh)})
-const dateToday=computed(()=>localDateKey(calendarNow.value))
+onMounted(()=>{calendarRefresh=setInterval(()=>{calendarNow.value=new Date()},60_000)})
+onUnmounted(()=>{
+  if(calendarRefresh)clearInterval(calendarRefresh)
+  if(ticker)clearInterval(ticker)
+})
+const dateToday=computed(()=>dateKey(calendarNow.value))
 const legacyTrainingDays=(state.value.routine||[]).flatMap((slot,day)=>
   state.value.workouts.some(w=>w.name===slot?.name)?[day]:[])
 if(!Array.isArray(state.value.scheduledDays))
@@ -36,22 +38,17 @@ if(!Array.isArray(state.value.scheduledDays))
 if(!state.value.scheduleAnchor)state.value.scheduleAnchor=dateToday.value
 if(!Number.isInteger(state.value.scheduleCompleted))state.value.scheduleCompleted=0
 if(!Number.isInteger(state.value.scheduleCarry))state.value.scheduleCarry=0
-const scheduledDays=computed(()=>[...new Set(state.value.scheduledDays)].filter(d=>Number.isInteger(d)&&d>=0&&d<7).sort((a,b)=>a-b))
+const scheduledDays=computed(()=>cleanDays(state.value.scheduledDays))
 const scheduledDayNames=computed(()=>scheduledDays.value.map(i=>weekNames[i]))
-// A dívida é calculada a partir da data de ativação da agenda. Histórico anterior permanece intacto.
-function plannedSessionsBefore(dateKey){
-  const start=fromLocalDate(state.value.scheduleAnchor)
-  const end=fromLocalDate(dateKey)
-  if(!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime()))return 0
-  let count=0
-  for(const day=new Date(start);day<end;day.setDate(day.getDate()+1)){
-    if(scheduledDays.value.includes(day.getDay()))count++
-    if(count>50000)break
-  }
-  return count
-}
-const overdueWorkouts=computed(()=>Math.max(0,state.value.scheduleCarry+plannedSessionsBefore(dateToday.value)-state.value.scheduleCompleted))
-const dueWorkouts=computed(()=>Math.max(0,state.value.scheduleCarry+plannedSessionsBefore((()=>{const d=fromLocalDate(dateToday.value);d.setDate(d.getDate()+1);return localDateKey(d)})())-state.value.scheduleCompleted))
+const scheduleInputs=computed(()=>({
+  anchor:state.value.scheduleAnchor,
+  today:dateToday.value,
+  days:scheduledDays.value,
+  completed:state.value.scheduleCompleted,
+  carry:state.value.scheduleCarry
+}))
+const overdueWorkouts=computed(()=>pendingBefore(scheduleInputs.value))
+const dueWorkouts=computed(()=>pendingIncludingToday(scheduleInputs.value))
 function toggleTrainingDay(day){
   const oldOverdue=overdueWorkouts.value
   const next=new Set(scheduledDays.value)
@@ -59,35 +56,14 @@ function toggleTrainingDay(day){
   state.value.scheduleCarry=oldOverdue
   state.value.scheduleCompleted=0
   state.value.scheduleAnchor=dateToday.value
-  state.value.scheduledDays=[...next].sort((a,b)=>a-b)
+  state.value.scheduledDays=cleanDays([...next])
 }
-const weekPlan=computed(()=>{
-  const now=fromLocalDate(dateToday.value)
-  const monday=new Date(now);monday.setDate(monday.getDate()-(monday.getDay()+6)%7)
-  const days=Array.from({length:7},(_,i)=>{
-    const date=new Date(monday);date.setDate(date.getDate()+i)
-    return {day:date.getDay(),date:localDateKey(date),short:weekNames[date.getDay()],
-      full:weekFullNames[date.getDay()],isToday:localDateKey(date)===dateToday.value,
-      past:date<now,scheduled:scheduledDays.value.includes(date.getDay())}
-  })
-  let nextOffset=0
-  const raw=days.map(d=>{
-    const lastLog=[...state.value.history].reverse().find(h=>h.kind==='forca'&&h.date===fromLocalDate(d.date).toLocaleDateString('pt-BR'))
-    const recorded=!!lastLog
-    const todayFinished=d.isToday&&dueWorkouts.value===0&&recorded
-    const queued=d.scheduled&&!d.past&&!todayFinished
-    const name=queued&&rotation.value.length?rotation.value[(rotationIndex.value+nextOffset)%rotation.value.length]:lastLog?.name||''
-    if(queued)nextOffset++
-    const status=!d.scheduled?'livre':d.past?(recorded?'concluído':overdueWorkouts.value>0?'pendente':'reorganizado'):todayFinished?'concluído':d.isToday?'hoje':'previsto'
-    return {...d,recorded,name,status}
-  })
-  // O treino perdido continua visível no dia da falta e é repetido no próximo dia disponível.
-  const missed=raw.filter(d=>d.status==='pendente')
-  missed.slice(-overdueWorkouts.value).forEach((d,i)=>{
-    if(rotation.value.length)d.name=rotation.value[(rotationIndex.value+i)%rotation.value.length]
-  })
-  return raw
-})
+const weekPlan=computed(()=>createWeekPlan({
+  ...scheduleInputs.value,
+  history:state.value.history,
+  rotation:rotation.value,
+  nextIndex:rotationIndex.value
+}))
 
 const view=ref('home')
 const rotation=computed(()=>state.value.rotation.filter(name=>state.value.workouts.some(w=>w.name===name)))
@@ -196,17 +172,7 @@ watch(cycle,v=>localStorage.setItem(cycleKey,JSON.stringify(v)),{deep:true})
 const noteDate=ref(new Date().toISOString().slice(0,10)),noteEnergy=ref('normal'),noteSymptoms=ref(''),noteDifficulty=ref('normal')
 const cycleDay=computed(()=>{if(!cycle.value.start)return null;const diff=Math.floor((new Date().setHours(12,0,0,0)-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);return ((diff%Math.max(1,cycle.value.length))+Math.max(1,cycle.value.length))%Math.max(1,cycle.value.length)+1})
 function addNote(){cycle.value.notes.unshift({date:noteDate.value,energy:noteEnergy.value,symptoms:noteSymptoms.value,difficulty:noteDifficulty.value});noteSymptoms.value=''}
-const weeklyCardio=computed(()=>{
-  const now=new Date(),dow=(now.getDay()+6)%7
-  const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow)
-  monday.setHours(0,0,0,0)
-  return Math.round(state.value.history.filter(h=>h.kind==='cardio').reduce((sum,h)=>{
-    const parts=h.date?.split('/')
-    if(!parts||parts.length!==3)return sum
-    const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]))
-    return d>=monday&&d<=now?sum+(Number(h.seconds)||0):sum
-  },0)/60)
-})
+const weeklyCardio=computed(()=>cardioMinutesThisWeek(state.value.history,calendarNow.value))
 const cycleCalendarMonth=ref(new Date().getMonth())
 const cycleCalendarYear=ref(new Date().getFullYear())
 function moveCycleMonth(delta){const d=new Date(cycleCalendarYear.value,cycleCalendarMonth.value+delta,1);cycleCalendarMonth.value=d.getMonth();cycleCalendarYear.value=d.getFullYear()}
