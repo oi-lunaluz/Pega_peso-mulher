@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 300" role="img" aria-label="Cachorro caramelo sorridente de óculos e bandana rosa">
+<defs><linearGradient id="fur" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffbd49"/><stop offset="1" stop-color="#cc6d23"/></linearGradient><linearGradient id="band" x1="0" x2="1"><stop stop-color="#ff4491"/><stop offset="1" stop-color="#ee0960"/></linearGradient></defs>
+<path d="M51 278c-8-46 10-70 38-79" fill="none" stroke="#a45822" stroke-width="17" stroke-linecap="round"/>
+<ellipse cx="189" cy="249" rx="94" ry="38" fill="#c97122" stroke="#48271b" stroke-width="7"/>
+<path d="M122 220c-24 14-39 43-33 62h30l15-37m93-14c26 6 36 30 38 50h-32l-16-29" fill="#e89433" stroke="#48271b" stroke-width="6" stroke-linejoin="round"/>
+<path d="M145 184c-22 16-23 36-15 62 27 13 84 8 108-8 9-25-7-58-37-68" fill="url(#fur)" stroke="#48271b" stroke-width="7"/>
+<path d="M141 196c33 15 61 15 87-5l11 21c-29 23-69 24-107 5z" fill="url(#band)" stroke="#49201f" stroke-width="5"/>
+<path d="M217 204l21 54-27-19-16 23-2-43" fill="#ff338c" stroke="#49201f" stroke-width="5"/>
+<path d="M89 73c-33-20-58 15-46 71 4 28 24 36 41 23l23-60" fill="#ad5b26" stroke="#48271b" stroke-width="8"/>
+<path d="M237 78c32-4 51 17 48 47-3 25-25 40-41 25l-17-39" fill="#b96a2c" stroke="#48271b" stroke-width="8"/>
+<path d="M89 93c-4-42 32-66 85-66 70 0 101 38 97 92-4 47-37 80-90 85-56 5-95-38-92-111" fill="url(#fur)" stroke="#48271b" stroke-width="8"/>
+<path d="M105 58c12-14 37-22 66-22" fill="none" stroke="#ffe197" stroke-width="10" stroke-linecap="round"/>
+<ellipse cx="180" cy="147" rx="64" ry="47" fill="#ffd17e"/>
+<path d="M119 143q57 48 106 0" fill="none" stroke="#48271b" stroke-width="8" stroke-linecap="round"/>
+<path d="M167 156c1 26 31 43 43 13" fill="#e82374" stroke="#48271b" stroke-width="5"/>
+<path d="M165 144c12-16 38-19 46-3-9 16-35 24-46 3" fill="#36241f"/>
+<path d="M99 100l74 3c8 2 9 10 4 18-10 21-47 21-66 9-10-6-15-19-12-30zm80 3l69-7c5 10 0 27-10 34-18 13-49 8-59-9-4-7-4-12 0-18z" fill="#29232a" stroke="#44251d" stroke-width="6"/>
+<path d="M168 108h20" stroke="#44251d" stroke-width="7"/>
+<path d="M113 108l18 3m70-3 13-2" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+<path d="M101 85c30-33 125-30 145 1" fill="none" stroke="#fc3288" stroke-width="14" stroke-linecap="round"/>
+<path d="M80 23l-9-16m33 17 4-19m154 34 16-12m-7 35 22-3" stroke="#ffc313" stroke-width="9" stroke-linecap="round"/>
+<path d="M141 271c14 5 53 6 67-2" fill="none" stroke="#f8c46b" stroke-width="9" stroke-linecap="round"/>
+</svg>
