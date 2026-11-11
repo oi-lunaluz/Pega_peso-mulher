@@ -196,7 +196,7 @@ function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);el
 <div class="rotation-intro"><strong>Como funciona</strong><p>Você monta uma sequência e segue na ordem. Se não treinar hoje, nada muda. Somente concluir o treino da vez libera o próximo. Ao terminar a lista, ela recomeça.</p></div>
 <div class="brazil-row-title"><h3>Ordem dos treinos</h3><span>{{rotation.length}} fichas na sequência</span></div>
 <div class="brazil-list">
-  <div v-for="(name,i) in rotation" :key="name" class="brazil-list-row rotation-list-row" :class="{is-next:i===rotationIndex}">
+  <div v-for="(name,i) in rotation" :key="name" class="brazil-list-row rotation-list-row" :class="{'is-next':i===rotationIndex}">
     <span class="rotation-order-number">{{i+1}}</span>
     <span class="row-info"><strong>{{name}}</strong><small>{{i===rotationIndex?'Próximo a fazer':'Treino '+(i+1)}}</small></span>
     <div class="rotation-row-controls">
