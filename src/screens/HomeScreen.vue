@@ -30,10 +30,10 @@ const {
  <img class="home-dog" src="/caramelo-treino.svg" alt="Mary, a caramela apelidada CaraMary, de óculos e bandana rosa, sorrindo"/><span class="mary-label">Mary, a CaraMary</span>
 </div>
 <div class="home-rotation">
-  <div class="home-section-title"><strong>Sua semana</strong><button class="home-text-link" @click="view='routine'">Editar <span aria-hidden="true">›</span></button></div>
+  <div class="home-section-title"><strong>Sua semana</strong><button class="home-text-link" @click="view='list'">Ver treinos <span aria-hidden="true">›</span></button></div>
   <div class="home-week-days">
     <button v-for="d in weekPlan" :key="d.date" :class="{active:d.isToday,hasWorkout:d.scheduled,missed:d.status==='pendente'}"
-      :aria-label="d.full+': '+(d.scheduled?d.status:'Descanso ou cardio livre')" @click="view='routine'">
+      :aria-label="d.full+': '+(d.scheduled?d.status:'Descanso ou cardio livre')+'. Ver treinos'" @click="view='list'">
       <span>{{d.short}}</span>
       <AppIcon v-if="d.scheduled" :name="d.status==='concluído'?'check':'dumbbell'" :size="15" :strokeWidth="2.5"/>
       <span v-else class="week-rest-mark">–</span>
