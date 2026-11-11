@@ -345,3 +345,21 @@ button:active{transform:scale(.99)}
 .cardio-modal-start{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:3px}
 .cardio-finished-type{display:inline-block;margin-top:5px;background:#d7f5e5;color:#16764c;border-radius:50px;padding:7px 14px;font-size:13px;font-weight:950}
 @media(max-width:360px){.cardio-modality-option{min-height:48px;padding:10px;font-size:12px}.cardio-modal{padding:15px;gap:10px}}
+
+
+/* Mascote CaraMary: ilustração corresponde ao cardio em andamento */
+.cardio-mary-stage{
+ position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ background:linear-gradient(160deg,#e5fff0 0%,#cff6df 58%,#b9ebcf 100%);
+ border:1px solid #a5dfbf;border-radius:22px;min-height:260px;
+ padding:16px 12px 4px!important;overflow:hidden;isolation:isolate;
+}
+.cardio-mary-stage::before{content:"";position:absolute;width:210px;height:210px;border-radius:50%;background:#ffffff78;right:-40px;top:16px;z-index:-1}
+.cardio-mary-copy{text-align:center;position:relative;z-index:2}
+.cardio-mary-kicker{display:block;color:#27704e;font-size:10px;letter-spacing:.8px;font-weight:950}
+.cardio-mary-copy h2{font-size:27px!important;line-height:1.05;font-weight:1000;letter-spacing:-.8px;color:#144932;margin:6px 0 4px}
+.cardio-mary-copy p{font-size:12px;line-height:1.3;color:#42715d;font-weight:700;margin:0}
+.cardio-mary-art{position:relative;display:block;object-fit:contain;object-position:center bottom;width:min(100%,340px);height:175px;margin:2px auto 0;filter:drop-shadow(0 5px 5px #326f4c18)}
+@media(min-height:760px){.cardio-mary-stage{min-height:300px}.cardio-mary-art{height:210px}}
+@media(max-height:650px){.cardio-mary-stage{min-height:204px;padding:10px 8px 1px!important}.cardio-mary-art{height:128px}.cardio-mary-copy h2{font-size:23px!important}}
+@media(max-width:360px){.cardio-mary-stage{min-height:238px}.cardio-mary-art{height:150px}.cardio-mary-copy h2{font-size:23px!important}}
