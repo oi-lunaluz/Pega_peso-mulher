@@ -1,6 +1,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { SHORT_DAYS, cleanDays, dateKey, pendingBefore, pendingIncludingToday, createWeekPlan, cardioMinutesThisWeek } from '../lib/planner.js'
 import { readJson, writeJson, normalizeTrainingState } from '../lib/storage.js'
+import { clockLabel, validSet, totalSetVolume, maximumWeight, lastWeight } from '../lib/trainingMath.js'
 
 /** 
  * Estado e ações da aplicação.
@@ -136,11 +137,15 @@ export function useAppState() {
     ticker=setInterval(()=>clock.value=Date.now(),1000)
   }
   const elapsed=computed(()=>started.value?Math.max(0,Math.floor(((finished.value||clock.value)-started.value)/1000)):0)
-  const time=computed(()=>[Math.floor(elapsed.value/3600),Math.floor(elapsed.value%3600/60),elapsed.value%60].map(n=>String(n).padStart(2,'0')).join(':'))
-  function maxFor(e){return Math.max(0,...state.value.history.flatMap(h=>(h.sets?.[e]||[]).map(s=>s.kg)),...(sets.value[e]||[]).map(s=>s.kg))}
-  function lastFor(e){const a=state.value.history.flatMap(h=>h.sets?.[e]||[]);return a.length?a[a.length-1].kg:0}
+  const time=computed(()=>clockLabel(elapsed.value))
+  function maxFor(e){return maximumWeight(state.value.history,e,sets.value[e]||[])}
+  function lastFor(e){return lastWeight(state.value.history,e)}
   function choose(e){exercise.value=e;kg.value=String(lastFor(e)||'');reps.value='10';view.value='exercise'}
-  function addSet(){const k=Number(kg.value),r=Number(reps.value);if(!(k>=0&&r>0&&kg.value!==''))return;sets.value={...sets.value,[exercise.value]:[...(sets.value[exercise.value]||[]),{kg:k,reps:r}]}}
+  function addSet(){
+    if(!validSet(kg.value,reps.value)||!exercise.value)return
+    const entry={kg:Number(kg.value),reps:Number(reps.value)}
+    sets.value={...sets.value,[exercise.value]:[...(sets.value[exercise.value]||[]),entry]}
+  }
   function finish(){
     if(!started.value||finished.value!==null)return
     finished.value=Date.now()
@@ -187,14 +192,14 @@ export function useAppState() {
   const dateISO=dateKey
   const calendarMonthName=computed(()=>new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'}))
   const cycleCalendarDays=computed(()=>{const first=new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1);const offset=first.getDay();return Array.from({length:42},(_,i)=>{const d=new Date(first.getFullYear(),first.getMonth(),1-offset+i);let phase='';if(cycle.value.start){const n=Math.max(1,Number(cycle.value.length)||28);const diff=Math.round((new Date(dateISO(d)+'T12:00:00').getTime()-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);if(diff>=0){const step=diff%n;phase=step<Number(cycle.value.period||5)?'period':Math.abs(step-(n-14))<=2?'fertile':''}}return {date:dateISO(d),number:d.getDate(),outside:d.getMonth()!==cycleCalendarMonth.value,phase,today:dateISO(d)===dateISO(new Date())}})})
-  const chartWeeks=computed(()=>{const now=new Date();return Array.from({length:4},(_,i)=>{const newest=3-i;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()-newest*7,23,59,59);const start=new Date(end.getFullYear(),end.getMonth(),end.getDate()-6);const value=statsSessions.value.reduce((total,h)=>{const parts=h.date?.split('/');if(!parts||parts.length!==3)return total;const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]));return d>=start&&d<=end?total+Object.values(h.sets||{}).flat().reduce((sum,s)=>sum+(Number(s.kg)||0)*(Number(s.reps)||0),0):total},0);return {label:'S'+(i+1),value}})})
+  const chartWeeks=computed(()=>{const now=new Date();return Array.from({length:4},(_,i)=>{const newest=3-i;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()-newest*7,23,59,59);const start=new Date(end.getFullYear(),end.getMonth(),end.getDate()-6);const value=statsSessions.value.reduce((total,h)=>{const parts=h.date?.split('/');if(!parts||parts.length!==3)return total;const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]));return d>=start&&d<=end?total+totalSetVolume(h.sets):total},0);return {label:'S'+(i+1),value}})})
   const chartMax=computed(()=>Math.max(1,...chartWeeks.value.map(x=>x.value)))
   const profileKey='pega-peso-mulher-profile-v1'
   const profile=ref({nickname:'',goal:'Ganhar força e massa muscular',...readJson(profileKey,{})})
   watch(profile,value=>writeJson(profileKey,value),{deep:true})
   
   const strengthThisMonth=computed(()=>{const prefix=new Date().toLocaleDateString('pt-BR').slice(3);return state.value.history.filter(h=>h.kind==='forca'&&h.date?.slice(3)===prefix).length})
-  const personalRecords=computed(()=>new Set(state.value.history.flatMap(h=>Object.keys(h.sets||{})).filter(e=>state.value.history.some(h=>(h.sets?.[e]||[]).length)) ).size)
+  const personalRecords=computed(()=>new Set(state.value.history.flatMap(h=>Object.keys(h.sets||{}).filter(e=>(h.sets[e]||[]).length>0))).size)
   const homeGreeting=computed(()=>{const hour=new Date().getHours();return hour<12?'Bom dia':hour<18?'Boa tarde':'Boa noite'})
   function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);else view.value='routine'}
   return {
