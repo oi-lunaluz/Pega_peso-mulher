@@ -1,0 +1,49 @@
+
+/* Primeiro acesso: questionário independente do shell, com rolagem no celular */
+.onboard-shell{width:100%;max-width:520px;margin:auto;height:100vh;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:#fff8f1;color:#3c2833}
+.onboard-header{flex:0 0 auto;background:#fff8f1;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid #f4e3df}
+.onboard-exit{background:transparent!important;color:#a64d71!important;padding:6px 8px!important;font-size:12px}
+.onboard-scroll{width:100%;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:14px;padding:15px 16px max(38px,env(safe-area-inset-bottom));scroll-padding-bottom:90px}
+.onboard-scroll>*{flex-shrink:0;min-width:0}
+.onboard-intro{position:relative;isolation:isolate;min-height:148px;display:flex;overflow:hidden;border-radius:20px;background:linear-gradient(115deg,#ffe0c9,#ffcebd);border:1px solid #f8d6c4;padding:17px}
+.onboard-intro>div{position:relative;z-index:2;max-width:66%}
+.onboard-intro h1{font-size:clamp(21px,6vw,27px);line-height:1.07;margin:7px 0;letter-spacing:-.7px;font-weight:950;color:#542c3d}
+.onboard-intro p{font-size:11px;font-weight:650;line-height:1.36;margin:0;color:#825366}
+.onboard-intro img{position:absolute;right:-16px;bottom:-42px;width:48%;max-width:175px;height:auto}
+.onboard-progress{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.onboard-progress span{height:7px;border-radius:20px;background:#f2dce4}
+.onboard-progress span.current{background:#ed176d}
+.onboard-card{background:white;border:1px solid #f2d8e1;border-radius:20px;padding:15px;display:flex;flex-direction:column;gap:17px}
+.onboard-field{display:grid;gap:7px;min-width:0}
+.onboard-field label,.onboard-fieldset legend{font-size:13px;font-weight:900;color:#643c51}
+.onboard-field label{margin:0}
+.onboard-fieldset{min-width:0;border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.onboard-fieldset legend{margin:0 0 6px}
+.onboard-field small,.onboard-fieldset small,.onboard-workout-names small{font-size:11px;line-height:1.4;color:#896a78}
+.onboard-card input[type="text"],.onboard-card input[type="date"],.onboard-card input[type="number"]{width:100%;max-width:100%;min-width:0;min-height:45px;font-size:16px;padding:10px 12px;border:1px solid #ead1dc;border-radius:11px;scroll-margin:90px}
+.onboard-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.onboard-days button{padding:10px 0!important;min-width:0;min-height:41px;border:1px solid #ecd3dd;border-radius:9px;background:#fff5f9;color:#a04874;font-size:11px;font-weight:900}
+.onboard-days button.selected{background:#eb176c;border-color:#eb176c;color:white}
+.onboard-workout-names{display:flex;flex-direction:column;gap:11px;padding:12px;border-radius:13px;background:#fff8ed}
+.onboard-workout-names>strong{font-size:13px;color:#603b4e}
+.onboard-day-name{display:grid;gap:5px}
+.onboard-day-name label{font-size:11px;color:#805c6a}
+.onboard-goals{display:grid;gap:7px}
+.onboard-goals label{display:flex;gap:10px;align-items:center;justify-content:space-between;min-height:42px;padding:10px 12px;border:1px solid #efdae2;border-radius:12px;font-size:12px;font-weight:750;color:#6a4359;margin:0;cursor:pointer}
+.onboard-goals label.selected{border-color:#ed176d;background:#fff0f6;color:#af1659}
+.onboard-goals input[type="radio"],.onboard-cycle-toggle input[type="radio"]{width:16px;height:16px;accent-color:#ed176d;flex:0 0 16px}
+.onboard-goals label span{flex:1}
+.onboard-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.onboard-two>*{min-width:0}
+.onboard-hint{font-size:11px;line-height:1.45;color:#916b79;background:#fff3dc;padding:10px;border-radius:11px;margin:0}
+.onboard-cycle-toggle{display:grid;gap:8px}
+.onboard-cycle-toggle label{display:flex;align-items:center;gap:10px;border:1px solid #edd8e0;padding:12px;border-radius:12px;font-size:12px;font-weight:700;margin:0}
+.onboard-cycle-toggle label.selected{border-color:#eb176c;background:#fff0f6;color:#a51c57}
+.onboard-recap{display:flex;flex-direction:column;gap:7px;background:#e6f6ed;border:1px solid #bde9d1;padding:13px;border-radius:14px}
+.onboard-recap strong{font-size:14px;color:#276647}
+.onboard-recap span{font-size:11px;color:#387255}
+.onboard-actions{display:flex;align-items:stretch;gap:9px}
+.onboard-actions>.auth-submit{flex:1;min-width:0}
+.onboard-back{padding:12px!important;border:1px solid #e9cbd6!important;background:#fff7fa!important;color:#a13763!important;font-size:12px}
+.onboard-bottom{font-size:10px;color:#856876;line-height:1.4;margin:0;text-align:center}
+@media(max-width:360px){.onboard-scroll{padding:10px 10px 25px;gap:11px}.onboard-card{padding:11px;gap:13px}.onboard-days{gap:3px}.onboard-days button{font-size:10px}.onboard-intro{min-height:127px;padding:12px}.onboard-intro img{right:-20px;bottom:-34px}}
