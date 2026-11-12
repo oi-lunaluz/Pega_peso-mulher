@@ -36,6 +36,7 @@ test('desfazer check reverte sessão e sequência',()=>{
  assert.equal(r.state.rotationIndex,0)
  assert.equal(r.state.scheduleCompleted,0)
  assert.equal(r.state.history.length,0)
+ assert.equal(r.state.scheduleAnchor,'2026-11-12')
 })
 test('não permite futuro, dia livre nem sessão detalhada duplicada',()=>{
  assert.throws(()=>toggleQuickWorkout(initial(),'2026-11-13','2026-11-12'))
@@ -43,4 +44,18 @@ test('não permite futuro, dia livre nem sessão detalhada duplicada',()=>{
  const s=initial()
  s.history=[{kind:'forca',date:'12/11/2026',name:'A',sets:{Agachamento:[{kg:30,reps:10}]}}]
  assert.throws(()=>toggleQuickWorkout(s,'2026-11-12','2026-11-12'))
+})
+
+test('checks de segunda a quinta tiram todas as pendências até quinta',async()=>{
+ const {pendingIncludingToday}=await import('./planner.js')
+ let s=initial()
+ for(const day of [11,9,12,10])s=toggleQuickWorkout(s,'2026-11-'+day,'2026-11-12').state
+ assert.equal(s.rotationIndex,0)
+ assert.equal(s.scheduleCompleted,4)
+ assert.equal(pendingIncludingToday({anchor:s.scheduleAnchor,today:'2026-11-12',days:s.scheduledDays,completed:s.scheduleCompleted}),0)
+})
+test('não reordena histórico detalhado posterior',()=>{
+ const s=initial()
+ s.history=[{kind:'forca',date:'12/11/2026',name:'A',sets:{Agachamento:[{kg:30,reps:10}]}}]
+ assert.throws(()=>toggleQuickWorkout(s,'2026-11-09','2026-11-12'))
 })
