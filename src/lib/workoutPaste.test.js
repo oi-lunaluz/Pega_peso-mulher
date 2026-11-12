@@ -29,3 +29,11 @@ test('lista sem cabeçalho fica sem dia, aguardando confirmação',()=>{
 test('texto vazio não inventa fichas',()=>{
  assert.equal(parsePastedWorkout('  ').sections.length,0)
 })
+
+test('dia em uma linha e Treino A na seguinte pertencem à mesma ficha',()=>{
+ const p=parsePastedWorkout('Segunda-feira\nTreino A - Inferiores\nExercícios:\nAgachamento livre 3x12\nLeg press 4x10\nTerça-feira\nTreino B - Superiores\nPuxada alta 3x12')
+ assert.equal(p.sections.length,2)
+ assert.deepEqual(p.sections.map(s=>s.day),[1,2])
+ assert.deepEqual(p.sections[0].exercises,['Agachamento livre','Leg press'])
+ assert.equal(p.sections[1].name,'Treino B - Superiores')
+})
