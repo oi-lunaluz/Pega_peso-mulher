@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import AppIcon from '../AppIcon.vue'
-import { registerLocalAccount, loginLocalAccount } from '../lib/localAuth.js'
+import { supabase } from '../lib/supabase.js'
 
 const emit=defineEmits(['authenticated'])
 const mode=ref('login')
@@ -12,29 +12,53 @@ const confirm=ref('')
 const revealPassword=ref(false)
 const busy=ref(false)
 const error=ref('')
+const success=ref('')
 function switchMode(next){
   mode.value=next
   error.value=''
+  success.value=''
   password.value=''
   confirm.value=''
 }
 async function submit(){
   if(busy.value)return
   error.value=''
+  success.value=''
   if(mode.value==='signup'&&password.value!==confirm.value){
     error.value='As senhas não coincidem.'
     return
   }
   busy.value=true
   try{
-    const account=mode.value==='signup'
-      ?await registerLocalAccount({name:name.value,email:email.value,password:password.value})
-      :await loginLocalAccount({email:email.value,password:password.value})
-    password.value=''
-    confirm.value=''
-    emit('authenticated',account)
+    if(mode.value==='signup'){
+      const {data,error:authError}=await supabase.auth.signUp({
+        email:email.value.trim().toLowerCase(),
+        password:password.value,
+        options:{
+          data:{display_name:name.value.trim()},
+          emailRedirectTo:window.location.origin
+        }
+      })
+      if(authError)throw authError
+      password.value=''
+      confirm.value=''
+      if(!data.session){
+        success.value='Cadastro recebido! Confira seu e-mail e clique no link de confirmação antes de entrar.'
+      }else if(data.user){
+        emit('authenticated',data.user)
+      }
+    }else{
+      const {data,error:authError}=await supabase.auth.signInWithPassword({
+        email:email.value.trim().toLowerCase(),password:password.value
+      })
+      if(authError)throw authError
+      password.value=''
+      emit('authenticated',data.user)
+    }
   }catch(err){
-    error.value=err instanceof Error?err.message:'Não foi possível continuar.'
+    error.value=err?.message==='Invalid login credentials'
+      ?'E-mail ou senha incorretos.'
+      :err?.message||'Não foi possível conectar ao Supabase.'
   }finally{busy.value=false}
 }
 </script>
@@ -79,6 +103,7 @@ async function submit(){
           <input id="auth-confirm" v-model="confirm" type="password" autocomplete="new-password" placeholder="Repita a sua senha" minlength="8" required/>
         </div>
         <p v-if="error" class="auth-error" role="alert">{{error}}</p>
+        <p v-if="success" class="auth-success" role="status">{{success}}</p>
         <button class="auth-submit" type="submit" :disabled="busy">
           {{busy?'Verificando...':mode==='signup'?'Criar cadastro':'Entrar'}}
           <AppIcon v-if="!busy" name="arrow" :size="18"/>
@@ -94,7 +119,7 @@ async function submit(){
           <button type="button" @click="switchMode('login')">Fazer login</button>
         </template>
       </div>
-      <p class="auth-privacy"><AppIcon name="lock" :size="16"/> Protótipo de acesso local: cadastro e treinos ficam somente neste navegador. Não há sincronização, recuperação de senha nem conta online. Use uma senha exclusiva de teste.</p>
+      <p class="auth-privacy"><AppIcon name="lock" :size="16"/> Cadastro online pelo Supabase. Após confirmar seu e-mail, os treinos podem ser sincronizados entre dispositivos. Nunca compartilhe sua senha.</p>
     </section>
   </main>
 </div>
