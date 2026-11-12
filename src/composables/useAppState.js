@@ -98,14 +98,14 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
       const result=toggleQuickWorkout(state.value,date,dateToday.value)
       state.value=result.state
       selectedWeekDate.value=date
-      quickFeedback.value=result.checked?'Treino marcado como feito! Sequência atualizada.':'Check desfeito e sequência atualizada.'
+      quickFeedback.value=result.checked?'Marcado como feito. Atualizando próximo treino e salvando...':'Check desfeito. Atualizando sequência e salvando...'
     }catch(error){
       quickFeedback.value=error.message||'Não foi possível marcar este dia.'
     }
   }
   function canQuickCheck(day){
     return !!day?.scheduled && day.date<=dateToday.value &&
-      (!day.recorded||!!state.value.history.find(h=>h.quick&&dateKey(fromBrazilDate(h.date))===day.date))
+      (!day.recorded||!!state.value.history.find(h=>h.quick&&fromBrazilDate(h.date)&&dateKey(fromBrazilDate(h.date))===day.date))
   }
 
 
