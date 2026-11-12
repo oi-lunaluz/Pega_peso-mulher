@@ -16,7 +16,10 @@ import { useAppState } from './composables/useAppState.js'
 const props=defineProps({accountId:{type:String,required:true},accountName:{type:String,required:true},initialCloud:{type:Object,default:null},cloudRevision:{type:Number,default:0}})
 const emit=defineEmits(['logout'])
 const app = useAppState({accountId:props.accountId,accountName:props.accountName,initialCloud:props.initialCloud,cloudRevision:props.cloudRevision})
-app.logout=()=>emit('logout')
+app.logout=async()=>{
+  const saved=await app.ensureCloudSaved()
+  if(saved)emit('logout')
+}
 provide('pegaPesoApp', app)
 const {
   syncStatus,
