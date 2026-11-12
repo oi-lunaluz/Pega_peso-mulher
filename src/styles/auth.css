@@ -78,3 +78,17 @@
   .auth-hero h1{font-size:23px;margin:5px 0;}
   .auth-hero p{font-size:10px;}
 }
+
+.auth-success{margin:0;padding:11px;border:1px solid #afe4c7;background:#e9fff3;color:#176744;border-radius:10px;font-size:12px;font-weight:750}
+.auth-loading,.auth-import{width:min(100%,520px);margin:auto;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;padding:30px;text-align:center;background:#fff8f1;color:#62435a}
+.auth-loading strong,.auth-import h2{color:#d40c63}
+.auth-loading p,.auth-import p{font-size:14px;line-height:1.45;margin:0}
+.auth-import img{width:170px;max-height:180px;object-fit:contain}
+.auth-import h2{font-size:23px;margin:0}
+.auth-import button{width:100%;background:#e70e69;color:white}
+.auth-import .auth-link,.auth-loading .auth-link{background:transparent;color:#c31b67;text-decoration:underline}
+.auth-import small{line-height:1.5;font-size:11px}
+.cloud-sync-indicator{font-size:11px;text-align:center;background:#e7fbf1;color:#1b744f;padding:6px 10px}
+.cloud-sync-error{display:flex;align-items:center;gap:8px;background:#fff0df;color:#844b2b;font-size:11px;line-height:1.35;padding:10px}
+.cloud-sync-error span{flex:1}
+.cloud-sync-error button{font-size:10px;padding:6px 9px;min-width:90px;background:#c65a32;color:white}
