@@ -46,7 +46,8 @@ export function isUnconfiguredSnapshot(payload){
 }
 
 export function createOnboardingPayload(values,now=new Date()){
-  const selected=cleanDays(values.days)
+  const chosen=cleanDays(values.days)
+  const selected=TRAINING_DAY_OPTIONS.map(option=>option.day).filter(day=>chosen.includes(day))
   if(!selected.length)throw new Error('Escolha pelo menos um dia de treino.')
   const goal=String(values.goal||'').trim()
   if(!GOAL_OPTIONS.includes(goal))throw new Error('Escolha seu objetivo.')
