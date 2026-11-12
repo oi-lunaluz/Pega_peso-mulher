@@ -66,7 +66,7 @@ export function createWeekPlan({today,days,history,rotation,nextIndex,anchor,com
     const past=date<now,isToday=iso===today,planned=scheduled.has(day)
     const logs=sessionOnDate(history,iso)
     const isComplete=logs.length>0
-    const hasFinishedToday= isToday && isComplete && todayDue===0
+    const hasFinishedToday= isToday && isComplete
     let status='livre'
     if(planned){
       if(past) status=isComplete?'concluído':oldPending>0?'pendente':'reorganizado'
