@@ -2,6 +2,7 @@
 import { computed, reactive, ref, nextTick } from 'vue'
 import AppIcon from '../AppIcon.vue'
 import { createOnboardingPayload, TRAINING_DAY_OPTIONS, GOAL_OPTIONS } from '../lib/onboarding.js'
+import { parsePastedWorkout } from '../lib/workoutPaste.js'
 
 const props=defineProps({
   accountName:{type:String,default:''},
@@ -12,10 +13,61 @@ const emit=defineEmits(['finish','logout'])
 const step=ref(1)
 const scrollArea=ref(null)
 const validationError=ref('')
+const pastedText=ref('')
+const parsedSections=ref([])
+const pasteWarnings=ref([])
+const pasteError=ref('')
+const pasteSuccess=ref('')
+const showPaste=ref(false)
+function analysePaste(){
+  pasteError.value=''
+  pasteSuccess.value=''
+  const result=parsePastedWorkout(pastedText.value)
+  parsedSections.value=result.sections.map(sec=>({...sec,day:sec.day===null?'':String(sec.day)}))
+  pasteWarnings.value=result.warnings
+  if(!result.sections.length)pasteError.value='Não reconheci os treinos. Separe por dia (ex.: Segunda: Inferiores) ou por ficha (ex.: Treino A).'
+}
+function applyPaste(){
+  pasteError.value=''
+  pasteSuccess.value=''
+  if(!parsedSections.value.length)return
+  if(parsedSections.value.some(sec=>sec.day==='')){
+    pasteError.value='Escolha o dia correspondente a cada ficha antes de aplicar.'
+    return
+  }
+  const planned={}
+  for(const sec of parsedSections.value){
+    const day=Number(sec.day)
+    const dayName=TRAINING_DAY_OPTIONS.find(x=>x.day===day)?.label||'Treino'
+    const title=sec.name.trim().slice(0,60)||form.workoutNames[day]||'Treino de '+dayName
+    if(planned[day]&&planned[day].name!==title){
+      pasteError.value='Existem duas fichas diferentes para '+dayName+'. Confira os dias na prévia.'
+      return
+    }
+    if(!planned[day])planned[day]={name:title,exercises:[]}
+    for(const name of sec.exercises){
+      if(!planned[day].exercises.some(x=>x.toLocaleLowerCase('pt-BR')===name.toLocaleLowerCase('pt-BR')))
+        planned[day].exercises.push(name)
+    }
+  }
+  for(const [day,data] of Object.entries(planned)){
+    const number=Number(day)
+    if(!form.days.includes(number))form.days=[...form.days,number]
+    form.workoutNames[number]=data.name
+    form.workoutExercises[number]=[...new Set([...(form.workoutExercises[number]||[]),...data.exercises])]
+  }
+  pasteSuccess.value=parsedSections.value.length+' '+(parsedSections.value.length===1?'ficha organizada':'fichas organizadas')+'! Confira os dias e nomes abaixo antes de continuar.'
+  parsedSections.value=[]
+  pastedText.value=''
+  validationError.value=''
+  showPaste.value=false
+}
+
 const form=reactive({
   nickname:props.accountName,
   days:[],
   workoutNames:{},
+  workoutExercises:{},
   bodyWeightKg:'',
   usualLoadKg:'',
   cardioMinutes:0,
@@ -94,13 +146,64 @@ function next(){
               </button>
             </div>
           </fieldset>
+          <section class="onboard-paste">
+            <div class="onboard-paste-heading">
+              <div>
+                <strong><AppIcon name="clipboard" :size="17"/> Colar treino do personal</strong>
+                <small>Recebeu pelo WhatsApp ou bloco de notas? Cole tudo e organize rapidinho.</small>
+              </div>
+              <button type="button" class="onboard-paste-toggle" @click="showPaste=!showPaste">
+                {{showPaste?'Fechar':'Copiar e colar'}}
+              </button>
+            </div>
+            <template v-if="showPaste">
+              <label for="onb-paste-text">Cole seu treino aqui</label>
+              <textarea id="onb-paste-text" v-model="pastedText" rows="8"
+                placeholder="Segunda - Inferiores&#10;Agachamento 4x12&#10;Leg press 3x10&#10;&#10;Terça - Superiores&#10;Puxada alta 3x12&#10;Remada baixa 3x10"
+                maxlength="20000"></textarea>
+              <button type="button" class="onboard-paste-analyze" :disabled="!pastedText.trim()" @click="analysePaste">
+                <AppIcon name="search" :size="16"/> Analisar e separar os treinos
+              </button>
+              <p class="onboard-hint">A análise funciona no próprio navegador. Ela importa nomes de exercícios; séries, repetições e cargas do texto devem ser conferidas e registradas durante o treino.</p>
+              <div v-if="parsedSections.length" class="onboard-paste-preview">
+                <strong>Prévia — confira antes de importar</strong>
+                <p>Escolha o dia de cada ficha, corrija os nomes e só então confirme. Dias que ainda não marcou serão adicionados à sua semana.</p>
+                <div v-for="sec in parsedSections" :key="sec.id" class="onboard-paste-card">
+                  <div class="onboard-paste-fields">
+                    <div class="onboard-field">
+                      <label :for="'onb-parsed-day-'+sec.id">Dia da semana</label>
+                      <select :id="'onb-parsed-day-'+sec.id" v-model="sec.day">
+                        <option value="">Escolher dia</option>
+                        <option v-for="d in TRAINING_DAY_OPTIONS" :key="d.day" :value="String(d.day)">{{d.label}}</option>
+                      </select>
+                    </div>
+                    <div class="onboard-field">
+                      <label :for="'onb-parsed-title-'+sec.id">Nome da ficha</label>
+                      <input :id="'onb-parsed-title-'+sec.id" v-model="sec.name" maxlength="60" placeholder="Ex.: Treino A, Inferiores"/>
+                    </div>
+                  </div>
+                  <ul v-if="sec.exercises.length">
+                    <li v-for="(exercise,i) in sec.exercises" :key="i">{{exercise}}</li>
+                  </ul>
+                  <small v-else>Nenhum exercício identificado nesta ficha; você poderá adicionar depois.</small>
+                </div>
+                <p v-for="(warning,index) in pasteWarnings" :key="index" class="onboard-paste-warning">{{warning}}</p>
+                <button type="button" class="onboard-paste-apply" @click="applyPaste">
+                  <AppIcon name="check" :size="16"/> Confirmar e preencher meus dias
+                </button>
+              </div>
+            </template>
+            <p v-if="pasteError" class="auth-error" role="alert">{{pasteError}}</p>
+            <p v-if="pasteSuccess" class="onboard-paste-success" role="status">{{pasteSuccess}}</p>
+          </section>
           <div v-if="selectedDays.length" class="onboard-workout-names">
             <strong>Que treino você costuma fazer em cada dia?</strong>
-            <small>Opcional: dê um nome às fichas. Os exercícios ficarão vazios para você cadastrar depois. Dias com o mesmo nome compartilham a mesma ficha.</small>
+            <small>Digite manualmente ou use o campo de colar acima. Dias com o mesmo nome compartilham a ficha.</small>
             <div v-for="d in selectedDays" :key="d.day" class="onboard-day-name">
               <label :for="'onb-workout-'+d.day">{{d.label}}</label>
               <input :id="'onb-workout-'+d.day" v-model.trim="form.workoutNames[d.day]"
                 maxlength="60" placeholder="Ex.: Inferiores, Superiores..."/>
+              <small v-if="form.workoutExercises[d.day]?.length">{{form.workoutExercises[d.day].length}} exercícios importados para este dia</small>
             </div>
           </div>
         </template>
@@ -173,7 +276,8 @@ function next(){
           <div class="onboard-recap">
             <strong>Seu começo está preparado!</strong>
             <span>{{form.days.length}} {{form.days.length===1?'dia':'dias'}} de treino por semana</span>
-            <span>{{Object.values(form.workoutNames).filter(n=>String(n).trim()).length}} nomes de treinos preenchidos</span>
+            <span>{{Object.values(form.workoutNames).filter(n=>String(n).trim()).length}} dias com nomes de treino</span>
+            <span>{{Object.values(form.workoutExercises).reduce((sum,items)=>sum+(items?.length||0),0)}} exercícios importados do texto</span>
             <span>{{form.cardioMinutes||0}} minutos de cardio planejados por semana</span>
             <span>Nenhuma série ou treino registrado ainda</span>
           </div>
