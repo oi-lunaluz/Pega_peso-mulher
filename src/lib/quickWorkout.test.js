@@ -59,3 +59,24 @@ test('não reordena histórico detalhado posterior',()=>{
  s.history=[{kind:'forca',date:'12/11/2026',name:'A',sets:{Agachamento:[{kg:30,reps:10}]}}]
  assert.throws(()=>toggleQuickWorkout(s,'2026-11-09','2026-11-12'))
 })
+
+test('aceita estado reativo (Proxy), como o Vue envia ao clicar em Fiz ou Desfazer',()=>{
+ const source=new Proxy(initial(),{})
+ const checked=toggleQuickWorkout(source,'2026-11-09','2026-11-12')
+ assert.equal(checked.checked,true)
+ assert.equal(source.history.length,0)
+ const undone=toggleQuickWorkout(new Proxy(checked.state,{}),'2026-11-09','2026-11-12')
+ assert.equal(undone.checked,false)
+ assert.equal(undone.state.history.length,0)
+})
+test('não duplica treinos e mantém o dia correto ao alternar checks várias vezes',()=>{
+ let state=initial()
+ for(let i=0;i<3;i++){
+   state=toggleQuickWorkout(state,'2026-11-10','2026-11-12').state
+   assert.equal(state.history.filter(x=>x.date==='10/11/2026').length,1)
+   state=toggleQuickWorkout(state,'2026-11-10','2026-11-12').state
+   assert.equal(state.history.filter(x=>x.date==='10/11/2026').length,0)
+ }
+ assert.equal(state.rotationIndex,0)
+ assert.equal(state.scheduleCompleted,0)
+})
