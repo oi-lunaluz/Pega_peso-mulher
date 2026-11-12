@@ -71,7 +71,21 @@ export function createOnboardingPayload(values,now=new Date()){
     throw new Error('Confira a duração informada para o ciclo.')
   const rawNames=selected.map(day=>String(values.workoutNames?.[day]||'').trim().slice(0,60))
   const unique=[...new Set(rawNames.filter(Boolean))]
-  const workouts=unique.map(name=>({name,exercises:[]}))
+  const workouts=unique.map(name=>{
+    const seen=new Set()
+    const exercises=[]
+    for(const day of selected){
+      if(String(values.workoutNames?.[day]||'').trim().slice(0,60)!==name)continue
+      for(const exercise of values.workoutExercises?.[day]||[]){
+        const clean=String(exercise||'').trim().slice(0,120)
+        if(clean&&!seen.has(clean.toLocaleLowerCase('pt-BR'))){
+          seen.add(clean.toLocaleLowerCase('pt-BR'))
+          exercises.push(clean)
+        }
+      }
+    }
+    return {name,exercises}
+  })
   const routine=Array.from({length:7},()=>({name:'Descanso',cardio:0}))
   for(let i=0;i<selected.length;i++){
     routine[selected[i]]={name:rawNames[i]||'A definir',cardio:0}
