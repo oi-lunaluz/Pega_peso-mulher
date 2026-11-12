@@ -229,6 +229,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   let cloudVersion=Number(cloudRevision)||0
   let syncTimer=null
   let inFlight=false
+  let activeSave=null
   let dirty=false
   let halted=false
   let destroyed=false
@@ -241,7 +242,8 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
       const payload=JSON.parse(JSON.stringify({
         state:state.value,cycle:cycle.value,profile:profile.value
       }))
-      cloudVersion=await saveCloudSnapshot(payload,cloudVersion)
+      activeSave=saveCloudSnapshot(payload,cloudVersion)
+      cloudVersion=await activeSave
       syncStatus.value='saved'
       syncMessage.value=''
     }catch(error){
@@ -251,9 +253,16 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
       syncStatus.value='error'
       syncMessage.value=error.message||'Não foi possível salvar seus dados.'
     }finally{
+      activeSave=null
       inFlight=false
       if(dirty&&!halted&&!destroyed)scheduleCloud()
     }
+  }
+  async function ensureCloudSaved(){
+    if(syncTimer){clearTimeout(syncTimer);syncTimer=null}
+    if(activeSave)await activeSave.catch(()=>{})
+    if(dirty&&!halted)await flushCloud()
+    return !dirty&&!halted
   }
   function scheduleCloud(){
     if(destroyed||halted)return
@@ -281,6 +290,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     syncStatus,
     syncMessage,
     retryCloudSync,
+    ensureCloudSaved,
     weekNames,
     calendarNow,
     dateToday,
