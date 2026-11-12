@@ -47,3 +47,29 @@
 .onboard-back{padding:12px!important;border:1px solid #e9cbd6!important;background:#fff7fa!important;color:#a13763!important;font-size:12px}
 .onboard-bottom{font-size:10px;color:#856876;line-height:1.4;margin:0;text-align:center}
 @media(max-width:360px){.onboard-scroll{padding:10px 10px 25px;gap:11px}.onboard-card{padding:11px;gap:13px}.onboard-days{gap:3px}.onboard-days button{font-size:10px}.onboard-intro{min-height:127px;padding:12px}.onboard-intro img{right:-20px;bottom:-34px}}
+
+
+/* Importação de treinos copiados: revisão explícita antes de criar fichas */
+.onboard-paste{min-width:0;display:flex;flex-direction:column;gap:11px;padding:13px;border-radius:14px;background:#fff1e9;border:1px solid #f3d8c8}
+.onboard-paste-heading{display:flex;gap:10px;justify-content:space-between;align-items:center}
+.onboard-paste-heading>div{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.onboard-paste-heading strong{display:flex;align-items:center;gap:6px;font-size:13px;color:#703c55}
+.onboard-paste-heading small{font-size:11px;color:#896776;line-height:1.4}
+.onboard-paste-toggle{flex:0 0 auto;background:#e8196c!important;color:white!important;font-size:11px;padding:10px 9px!important;max-width:45%}
+.onboard-paste>label{font-size:12px;font-weight:800;color:#703c55}
+.onboard-paste textarea{font-size:16px;line-height:1.45;min-height:150px;max-width:100%;min-width:0;resize:vertical;scroll-margin:70px;border:1px solid #dfc0d0}
+.onboard-paste-analyze,.onboard-paste-apply{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:#e8196c!important;color:#fff!important;min-height:42px;font-size:12px}
+.onboard-paste-analyze:disabled{opacity:.55}
+.onboard-paste-preview{display:flex;flex-direction:column;gap:12px;border-top:1px solid #e7c8c8;padding-top:12px}
+.onboard-paste-preview>strong{font-size:14px;color:#7c3959}
+.onboard-paste-preview>p{font-size:11px;line-height:1.5;color:#866779;margin:0}
+.onboard-paste-card{display:flex;flex-direction:column;gap:8px;padding:11px;border:1px solid #efc7d7;border-radius:12px;background:#fff}
+.onboard-paste-fields{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:9px}
+.onboard-paste-fields .onboard-field label{font-size:11px}
+.onboard-paste-fields select,.onboard-paste-fields input{width:100%;min-width:0;padding:10px 8px;font-size:14px;background:#fff}
+.onboard-paste-card ul{padding-left:20px;margin:0;color:#604758;font-size:12px;line-height:1.65}
+.onboard-paste-card small{font-size:11px;color:#987081}
+.onboard-paste-warning{background:#fff4d4;padding:9px;border-radius:9px;color:#916224!important}
+.onboard-paste-success{font-size:12px;line-height:1.4;color:#2b704f;padding:10px;background:#e7f8ed;border:1px solid #b9e8c9;border-radius:10px;margin:0}
+.onboard-day-name>small{font-size:11px;color:#307050}
+@media(max-width:360px){.onboard-paste{padding:10px}.onboard-paste-heading{flex-wrap:wrap}.onboard-paste-toggle{max-width:100%}.onboard-paste-fields{grid-template-columns:1fr}}
