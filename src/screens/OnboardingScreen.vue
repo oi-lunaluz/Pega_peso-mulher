@@ -92,6 +92,11 @@ async function goTo(value){
   scrollArea.value?.scrollTo({top:0,behavior:'instant'})
 }
 function next(){
+  if(step.value===1&&parsedSections.value.length){
+    validationError.value='Revise e confirme os treinos encontrados antes de continuar.'
+    showPaste.value=true
+    return
+  }
   if(step.value===1&&!form.days.length){
     validationError.value='Escolha pelo menos um dia em que pretende treinar.'
     return
