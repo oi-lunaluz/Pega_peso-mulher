@@ -81,3 +81,34 @@ A tela de cadastro/login utiliza apenas armazenamento local do navegador: **não
 ## Cadastro local de demonstração
 
 A primeira visita apresenta **Criar cadastro** (nome, e-mail, senha com 8+ caracteres e confirmação); também há **Já tenho cadastro**. Cada cadastro guarda treinos, ciclo e perfil em chaves separadas neste navegador. O primeiro cadastro herda os dados usados no aplicativo antes da existência de login. A opção **Sair do cadastro** está em Meu perfil. A sessão vale somente para a aba atual. **Não use senhas já usadas em outros sites**, pois não há servidor nem proteção real de contas. Para disponibilizar o aplicativo a outras pessoas, substituir esse protótipo por autenticação por servidor.
+
+## Supabase: autenticação e sincronização online (novembro de 2026)
+
+**Projeto:** [pega-peso-mulher](https://supabase.com/dashboard/project/cjwstgthibwmrgidsltu) — plano Free, região `sa-east-1`.
+
+- A entrada usa **Supabase Auth** (e-mail e senha); cadastro exige confirmação do e-mail conforme configuração padrão do Supabase.
+- O SDK `@supabase/supabase-js` é usado com chave **publicável**; nenhuma chave secreta de administrador é colocada no navegador.
+- A sessão do Supabase é restaurada ao reabrir o aplicativo.
+- O estado de treinos, histórico, cardio, perfil e ciclo é salvo em `public.app_snapshots` como JSONB, com uma linha por usuário.
+- A gravação usa `save_app_snapshot` (transação e controle de revisão) para evitar sobrescrever dados mais novos de outro aparelho.
+- As 10 tabelas relacionais originais permanecem preparadas para evolução futura, mas **ainda não recebem a sincronização do app**. O snapshot é a fonte de verdade da versão atual.
+- RLS em `app_snapshots` restringe cada linha ao seu `auth.uid()`. O cliente nunca usa `service_role`.
+- O app mantém cache local por usuário e apresenta a opção de importar dados antigos; a importação é sempre uma escolha da pessoa e não apaga dados antigos.
+- Quando não há conexão, o cache fica preservado no navegador. O erro de sincronização aparece e a pessoa pode tentar novamente. Não feche a página antes de concluir uma gravação pendente.
+- A conta online substitui o cadastro local anterior, portanto é necessário **criar a conta Supabase novamente**. A senha local antiga não foi migrada.
+
+### Configuração obrigatória do redirecionamento de e-mail
+
+No painel [Authentication > URL Configuration](https://supabase.com/dashboard/project/cjwstgthibwmrgidsltu/auth/url-configuration), configure:
+- **Site URL:** `https://pega-peso-mulher.vercel.app`
+- **Redirect URLs:** `https://pega-peso-mulher.vercel.app/**`
+
+Sem isso, a confirmação enviada por e-mail pode redirecionar para `localhost`, que é o padrão inicial dos projetos Supabase. Esta configuração precisa ser feita no dashboard, pois o conector disponível não expõe a edição do Auth Site URL.
+
+### Custo
+
+Usa o plano gratuito. Caso o limite gratuito seja atingido, **não existe implementação de upgrade automático**. Confira a utilização pelo dashboard do Supabase.
+
+### Limites atuais
+
+Sem recuperação personalizada de senha, resolução automática de conflitos entre dois dispositivos ou migração das linhas de snapshot para as tabelas relacionais. Os testes automatizados e a compilação não substituem um teste real de inscrição, confirmação de e-mail e sincronização em dois dispositivos.
