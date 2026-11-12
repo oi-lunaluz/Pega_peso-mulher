@@ -23,6 +23,13 @@ export function isUnconfiguredSnapshot(payload){
   if(!payload||payload.onboardingCompleted===true)return false
   const state=payload.state
   if(!state)return true
+  // Never replace personal or health records when only training fichas are absent.
+  if(payload.cycle?.enabled||payload.cycle?.start||(payload.cycle?.notes||[]).length)return false
+  if(payload.profile?.goal&&payload.profile.goal!=='Ganhar força e massa muscular')return false
+  if(payload.profile?.bodyWeightKg!=null||payload.profile?.usualLoadKg!=null)return false
+  if(state.cardioGoal!=null&&state.cardioGoal!==150)return false
+  const planned=Array.isArray(state.scheduledDays)?[...state.scheduledDays].sort((a,b)=>a-b).join(','):''
+  if(planned&&!['1,2,3,4','2,3,5,6'].includes(planned))return false
   if((state.history||[]).length>0)return false
   if(!Array.isArray(state.workouts)||state.workouts.length===0)return true
   // Early app releases automatically created these four example workouts.
