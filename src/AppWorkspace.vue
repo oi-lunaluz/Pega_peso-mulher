@@ -1,6 +1,6 @@
 <script setup>
 import AppIcon from './AppIcon.vue'
-import { provide } from 'vue'
+import { provide, onMounted } from 'vue'
 import HomeScreen from './screens/HomeScreen.vue'
 import RoutineScreen from './screens/RoutineScreen.vue'
 import ProgressScreen from './screens/ProgressScreen.vue'
@@ -13,9 +13,15 @@ import FinishedScreen from './screens/FinishedScreen.vue'
 import ProfileScreen from './screens/ProfileScreen.vue'
 import { useAppState } from './composables/useAppState.js'
 
-const props=defineProps({accountId:{type:String,required:true},accountName:{type:String,required:true},initialCloud:{type:Object,default:null},cloudRevision:{type:Number,default:0}})
+const props=defineProps({accountId:{type:String,required:true},accountName:{type:String,required:true},initialCloud:{type:Object,default:null},cloudRevision:{type:Number,default:0},freshSetup:{type:Boolean,default:false}})
 const emit=defineEmits(['logout'])
 const app = useAppState({accountId:props.accountId,accountName:props.accountName,initialCloud:props.initialCloud,cloudRevision:props.cloudRevision})
+onMounted(()=>{
+  if(props.freshSetup){
+    app.view.value='list'
+    if(!app.state.value.workouts.length)app.openCreateModal()
+  }
+})
 app.logout=async()=>{
   const saved=await app.ensureCloudSaved()
   if(saved)emit('logout')
