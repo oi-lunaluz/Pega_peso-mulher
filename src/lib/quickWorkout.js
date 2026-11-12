@@ -31,9 +31,16 @@ export function toggleQuickWorkout(raw,date,today){
    next.scheduleCompleted=(Number(next.scheduleCompleted)||0)+1
    // A newly configured schedule often starts on the registration date.
    // Backfill the anchor to the first checked day for accurate missed-day counts.
-   if(!next.scheduleAnchor||next.scheduleAnchor>date)next.scheduleAnchor=date
+   if(!next.scheduleAnchor||next.scheduleAnchor>date){
+     if(!Object.hasOwn(next,'quickAnchorBefore'))next.quickAnchorBefore=next.scheduleAnchor||''
+     next.scheduleAnchor=date
+   }
  }
  const updated=next.history.filter(h=>h.kind==='forca'&&h.quick)
+ if(!updated.length&&Object.hasOwn(next,'quickAnchorBefore')){
+   next.scheduleAnchor=next.quickAnchorBefore||dateKey(todayDate)
+   delete next.quickAnchorBefore
+ }
  updated.sort((a,b)=>fromBrazilDate(a.date)-fromBrazilDate(b.date))
  const first=(base%rotation.length+rotation.length)%rotation.length
  updated.forEach((entry,i)=>{entry.name=rotation[(first+i)%rotation.length]})
