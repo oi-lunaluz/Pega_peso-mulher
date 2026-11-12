@@ -8,6 +8,9 @@ const {
   overdueWorkouts,
   toggleTrainingDay,
   weekPlan,
+  quickFeedback,
+  toggleDayDone,
+  canQuickCheck,
   view,
   rotation,
   rotationIndex,
@@ -32,11 +35,20 @@ const {
 :key="d.day" :aria-pressed="scheduledDays.includes(d.day)" :class="{selected:scheduledDays.includes(d.day)}" @click="toggleTrainingDay(d.day)">{{d.label}}</button>
 </div>
 <div class="brazil-row-title"><h3>Esta semana</h3><span>Reorganizada automaticamente</span></div>
+<div class="quick-workout-tip"><AppIcon name="check" :size="17"/> Já treinou e não anotou pesos? Marque o dia como feito aqui. O próximo treino será ajustado automaticamente.</div>
+<p v-if="quickFeedback" class="quick-workout-feedback" role="status">{{quickFeedback}}</p>
 <div class="brazil-list">
   <div v-for="d in weekPlan" :key="d.date" class="brazil-list-row schedule-day-row" :class="{isToday:d.isToday,isLate:d.status==='pendente'}">
     <span class="schedule-date">{{d.short}}</span>
     <span class="row-info"><strong>{{d.scheduled?(d.name|| (d.past?'Treino programado':nextWorkoutName)):'Descanso / cardio livre'}}</strong><small>{{d.full}} · {{d.status==='pendente'?'Faltou — treino mantido na sequência':d.status==='concluído'?'Treino registrado':d.status==='reorganizado'?'Treino já reorganizado':d.status==='hoje'?'Treino previsto para hoje':d.status==='previsto'?'Próximo na ordem':'Dia livre'}}</small></span>
-    <AppIcon v-if="d.status==='concluído'" name="check" :size="19"/>
+    <button v-if="canQuickCheck(d)" type="button" class="quick-workout-check"
+      :class="{checked:d.recorded}" :aria-pressed="d.recorded"
+      :aria-label="d.recorded?'Desfazer check de '+d.full:'Marcar treino de '+d.full+' como feito'"
+      @click="toggleDayDone(d.date)">
+      <AppIcon name="check" :size="18"/>
+      <span>{{d.recorded?'Feito':'Fiz'}}</span>
+    </button>
+    <AppIcon v-else-if="d.recorded" name="check" :size="19"/>
     <span v-else-if="d.status==='pendente'" class="schedule-late-tag">Pendente</span>
   </div>
 </div>
