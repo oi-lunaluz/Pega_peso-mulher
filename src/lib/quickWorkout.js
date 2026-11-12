@@ -14,7 +14,9 @@ export function toggleQuickWorkout(raw,date,today){
  if(!days.includes(day.getDay()))throw new Error('Este dia não está marcado para musculação na sua rotina.')
  const rotation=(raw.rotation||[]).filter(name=>raw.workouts?.some(w=>w.name===name))
  if(!rotation.length)throw new Error('Cadastre ao menos uma ficha antes de marcar um treino.')
- const next=structuredClone(raw)
+ // Vue passes a reactive Proxy. structuredClone(proxy) throws DataCloneError.
+ // JSON data is the persisted app format, so clone it before modifying any state.
+ const next=JSON.parse(JSON.stringify(raw))
  const original=next.history||[]
  const sameDate=sessionOnDate(original,date)
  const quick=sameDate.find(h=>h.quick===true)
