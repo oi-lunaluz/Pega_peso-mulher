@@ -23,7 +23,7 @@ const cleanExercise=s=>{
   x=x.replace(/\s+(?:[-–—:|]\s*)?(?:\d+\s*[x×]\s*\d+(?:\s*[-–]\s*\d+)?|\d+\s*(?:s[eé]ries?|reps?|repeti[cç][oõ]es|kg)\b).*$/i,'').trim()
   x=x.replace(/[;,.:\-–—]\s*$/,'').trim()
   if(x.length<3||resemblesPrescription(x)||isNoise(x))return null
-  if(/^(?:treino|ficha|dia|s[eé]rie|s[eé]ries|superset|bi[- ]?set|tri[- ]?set|total|tempo|pausa|descanso|cardio|repeti[cç][oõ]es|aquecimento)$/i.test(x))return null
+  if(/^(?:treino|ficha|dia|exerc[ií]cios?|s[eé]rie|s[eé]ries|superset|bi[- ]?set|tri[- ]?set|total|tempo|pausa|descanso|cardio|repeti[cç][oõ]es|aquecimento)$/i.test(x))return null
   if(/^\d+(?:\s*[-x×]\s*\d+)*$/.test(x))return null
   return x.slice(0,120)
 }
@@ -63,7 +63,23 @@ export function parsePastedWorkout(text){
     const raw=lines[index].trim().replace(/^\*+|\*+$/g,'').trim()
     if(!raw)continue
     const h=heading(raw)
-    if(h){open(h);continue}
+    if(h){
+      if(current&&!current.exercises.length){
+        // A common personal template uses "Segunda" followed by "Treino A"
+        // on the next line. Those are labels of the SAME training session.
+        if(current.day!==null&&h.day===null){
+          current.name=h.name||current.name
+          continue
+        }
+        if(current.day===null&&h.day!==null){
+          current.day=h.day
+          if(h.name)current.name=h.name
+          continue
+        }
+      }
+      open(h)
+      continue
+    }
     if(!current){open({day:null,name:'',explicit:false})}
     if(/^(?:cardio|esteira|bicicleta|bike)\s*[:\-]\s*\d+\s*(?:min|m\b|minutes|minutos)/i.test(raw)){
       warnings.push('Cardio em texto livre não foi somado automaticamente à meta semanal.')
