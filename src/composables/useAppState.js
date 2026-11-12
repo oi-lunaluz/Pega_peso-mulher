@@ -3,6 +3,7 @@ import { SHORT_DAYS, cleanDays, dateKey, pendingBefore, pendingIncludingToday, c
 import { readJson, writeJson, normalizeTrainingState } from '../lib/storage.js'
 import { clockLabel, validSet, totalSetVolume, maximumWeight, lastWeight } from '../lib/trainingMath.js'
 import { saveCloudSnapshot } from '../lib/cloudData.js'
+import { emptyTrainingState } from '../lib/onboarding.js'
 
 /** 
  * Estado e ações da aplicação.
@@ -13,7 +14,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   if(!accountId)throw new Error('Cadastro local obrigatório para iniciar o aplicativo.')
   const scopedKey=(base)=>`${base}-${accountId}`
   const key=scopedKey('pega-peso-mulher-mvp-v1')
-  const initial={routine:[{name:'Descanso',cardio:0},{name:'Quadríceps',cardio:30},{name:'Superiores A',cardio:30},{name:'Descanso',cardio:0},{name:'Posterior e glúteos',cardio:30},{name:'Superiores B',cardio:30},{name:'Cardio',cardio:30}],workouts:[{name:'Quadríceps',exercises:['Agachamento livre','Leg press','Cadeira extensora']},{name:'Superiores A',exercises:['Puxada alta','Remada baixa']},{name:'Posterior e glúteos',exercises:['Stiff','Mesa flexora','Elevação pélvica']},{name:'Superiores B',exercises:['Supino máquina','Elevação lateral']}],history:[]}
+  const initial=emptyTrainingState()
   const state=ref(normalizeTrainingState(initialCloud?.state||readJson(key,initial),initial))
   watch(state,v=>writeJson(key,v),{deep:true})
   // Migração: preserva fichas, histórico e preferências anteriores sem manter dias fixos.
@@ -43,7 +44,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   const legacyTrainingDays=(state.value.routine||[]).flatMap((slot,day)=>
     state.value.workouts.some(w=>w.name===slot?.name)?[day]:[])
   if(!Array.isArray(state.value.scheduledDays))
-    state.value.scheduledDays=legacyTrainingDays.length?legacyTrainingDays:[1,2,3,4]
+    state.value.scheduledDays=legacyTrainingDays
   if(!state.value.scheduleAnchor)state.value.scheduleAnchor=dateToday.value
   if(!Number.isInteger(state.value.scheduleCompleted))state.value.scheduleCompleted=0
   if(!Number.isInteger(state.value.scheduleCarry))state.value.scheduleCarry=0
@@ -221,7 +222,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   const strengthThisMonth=computed(()=>{const prefix=new Date().toLocaleDateString('pt-BR').slice(3);return state.value.history.filter(h=>h.kind==='forca'&&h.date?.slice(3)===prefix).length})
   const personalRecords=computed(()=>new Set(state.value.history.flatMap(h=>Object.keys(h.sets||{}).filter(e=>(h.sets[e]||[]).length>0))).size)
   const homeGreeting=computed(()=>{const hour=new Date().getHours();return hour<12?'Bom dia':hour<18?'Boa tarde':'Boa noite'})
-  function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);else view.value='routine'}
+  function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);else {view.value='list';openCreateModal()}}
   // Sync the complete app state atomically (no partially saved workouts).
   // If the server revision changed on another device, never overwrite it.
   const syncStatus=ref('idle')
@@ -240,6 +241,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     syncStatus.value='saving'
     try{
       const payload=JSON.parse(JSON.stringify({
+        onboardingCompleted:true,
         state:state.value,cycle:cycle.value,profile:profile.value
       }))
       activeSave=saveCloudSnapshot(payload,cloudVersion)
