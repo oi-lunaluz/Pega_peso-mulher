@@ -20,7 +20,7 @@ export function toggleQuickWorkout(raw,date,today){
  const quick=sameDate.find(h=>h.quick===true)
  if(sameDate.length&&!quick)throw new Error('Já existe um treino detalhado registrado neste dia.')
  const laterDetailed=original.some(h=>h.kind==='forca'&&!h.quick&&fromBrazilDate(h.date)>day)
- if(quick&&laterDetailed)throw new Error('Não é possível desfazer esse check após registrar treinos detalhados posteriores.')
+ if(laterDetailed)throw new Error('Há um treino detalhado posterior. Para não mudar sua sequência já registrada, não é possível alterar esse dia pelo check rápido.')
  const quicks=original.filter(h=>h.kind==='forca'&&h.quick)
  const base=(Number(next.rotationIndex)||0)-quicks.length
  if(quick){
