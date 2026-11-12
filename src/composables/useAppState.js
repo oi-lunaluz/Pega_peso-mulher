@@ -1,9 +1,10 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { SHORT_DAYS, cleanDays, dateKey, pendingBefore, pendingIncludingToday, createWeekPlan, cardioMinutesThisWeek, previewAfterDay, LONG_DAYS, fromDateKey } from '../lib/planner.js'
+import { SHORT_DAYS, cleanDays, dateKey, pendingBefore, pendingIncludingToday, createWeekPlan, cardioMinutesThisWeek, previewAfterDay, LONG_DAYS, fromDateKey, fromBrazilDate } from '../lib/planner.js'
 import { readJson, writeJson, normalizeTrainingState } from '../lib/storage.js'
 import { clockLabel, validSet, totalSetVolume, maximumWeight, lastWeight } from '../lib/trainingMath.js'
 import { saveCloudSnapshot } from '../lib/cloudData.js'
 import { emptyTrainingState } from '../lib/onboarding.js'
+import { toggleQuickWorkout } from '../lib/quickWorkout.js'
 
 /** 
  * Estado e ações da aplicação.
@@ -90,6 +91,23 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     return date?LONG_DAYS[date.getDay()]:''
   })
   function selectWeekDay(date){selectedWeekDate.value=date}
+  const quickFeedback=ref('')
+  function toggleDayDone(date){
+    quickFeedback.value=''
+    try{
+      const result=toggleQuickWorkout(state.value,date,dateToday.value)
+      state.value=result.state
+      selectedWeekDate.value=date
+      quickFeedback.value=result.checked?'Treino marcado como feito! Sequência atualizada.':'Check desfeito e sequência atualizada.'
+    }catch(error){
+      quickFeedback.value=error.message||'Não foi possível marcar este dia.'
+    }
+  }
+  function canQuickCheck(day){
+    return !!day?.scheduled && day.date<=dateToday.value &&
+      (!day.recorded||!!state.value.history.find(h=>h.quick&&dateKey(fromBrazilDate(h.date))===day.date))
+  }
+
 
   
   const view=ref('home')
@@ -308,6 +326,9 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     selectedWeekPreview,
     predictedDayLabel,
     selectWeekDay,
+    quickFeedback,
+    toggleDayDone,
+    canQuickCheck,
     view,
     rotation,
     rotationIndex,
