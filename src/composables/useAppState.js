@@ -2,19 +2,19 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { SHORT_DAYS, cleanDays, dateKey, pendingBefore, pendingIncludingToday, createWeekPlan, cardioMinutesThisWeek, previewAfterDay, LONG_DAYS, fromDateKey } from '../lib/planner.js'
 import { readJson, writeJson, normalizeTrainingState } from '../lib/storage.js'
 import { clockLabel, validSet, totalSetVolume, maximumWeight, lastWeight } from '../lib/trainingMath.js'
+import { saveCloudSnapshot } from '../lib/cloudData.js'
 
 /** 
  * Estado e ações da aplicação.
  * Mantém os dados anteriores (localStorage) e centraliza as regras do MVP.
  * A matemática do calendário vive em lib/planner.js e tem testes de regressão.
  */
-export function useAppState({accountId,accountName,migrateLegacy=false}={}) {
+export function useAppState({accountId,accountName,initialCloud=null,cloudRevision=0}={}) {
   if(!accountId)throw new Error('Cadastro local obrigatório para iniciar o aplicativo.')
   const scopedKey=(base)=>`${base}-${accountId}`
   const key=scopedKey('pega-peso-mulher-mvp-v1')
   const initial={routine:[{name:'Descanso',cardio:0},{name:'Quadríceps',cardio:30},{name:'Superiores A',cardio:30},{name:'Descanso',cardio:0},{name:'Posterior e glúteos',cardio:30},{name:'Superiores B',cardio:30},{name:'Cardio',cardio:30}],workouts:[{name:'Quadríceps',exercises:['Agachamento livre','Leg press','Cadeira extensora']},{name:'Superiores A',exercises:['Puxada alta','Remada baixa']},{name:'Posterior e glúteos',exercises:['Stiff','Mesa flexora','Elevação pélvica']},{name:'Superiores B',exercises:['Supino máquina','Elevação lateral']}],history:[]}
-  const previousState=migrateLegacy?readJson('pega-peso-mulher-mvp-v1',initial):initial
-  const state=ref(normalizeTrainingState(readJson(key,previousState),initial))
+  const state=ref(normalizeTrainingState(initialCloud?.state||readJson(key,initial),initial))
   watch(state,v=>writeJson(key,v),{deep:true})
   // Migração: preserva fichas, histórico e preferências anteriores sem manter dias fixos.
   const workoutNames=()=>state.value.workouts.map(w=>w.name)
@@ -198,7 +198,7 @@ export function useAppState({accountId,accountName,migrateLegacy=false}={}) {
   const cycleKey=scopedKey('pega-peso-mulher-cycle-v1')
   const cycle=ref({
     enabled:false,start:'',length:28,period:5,notes:[],
-    ...readJson(cycleKey,migrateLegacy?readJson('pega-peso-mulher-cycle-v1',{}):{})
+    ...(initialCloud?.cycle||readJson(cycleKey,{}))
   })
   if(!Array.isArray(cycle.value.notes))cycle.value.notes=[]
   watch(cycle,v=>writeJson(cycleKey,v),{deep:true})
@@ -215,16 +215,72 @@ export function useAppState({accountId,accountName,migrateLegacy=false}={}) {
   const chartWeeks=computed(()=>{const now=new Date();return Array.from({length:4},(_,i)=>{const newest=3-i;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()-newest*7,23,59,59);const start=new Date(end.getFullYear(),end.getMonth(),end.getDate()-6);const value=statsSessions.value.reduce((total,h)=>{const parts=h.date?.split('/');if(!parts||parts.length!==3)return total;const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]));return d>=start&&d<=end?total+totalSetVolume(h.sets):total},0);return {label:'S'+(i+1),value}})})
   const chartMax=computed(()=>Math.max(1,...chartWeeks.value.map(x=>x.value)))
   const profileKey=scopedKey('pega-peso-mulher-profile-v1')
-  const legacyProfile=migrateLegacy?readJson('pega-peso-mulher-profile-v1',{}):{}
-  const profile=ref({nickname:accountName||'',goal:'Ganhar força e massa muscular',...readJson(profileKey,legacyProfile)})
+  const profile=ref({nickname:accountName||'',goal:'Ganhar força e massa muscular',...(initialCloud?.profile||readJson(profileKey,{}))})
   watch(profile,value=>writeJson(profileKey,value),{deep:true})
   
   const strengthThisMonth=computed(()=>{const prefix=new Date().toLocaleDateString('pt-BR').slice(3);return state.value.history.filter(h=>h.kind==='forca'&&h.date?.slice(3)===prefix).length})
   const personalRecords=computed(()=>new Set(state.value.history.flatMap(h=>Object.keys(h.sets||{}).filter(e=>(h.sets[e]||[]).length>0))).size)
   const homeGreeting=computed(()=>{const hour=new Date().getHours();return hour<12?'Bom dia':hour<18?'Boa tarde':'Boa noite'})
   function openToday(){if(nextWorkout.value)openWorkout(nextWorkout.value.name);else view.value='routine'}
+  // Sync the complete app state atomically (no partially saved workouts).
+  // If the server revision changed on another device, never overwrite it.
+  const syncStatus=ref('idle')
+  const syncMessage=ref('')
+  let cloudVersion=Number(cloudRevision)||0
+  let syncTimer=null
+  let inFlight=false
+  let dirty=false
+  let halted=false
+  let destroyed=false
+  async function flushCloud(){
+    if(inFlight||halted||destroyed||!dirty)return
+    inFlight=true
+    dirty=false
+    syncStatus.value='saving'
+    try{
+      const payload=JSON.parse(JSON.stringify({
+        state:state.value,cycle:cycle.value,profile:profile.value
+      }))
+      cloudVersion=await saveCloudSnapshot(payload,cloudVersion)
+      syncStatus.value='saved'
+      syncMessage.value=''
+    }catch(error){
+      // Never discard unsynced local data.
+      dirty=true
+      halted=true
+      syncStatus.value='error'
+      syncMessage.value=error.message||'Não foi possível salvar seus dados.'
+    }finally{
+      inFlight=false
+      if(dirty&&!halted&&!destroyed)scheduleCloud()
+    }
+  }
+  function scheduleCloud(){
+    if(destroyed||halted)return
+    dirty=true
+    syncStatus.value='saving'
+    if(syncTimer)clearTimeout(syncTimer)
+    syncTimer=setTimeout(()=>{syncTimer=null;void flushCloud()},850)
+  }
+  function retryCloudSync(){
+    if(!halted)return
+    // Conflicts require a fresh login rather than overwriting newer data.
+    if(syncMessage.value.includes('outro dispositivo'))return
+    halted=false
+    scheduleCloud()
+  }
+  watch([state,cycle,profile],scheduleCloud,{deep:true})
+  onMounted(()=>{if(cloudVersion===0)scheduleCloud()})
+  onUnmounted(()=>{
+    destroyed=true
+    if(syncTimer)clearTimeout(syncTimer)
+  })
+
   return {
     state,
+    syncStatus,
+    syncMessage,
+    retryCloudSync,
     weekNames,
     calendarNow,
     dateToday,
