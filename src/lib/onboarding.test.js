@@ -52,3 +52,17 @@ test('não aceita ausência de dias nem data futura de menstruação',()=>{
  assert.throws(()=>createOnboardingPayload({...base,days:[]},new Date(2026,10,12)))
  assert.throws(()=>createOnboardingPayload({...base,days:[1]},new Date(2026,10,12)))
 })
+
+test('não reinicia conta com dados menstruais ou metas personalizadas',()=>{
+ assert.equal(isUnconfiguredSnapshot({
+   state:{workouts:[],history:[]},
+   cycle:{enabled:true,start:'2026-11-01',notes:[]}
+ }),false)
+ assert.equal(isUnconfiguredSnapshot({
+   state:{workouts:[],history:[],cardioGoal:240}
+ }),false)
+ assert.equal(isUnconfiguredSnapshot({
+   state:{workouts:[],history:[]},
+   profile:{goal:'Emagrecer'}
+ }),false)
+})
