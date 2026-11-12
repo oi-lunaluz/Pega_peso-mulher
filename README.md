@@ -112,3 +112,14 @@ Usa o plano gratuito. Caso o limite gratuito seja atingido, **não existe implem
 ### Limites atuais
 
 Sem recuperação personalizada de senha, resolução automática de conflitos entre dois dispositivos ou migração das linhas de snapshot para as tabelas relacionais. Os testes automatizados e a compilação não substituem um teste real de inscrição, confirmação de e-mail e sincronização em dois dispositivos.
+
+
+## Primeiro acesso e configuração inicial
+
+- **Sem importação significa zero fichas e zero registros**: não há mais exemplos de Quadríceps/Superiores criados automaticamente para contas novas.
+- A primeira entrada sem dados reais abre um formulário em três etapas: dias escolhidos e nomes das fichas (opcionais); objetivo (ganho de massa, emagrecimento, manutenção etc.), peso corporal, carga habitual e meta semanal total de cardio; acompanhamento menstrual opcional e início da última menstruação.
+- As respostas são validadas e gravadas em um único snapshot remoto antes de liberar a área principal. A tela mostra erro se não conseguir salvar.
+- Nomes de fichas são criados **sem exercícios e sem sessões concluídas**. Se não informar nenhum nome, a lista permanece vazia e, depois do formulário, abre a criação da primeira ficha.
+- Os dados do ciclo são opcionais e as estimativas não servem para contracepção ou diagnóstico.
+- Snapshots antigos contendo apenas os quatro exemplos automáticos (sem histórico) também são reconhecidos como não configurados. Snapshots com treinos personalizados ou histórico não são apagados.
+- `onboardingCompleted: true` indica que a conta já concluiu o formulário; novas entradas não precisam repeti-lo.
