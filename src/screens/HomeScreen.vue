@@ -12,6 +12,9 @@ const {
   selectedWeekPreview,
   predictedDayLabel,
   selectWeekDay,
+  quickFeedback,
+  toggleDayDone,
+  canQuickCheck,
   view,
   rotation,
   rotationIndex,
@@ -65,7 +68,16 @@ const {
     <strong>{{selectedWeekPreview.nextName||'Configure sua sequência'}}</strong>
     <small>{{selectedWeekPreview.simulated?'Previsão se os treinos planejados forem concluídos':'Previsão com base nos treinos registrados'}}</small>
   </div>
-  <p class="home-forecast-disclaimer">Selecionar um dia apenas mostra a previsão. Para registrar que treinou, conclua uma sessão.</p>
+  <div v-if="canQuickCheck(selectedWeekDay)" class="quick-workout-actions">
+    <button type="button" class="quick-workout-button" @click="toggleDayDone(selectedWeekDate)">
+      <AppIcon :name="selectedWeekDay.recorded?'check':'calendarCheck'" :size="18"/>
+      {{selectedWeekDay.recorded?'Desfazer check deste dia':'Já fiz esse treino ✓'}}
+    </button>
+    <p>Sem precisar acompanhar séries, cargas ou cronômetro. O check atualiza a ordem dos próximos treinos.</p>
+  </div>
+  <p v-else-if="selectedWeekDay?.recorded" class="home-forecast-disclaimer">Este treino já está registrado com acompanhamento detalhado.</p>
+  <p v-else class="home-forecast-disclaimer">Toque em um dia de treino de hoje ou anterior para marcá-lo como feito, ou inicie uma sessão com acompanhamento detalhado.</p>
+  <p v-if="quickFeedback" class="quick-workout-feedback" role="status">{{quickFeedback}}</p>
   <button class="home-primary" @click="openToday">{{nextWorkout?'Iniciar treino pendente / atual':'Organizar treinos'}} <span aria-hidden="true">→</span></button>
 </section>
 <div class="home-bottom-grid">
