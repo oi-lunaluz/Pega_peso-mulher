@@ -66,3 +66,17 @@ test('não reinicia conta com dados menstruais ou metas personalizadas',()=>{
    profile:{goal:'Emagrecer'}
  }),false)
 })
+
+test('importação copia exercícios para fichas e une dias que usam a mesma ficha',()=>{
+ const values={
+  days:[1,2,4],workoutNames:{1:'Pernas',2:'Superiores',4:'Pernas'},
+  workoutExercises:{1:['Agachamento','Leg press'],2:['Remada'],4:['Leg press','Stiff']},
+  goal:'Ganhar força',cardioMinutes:60,bodyWeightKg:'',usualLoadKg:'',
+  trackCycle:false
+ }
+ const p=createOnboardingPayload(values,new Date(2026,10,12))
+ assert.deepEqual(p.state.rotation,['Pernas','Superiores'])
+ assert.deepEqual(p.state.workouts[0].exercises,['Agachamento','Leg press','Stiff'])
+ assert.deepEqual(p.state.workouts[1].exercises,['Remada'])
+ assert.deepEqual(p.state.history,[])
+})
