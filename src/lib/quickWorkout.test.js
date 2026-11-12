@@ -49,7 +49,7 @@ test('não permite futuro, dia livre nem sessão detalhada duplicada',()=>{
 test('checks de segunda a quinta tiram todas as pendências até quinta',async()=>{
  const {pendingIncludingToday}=await import('./planner.js')
  let s=initial()
- for(const day of [11,9,12,10])s=toggleQuickWorkout(s,'2026-11-'+day,'2026-11-12').state
+ for(const day of [11,9,12,10])s=toggleQuickWorkout(s,'2026-11-'+String(day).padStart(2,'0'),'2026-11-12').state
  assert.equal(s.rotationIndex,0)
  assert.equal(s.scheduleCompleted,4)
  assert.equal(pendingIncludingToday({anchor:s.scheduleAnchor,today:'2026-11-12',days:s.scheduledDays,completed:s.scheduleCompleted}),0)
