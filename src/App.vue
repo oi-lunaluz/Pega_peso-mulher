@@ -55,6 +55,14 @@ function chooseImport(importLocal){
   account.value=candidate.value.account
   candidate.value=null
 }
+async function retryLoad(){
+  loadError.value=''
+  loading.value=true
+  const {data,error}=await supabase.auth.getUser()
+  if(error){loadError.value=error.message;loading.value=false;return}
+  if(data.user)await openAccount(data.user)
+  else loading.value=false
+}
 async function logout(){
   ++requestVersion
   const {error}=await supabase.auth.signOut()
@@ -93,7 +101,7 @@ onUnmounted(()=>{++requestVersion;listener?.unsubscribe()})
   <div v-else-if="loadError" class="auth-loading">
     <strong>Não foi possível acessar os dados da nuvem.</strong>
     <p>{{loadError}}</p>
-    <button @click="loadError='';loading=true;start()">Tentar novamente</button>
+    <button @click="retryLoad">Tentar novamente</button>
     <button class="auth-link" @click="logout">Sair da conta</button>
   </div>
   <div v-else-if="candidate" class="auth-import">
