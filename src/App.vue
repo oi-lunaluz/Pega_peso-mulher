@@ -12,6 +12,7 @@ const cloud=ref(null)
 const revision=ref(0)
 const candidate=ref(null)
 const onboarding=ref(null)
+const firstSetupFinished=ref(false)
 const savingOnboarding=ref(false)
 const onboardingError=ref('')
 const loading=ref(true)
@@ -51,6 +52,7 @@ async function openAccount(user){
     }
     candidate.value=null
     onboarding.value=null
+    firstSetupFinished.value=false
     account.value=basic
   }catch(error){
     loadError.value=error.message||'Não foi possível carregar sua conta.'
@@ -87,6 +89,7 @@ async function finishOnboarding(payload){
     cloud.value=payload
     revision.value=nextRevision
     onboarding.value=null
+    firstSetupFinished.value=true
     account.value=current
   }catch(error){
     onboardingError.value=error.message||'Não foi possível salvar sua configuração.'
@@ -158,6 +161,6 @@ onUnmounted(()=>{++requestVersion;listener?.unsubscribe()})
     @finish="finishOnboarding" @logout="logout"/>
   <AppWorkspace v-else-if="account" :key="account.id"
     :account-id="account.id" :account-name="account.name"
-    :initial-cloud="cloud" :cloud-revision="revision" @logout="logout"/>
+    :initial-cloud="cloud" :cloud-revision="revision" :fresh-setup="firstSetupFinished" @logout="logout"/>
   <AuthScreen v-else @authenticated="openAccount"/>
 </template>
