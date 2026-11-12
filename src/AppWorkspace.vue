@@ -13,12 +13,15 @@ import FinishedScreen from './screens/FinishedScreen.vue'
 import ProfileScreen from './screens/ProfileScreen.vue'
 import { useAppState } from './composables/useAppState.js'
 
-const props=defineProps({accountId:{type:String,required:true},accountName:{type:String,required:true},migrateLegacy:{type:Boolean,default:false}})
+const props=defineProps({accountId:{type:String,required:true},accountName:{type:String,required:true},initialCloud:{type:Object,default:null},cloudRevision:{type:Number,default:0}})
 const emit=defineEmits(['logout'])
-const app = useAppState({accountId:props.accountId,accountName:props.accountName,migrateLegacy:props.migrateLegacy})
+const app = useAppState({accountId:props.accountId,accountName:props.accountName,initialCloud:props.initialCloud,cloudRevision:props.cloudRevision})
 app.logout=()=>emit('logout')
 provide('pegaPesoApp', app)
 const {
+  syncStatus,
+  syncMessage,
+  retryCloudSync,
   view,
   workoutName,
   createModal,
@@ -44,6 +47,11 @@ const {
 <button v-if="view!=='profile'" class="header-profile" title="Meu perfil" aria-label="Abrir meu perfil" @click="view='profile'"><AppIcon name="user" :size="21"/></button>
 <button v-else class="header-profile" aria-label="Voltar ao início" @click="view='home'"><AppIcon name="close" :size="20"/></button>
 </header>
+<div v-if="syncStatus==='error'" class="cloud-sync-error" role="alert">
+  <span>{{syncMessage}} Seus registros continuam salvos neste navegador.</span>
+  <button type="button" @click="retryCloudSync">Tentar novamente</button>
+</div>
+<div v-else-if="syncStatus==='saving'" class="cloud-sync-indicator" role="status">Salvando na nuvem...</div>
 <main>
 <HomeScreen v-if="view==='home'"/>
 <RoutineScreen v-else-if="view==='routine'"/>
@@ -66,5 +74,5 @@ const {
 </label>
 </div>
 <button class="brazil-primary cardio-modal-start" @click="confirmCardioStart"><AppIcon name="timer" :size="18"/> Iniciar {{selectedCardioModality}}</button>
-</div></div><div v-if="createModal" class="modal-backdrop" @click.self="createModal=false"><div class="modal-sheet" role="dialog" aria-modal="true" aria-label="Criar novo treino"><div class="modal-head"><div><small>NOVO TREINO</small><h2>Criar treino <AppIcon name="dumbbell" :size="17"/></h2></div><button class="close-modal" aria-label="Fechar" @click="createModal=false">✕</button></div><p class="muted">Dê um nome ao seu treino. Depois você poderá adicionar os exercícios.</p><form @submit.prevent="addWorkout"><label for="new-workout-name">Nome do treino</label><input id="new-workout-name" v-model="newWorkout" placeholder="Ex.: Glúteos e posterior" maxlength="60" autofocus/><p v-if="createError" class="field-error">{{createError}}</p><div class="modal-actions"><button type="button" class="outline" @click="createModal=false">Cancelar</button><button type="submit">Criar treino</button></div></form></div></div><nav class="bottom-nav" aria-label="Navegação principal"><button v-for="tab in [{id:'home',icon:'home',label:'Início'},{id:'list',icon:'dumbbell',label:'Treinos'},{id:'routine',icon:'calendar',label:'Rotina'},{id:'stats',icon:'chart',label:'Evolução'},{id:'cycle',icon:'flower',label:'Ciclo'}]" :key="tab.id" :class="{active:view===tab.id}" @click="view=tab.id"><AppIcon :name="tab.icon" :size="21" :strokeWidth="view===tab.id?2.6:2"/><small>{{tab.label}}</small></button></nav><footer>Acesso local · dados salvos neste navegador · sem sincronização entre dispositivos</footer></div>
+</div></div><div v-if="createModal" class="modal-backdrop" @click.self="createModal=false"><div class="modal-sheet" role="dialog" aria-modal="true" aria-label="Criar novo treino"><div class="modal-head"><div><small>NOVO TREINO</small><h2>Criar treino <AppIcon name="dumbbell" :size="17"/></h2></div><button class="close-modal" aria-label="Fechar" @click="createModal=false">✕</button></div><p class="muted">Dê um nome ao seu treino. Depois você poderá adicionar os exercícios.</p><form @submit.prevent="addWorkout"><label for="new-workout-name">Nome do treino</label><input id="new-workout-name" v-model="newWorkout" placeholder="Ex.: Glúteos e posterior" maxlength="60" autofocus/><p v-if="createError" class="field-error">{{createError}}</p><div class="modal-actions"><button type="button" class="outline" @click="createModal=false">Cancelar</button><button type="submit">Criar treino</button></div></form></div></div><nav class="bottom-nav" aria-label="Navegação principal"><button v-for="tab in [{id:'home',icon:'home',label:'Início'},{id:'list',icon:'dumbbell',label:'Treinos'},{id:'routine',icon:'calendar',label:'Rotina'},{id:'stats',icon:'chart',label:'Evolução'},{id:'cycle',icon:'flower',label:'Ciclo'}]" :key="tab.id" :class="{active:view===tab.id}" @click="view=tab.id"><AppIcon :name="tab.icon" :size="21" :strokeWidth="view===tab.id?2.6:2"/><small>{{tab.label}}</small></button></nav><footer>Conta Supabase · dados sincronizados na nuvem · backup local mantido</footer></div>
 </template>
