@@ -123,3 +123,9 @@ Sem recuperação personalizada de senha, resolução automática de conflitos e
 - Os dados do ciclo são opcionais e as estimativas não servem para contracepção ou diagnóstico.
 - Snapshots antigos contendo apenas os quatro exemplos automáticos (sem histórico) também são reconhecidos como não configurados. Snapshots com treinos personalizados ou histórico não são apagados.
 - `onboardingCompleted: true` indica que a conta já concluiu o formulário; novas entradas não precisam repeti-lo.
+
+### Copiar e colar treino no primeiro acesso
+
+Na etapa 1 do formulário existe **Colar treino do personal**. Cole um texto com cabeçalhos de dias (`Segunda: Inferiores`, `Terça-feira: Superiores`) ou fichas (`Treino A`, `Treino B`) e a lista de exercícios. O leitor local identifica seções, nomes de fichas e exercícios comuns, ignora prescrições isoladas e mostra **prévia editável de nome e dia** antes de aplicar. Treinos sem dia identificado requerem seleção manual. Os dias não selecionados são adicionados somente após confirmação. Exercícios copiados são salvos nas fichas do snapshot Supabase e dias com o mesmo nome de ficha compartilham os exercícios sem duplicatas.
+
+**Limitação atual:** o formato de entrada é texto, não PDF/imagem, e ainda não importa diretamente cargas, séries e repetições prescritas; esses valores devem ser conferidos e registrados pelo usuário durante o treino. A análise é determinística no navegador, sem serviço de IA externo ou cobrança adicional. Não se deve usar a prévia sem conferência.
