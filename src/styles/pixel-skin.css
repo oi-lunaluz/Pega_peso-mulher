@@ -1,0 +1,90 @@
+
+/* PIXEL QUEST SKIN — scoped to this branch's adventure mode. Forms,
+   modal behavior and state actions are inherited from the original app. */
+.pixel-app-skin{--game-paper:#f9ebc9;--game-ink:#574131;--game-wood:#6c4939;--game-pink:#ac5874;--game-green:#53794c;background:#f5e7c9!important;color:#493b36}
+.pixel-app-skin main{background:linear-gradient(180deg,#f1e6cb,#faeed3)!important}
+.pixel-app-skin .home-header,.pixel-app-skin .brazil-header{background:#f4d7a2!important;border-bottom:3px solid #74533a!important;color:#5b3d30!important}
+.pixel-app-skin .home-header h1,.pixel-app-skin .brazil-header h1{color:#5b3d30!important;letter-spacing:-.5px!important}
+.pixel-app-skin .brand-wordmark{color:#764b3d!important;font-family:monospace;font-weight:950}
+.pixel-app-skin .brand-mark{background:#ac5574!important;color:#fff2d1!important;border:2px solid #6d3b4d}
+.pixel-app-skin .header-profile{border:2px solid #825a43!important;background:#ffebbe!important;color:#714b39!important}
+.pixel-app-skin .brazil-banner{display:none!important}
+.pixel-app-skin .pixel-home{padding:10px 5px 18px}
+.pixel-party{position:absolute;z-index:5;width:clamp(75px,23%,130px);height:74px;transform:translate(-56%,-105%);pointer-events:none;display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(3px 4px #302a28)}
+.pixel-party img{image-rendering:pixelated;object-fit:contain;display:block}
+.pixel-party-girl{height:100%;width:47%}
+.pixel-party-mary{height:73%;width:53%;margin-left:-9px}
+.pixel-scene-header{min-height:155px;border:3px solid #694c38;box-shadow:4px 5px #3f302a;margin-bottom:15px;display:flex;align-items:center;overflow:hidden;position:relative;isolation:isolate;background:linear-gradient(130deg,#f9df9d,#edc98d 72%,#d4b477);padding:13px 9px 13px 14px}
+.pixel-scene-header:after{content:"";position:absolute;z-index:-1;width:170px;height:90px;background:#eed7aa66;right:-38px;bottom:-45px;transform:rotate(-16deg)}
+.pixel-scene-copy{flex:1 1 60%;min-width:0;position:relative;z-index:2;max-width:65%}
+.pixel-scene-copy span{font:950 10px/1.3 monospace;color:#9a5062;letter-spacing:.35px}
+.pixel-scene-copy h2{font-size:clamp(20px,5.5vw,28px)!important;line-height:1.1;margin:9px 0 5px;color:#563b35;overflow-wrap:anywhere}
+.pixel-scene-copy p{font:750 11px/1.4 monospace;color:#775641;margin:0}
+.pixel-scene-characters{flex:0 0 39%;height:125px;display:flex;align-items:flex-end;position:relative;justify-content:center;gap:0}
+.pixel-scene-characters img{image-rendering:pixelated;object-fit:contain;position:relative;filter:drop-shadow(2px 3px #80533f33)}
+.pixel-scene-girl{height:115px;width:49%}
+.pixel-scene-mary{height:88px;width:58%;margin-left:-13px}
+.pixel-app-skin .brazil-list-row,.pixel-app-skin .workout-exercise-item,.pixel-app-skin .brazil-form,.pixel-app-skin .brazil-empty,.pixel-app-skin .chart-card,.pixel-app-skin .stat-tile,.pixel-app-skin .stats-workout-filter,.pixel-app-skin .week-settings,.pixel-app-skin .cardio-training-panel,.pixel-app-skin .cycle-toggle,.pixel-app-skin .calendar-card,.pixel-app-skin .cycle-info,.pixel-app-skin .profile-card,.pixel-app-skin .profile-home-preference,.pixel-app-skin .workout-manage-panel,.pixel-app-skin .session-timer,.pixel-app-skin .cardio-session-summary,.pixel-app-skin .week-strength-card,.pixel-app-skin .brazil-celebrate,.pixel-app-skin .week-today-tile{background:#fff4d9!important;border:2px solid #ae8a65!important;border-radius:3px!important;box-shadow:3px 3px #d9b78a!important;color:#604737}
+.pixel-app-skin .brazil-list-row strong,.pixel-app-skin .brazil-row-title h3,.pixel-app-skin .week-card-title strong{color:#634532!important}
+.pixel-app-skin .brazil-primary,.pixel-app-skin .brazil-complete,.pixel-app-skin .week-card-mark,.pixel-app-skin .cardio-panel-start{background:#ae5577!important;color:white!important;border:2px solid #683c50!important;border-radius:3px!important;box-shadow:3px 3px #865a5f!important}
+.pixel-app-skin .brazil-outline,.pixel-app-skin .outline,.pixel-app-skin .week-card-open{background:#fff0ce!important;border:2px solid #b9956d!important;border-radius:3px!important;color:#654632!important}
+.pixel-app-skin input:not([type=checkbox]):not([type=radio]),.pixel-app-skin select,.pixel-app-skin textarea{background:#fff9e9!important;border:2px solid #ba9b70!important;color:#513d34!important;border-radius:3px!important;max-width:100%;font-size:16px!important}
+.pixel-app-skin input:focus-visible,.pixel-app-skin textarea:focus-visible,.pixel-app-skin select:focus-visible,.pixel-app-skin button:focus-visible{outline:3px solid #c65b88;outline-offset:2px}
+.pixel-app-skin .brazil-tabs,.pixel-app-skin .cardio-tabs{border:2px solid #ac8b66;background:#f3ddab!important;border-radius:3px!important}
+.pixel-app-skin .brazil-tabs button.active,.pixel-app-skin .cardio-tabs button.active{background:#ac5874!important;color:white!important;border-radius:2px!important}
+.pixel-app-skin .bottom-nav{background:#f8e6b7!important;border-top:3px solid #8a694b!important}
+.pixel-app-skin .bottom-nav button.active{background:#eccf9d!important;color:#793f55!important}
+.pixel-app-skin .session-timer strong{font-family:monospace!important;color:#9a4b6a!important}
+.pixel-app-skin .chart-rail{background:#e9d6b0!important;border:1px solid #aa895d}
+.pixel-app-skin .chart-rail div{background:#9b617d!important}
+.pixel-app-skin .cardio-mary-stage{border:2px solid #aa8a62!important;border-radius:3px!important;box-shadow:3px 3px #d8b88f!important}
+.pixel-app-skin .modal-sheet{background:#fff2d0!important;border:3px solid #8d6345!important;border-radius:4px!important}
+.pixel-app-skin .modal-actions button{border-radius:3px!important}
+.pixel-app-skin footer{font-family:monospace;color:#76614c}
+.pixel-rewards{display:flex;flex-direction:column;gap:12px;background:#fff1cf;border:3px solid #77543d;box-shadow:4px 4px #3f332a;padding:13px;color:#513c2e;margin:8px 0 14px}
+.pixel-rewards-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pixel-rewards-head>div:first-child{min-width:0}
+.pixel-rewards-head span{font:950 9px monospace;color:#a45c66;letter-spacing:.5px}
+.pixel-rewards-head h3{font-size:18px!important;margin:4px 0;color:#5a3e33!important}
+.pixel-streak-chip{display:flex;gap:3px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:105px;border:2px solid #ad8a60;padding:7px;background:#ffe2a1}
+.pixel-streak-chip svg{color:#a45c5b}
+.pixel-streak-chip strong{font:1000 19px monospace}
+.pixel-streak-chip small{font:850 8px/1.2 monospace;color:#80624c;text-align:center}
+.pixel-reward-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pixel-reward-stats>div{display:flex;flex-direction:column;gap:4px;padding:10px 5px;background:#f7e2b3;border:2px solid #ba9d77;text-align:center}
+.pixel-reward-stats strong{font:1000 19px monospace;color:#80465b}
+.pixel-reward-stats small{font:800 9px/1.2 monospace;color:#806651}
+.pixel-next-reward{display:flex;flex-direction:column;gap:6px;border:2px solid #92aa6d;background:#e6efc6;padding:11px}
+.pixel-next-reward>span{font:900 9px monospace;letter-spacing:.5px;color:#5b8448}
+.pixel-next-reward strong{font-size:15px;color:#4b693c}
+.pixel-next-reward small{font:750 10px/1.4 monospace;color:#567448}
+.pixel-reward-track{height:13px;border:2px solid #536e3e;background:#fff9dd;overflow:hidden}
+.pixel-reward-track i{display:block;height:100%;background:#b87b70;transition:width .2s}
+.pixel-medal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.pixel-medal-card{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;min-height:110px;padding:9px 5px!important;border:2px solid #8a644d!important;border-radius:2px!important;background:#fae2aa!important;color:#513c2e!important;text-align:center}
+.pixel-medal-card strong{font:900 10px/1.3 monospace}
+.pixel-medal-card small{font:800 9px monospace;color:#75533e}
+.pixel-medal-art{width:47px;height:47px;border:3px solid #825235;background:linear-gradient(135deg,#ffe59b,#d9a053);display:grid;place-items:center;box-shadow:3px 3px #b78651}
+.pixel-medal-15,.pixel-medal-30{background:linear-gradient(135deg,#c8dddc,#90a8b8)}
+.pixel-medal-30,.pixel-medal-60{border-color:#b77b3c;background:linear-gradient(135deg,#ffe6a2,#e1a83e)}
+.pixel-medal-100{border-color:#7e3f63;background:linear-gradient(135deg,#e9bfdf,#bf80aa)}
+.pixel-rewards-complete,.pixel-reward-rule,.pixel-no-medals{margin:0;font:750 10px/1.5 monospace;color:#79634e}
+.pixel-no-medals{grid-column:1/-1;background:#f8e5ba;border:1px dashed #b3916b;padding:14px;text-align:center}
+.pixel-reward-more{background:#855063!important;color:#fff4e1!important;border:2px solid #583646!important;padding:11px!important;font:900 11px monospace}
+.pixel-reward-demo{display:flex;flex-direction:column;gap:7px;background:#ede2cf;border:2px dashed #a28a6e;padding:10px}
+.pixel-reward-demo small{font:900 9px monospace;color:#78624b}
+.pixel-reward-demo>div{display:flex;flex-wrap:wrap;gap:7px}
+.pixel-reward-demo button{background:#7d6b56!important;color:#fff7df!important;padding:9px!important;font:850 10px monospace;border-radius:2px!important}
+.pixel-reward-backdrop{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px;background:#171b19b8}
+.pixel-reward-popup{width:min(100%,430px);max-height:92dvh;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:11px;background:#fff0c9;border:5px solid #6e4e35;box-shadow:7px 8px #211c19;padding:20px;text-align:center}
+.pixel-reward-popup-label{font:950 11px monospace;letter-spacing:.5px;color:#a4526e}
+.pixel-reward-popup-characters{display:flex;align-items:flex-end;justify-content:center;gap:5px;height:118px}
+.pixel-reward-popup-characters img{width:27%;max-height:104px;object-fit:contain;image-rendering:pixelated}
+.pixel-popup-medal{width:75px;height:75px;flex:0 0 75px;border:5px solid #b47b39;background:linear-gradient(135deg,#fff3bb,#e4a845);display:grid;place-items:center;color:#804739;box-shadow:3px 4px #8e593c}
+.pixel-reward-popup h2{font-size:24px!important;color:#62432f;margin:0}
+.pixel-reward-popup strong{font:950 12px monospace;color:#9b5361}
+.pixel-reward-popup p{font:750 12px/1.55 monospace;color:#80664d;margin:0}
+.pixel-reward-popup .pixel-popup-quote{font-weight:950;color:#59844c}
+.pixel-reward-popup button{width:100%;padding:13px!important;background:#a15371!important;color:#fff!important;border:3px solid #6c3850!important;font:950 12px monospace;border-radius:2px!important}
+@media(max-width:365px){.pixel-scene-header{min-height:130px;padding:10px}.pixel-scene-characters{height:108px}.pixel-scene-girl{height:100px}.pixel-scene-mary{height:80px}.pixel-medal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.pixel-reward-track i{transition:none}}
