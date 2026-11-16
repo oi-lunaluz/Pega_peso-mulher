@@ -2,6 +2,7 @@
 import { computed, inject, ref, watch } from 'vue'
 import AppIcon from '../AppIcon.vue'
 import PixelQuestMap from './PixelQuestMap.vue'
+import PixelRewardShelf from './PixelRewardShelf.vue'
 import { questPhase, questChapter, questWindow } from '../lib/pixelQuest.js'
 import { strengthNames } from '../lib/weeklyCards.js'
 
@@ -107,6 +108,8 @@ function simulateVictory(){if(!demoMode||!workoutNames.value.length)return;simul
       <span>Área {{chapter+1}} · fases {{chapter*5+1}}–{{chapter*5+5}}</span>
       <button type="button" @click="changeArea(1)">Próxima ▶</button>
     </section>
+
+    <PixelRewardShelf compact/>
 
     <section class="pixel-hub" aria-label="Atalhos para outras telas">
       <div class="pixel-hub-heading">
