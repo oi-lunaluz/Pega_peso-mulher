@@ -1,6 +1,7 @@
 <script setup>
 import { inject } from 'vue'
 import AppIcon from '../AppIcon.vue'
+import PixelRewardShelf from './PixelRewardShelf.vue'
 import { GOAL_OPTIONS } from '../lib/onboarding.js'
 
 const {
@@ -17,7 +18,8 @@ const {
 <input id="profile-weight-kg" type="number" min="0.1" max="650" step="0.1" inputmode="decimal" :value="profile.bodyWeightKg??''" @change="profile.bodyWeightKg=$event.target.value===''?null:Number($event.target.value)"/>
 <label class="brazil-label" for="profile-load-kg">Carga habitual de referência (kg) · opcional</label>
 <input id="profile-load-kg" type="number" min="0" max="1000" step="0.5" inputmode="decimal" :value="profile.usualLoadKg??''" @change="profile.usualLoadKg=$event.target.value===''?null:Number($event.target.value)"/>
-</div><small>{{demoMode?'Dados de demonstração: ficam só nesta sessão e não vão para a nuvem.':'As alterações são sincronizadas com sua conta Supabase. Os pesos não são registros automáticos de treino.'}}</small></div><section class="profile-home-preference">
+</div><small>{{demoMode?'Dados de demonstração: ficam só nesta sessão e não vão para a nuvem.':'As alterações são sincronizadas com sua conta Supabase. Os pesos não são registros automáticos de treino.'}}</small></div><PixelRewardShelf compact/>
+<section class="profile-home-preference">
   <strong>Como quer ver a tela inicial?</strong>
   <p>Você pode alternar entre a aventura e o painel original sem perder suas configurações.</p>
   <div class="profile-home-options">
