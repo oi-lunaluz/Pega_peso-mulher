@@ -80,3 +80,29 @@
 .profile-home-options button{font-size:11px!important;padding:10px!important;background:#f5e4dc!important;border:1px solid #dab7ac!important;color:#76535b!important}
 .profile-home-options button.active{background:#d95387!important;color:#fff!important}
 @media(max-width:350px){.pixel-hub-grid button{min-height:88px}.pixel-hub-cardio{flex-wrap:wrap}.pixel-hub-cardio button{width:100%}}
+
+
+/* Formulário de edição de fichas, com controles acessíveis no celular */
+.workout-manage-panel,.workout-exercise-item,.workout-danger-zone{border:1px solid #ead4dc;border-radius:13px;background:#fff;padding:12px;display:flex;flex-direction:column;gap:10px}
+.workout-manage-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.workout-manage-heading>strong{font-size:13px;color:#634257}
+.workout-manage-heading button{display:flex;align-items:center;gap:6px;background:#fff0f6!important;color:#a52a69!important;padding:9px 10px!important;font-size:11px!important}
+.workout-exercise-list{display:flex;flex-direction:column;gap:9px}
+.workout-exercise-overview{display:flex;align-items:center;gap:9px;min-width:0}
+.workout-exercise-overview .row-info{flex:1;min-width:0}
+.workout-inline-action{background:#fff0f6!important;color:#a02e64!important;padding:11px!important;flex:0 0 auto}
+.workout-edit-row{display:flex;flex-direction:column;gap:7px}
+.workout-edit-row label{font-size:11px;color:#765263;margin:0}
+.workout-edit-row>div{display:flex;align-items:center;gap:8px}
+.workout-edit-row input{font-size:16px;min-width:0;flex:1}
+.workout-edit-row>div button{background:#a74b76!important;color:#fff!important;padding:11px!important;flex:0 0 auto;font-size:12px}
+.workout-text-action{background:transparent!important;color:#a85c79!important;font-size:11px!important;padding:7px 3px!important;text-decoration:underline;align-self:flex-start}
+.workout-remove-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.workout-remove-row span{font-size:11px;color:#92677b;flex:1 1 100%}
+.workout-remove-row>button:not(.workout-text-action){font-size:11px!important;padding:8px 10px!important;background:#f8eaf0!important;color:#943963!important}
+.workout-danger-zone{background:#fff8f7;border-color:#f0d6d3}
+.workout-danger-zone>button{background:transparent!important;color:#ba4b5e!important;font-size:11px!important;padding:7px!important;text-decoration:underline}
+.workout-danger-zone p{margin:0;font-size:12px;color:#8b4d56;line-height:1.5}
+.workout-danger-zone>div{display:flex;gap:8px;flex-wrap:wrap}
+.workout-danger-zone>div button{font-size:11px!important;padding:10px!important;background:#eee2e0!important;color:#70474a!important}
+.workout-danger-zone>div button.danger-confirm{background:#bd465d!important;color:white!important}
