@@ -30,7 +30,7 @@ export function calculateStreak({history=[],scheduledDays=[],scheduleTimeline=[]
   .filter(Boolean).map(dateKey))].sort()
  const valid=entries.filter(d=>d<=end)
  if(!hasPlan)return {current:0,best:0,total:valid.length,qualified:0,unlocked:[],next:REWARDS[0],remaining:5,hasSchedule:false}
- const anchor=fromDateKey(scheduleAnchor)||fromDateKey(valid[0])||fromDateKey(end)
+ const anchor=fromDateKey(revisions[0]?.effectiveOn)||fromDateKey(scheduleAnchor)||fromDateKey(valid[0])||fromDateKey(end)
  const first=valid.length&&fromDateKey(valid[0])<anchor?fromDateKey(valid[0]):anchor
  const counted=new Set(valid)
  let run=0,best=0,qualified=0
