@@ -6,6 +6,7 @@ import { saveCloudSnapshot } from '../lib/cloudData.js'
 import { emptyTrainingState } from '../lib/onboarding.js'
 import { toggleQuickWorkout } from '../lib/quickWorkout.js'
 import { weekStrength, toggleWeekStrength, weekLabel } from '../lib/weeklyCards.js'
+import { calculateStreak, newlyUnlocked, REWARDS } from '../lib/gamification.js'
 import {
   renameWorkoutState,renameExerciseState,removeExerciseState,removeWorkoutState
 } from '../lib/workoutManagement.js'
@@ -293,6 +294,30 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   const profile=ref({nickname:accountName||'',goal:'Ganhar força e massa muscular',...(initialCloud?.profile||(demoMode?{}:readJson(profileKey,{})))})
   if(!demoMode)watch(profile,value=>writeJson(profileKey,value),{deep:true})
   
+  // Rewards derive from the logged strength sessions and saved training days.
+  // They are not incremented by navigation, cardio or fake game victories.
+  const gamification=computed(()=>calculateStreak({
+    history:state.value.history,scheduledDays:state.value.scheduledDays,
+    scheduleAnchor:state.value.scheduleAnchor,now:calendarNow.value
+  }))
+  const rewardPopup=ref(null)
+  const rewardIsPreview=ref(false)
+  function previewReward(reward){
+    const candidate=typeof reward==='number'
+      ?REWARDS.find(x=>x.threshold===reward):reward
+    if(!candidate)return
+    rewardPopup.value=candidate
+    rewardIsPreview.value=true
+  }
+  function closeRewardPopup(){rewardPopup.value=null;rewardIsPreview.value=false}
+  watch(()=>gamification.value.unlocked.map(r=>r.id).join(','),(_,before)=>{
+    const former=new Set((before||'').split(',').filter(Boolean))
+    const unlocked=gamification.value.unlocked.filter(r=>!former.has(r.id))
+    if(unlocked.length){
+      rewardPopup.value=unlocked.at(-1)
+      rewardIsPreview.value=false
+    }
+  })
   const strengthThisMonth=computed(()=>{const prefix=new Date().toLocaleDateString('pt-BR').slice(3);return state.value.history.filter(h=>h.kind==='forca'&&h.date?.slice(3)===prefix).length})
   const personalRecords=computed(()=>new Set(state.value.history.flatMap(h=>Object.keys(h.sets||{}).filter(e=>(h.sets[e]||[]).length>0))).size)
   const homeGreeting=computed(()=>{const hour=new Date().getHours();return hour<12?'Bom dia':hour<18?'Boa tarde':'Boa noite'})
@@ -466,6 +491,11 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     profile,
     strengthThisMonth,
     personalRecords,
+    gamification,
+    rewardPopup,
+    rewardIsPreview,
+    previewReward,
+    closeRewardPopup,
     homeGreeting,
     openToday,
     newWorkout,
