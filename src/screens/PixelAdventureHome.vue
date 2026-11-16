@@ -1,106 +1,136 @@
 <script setup>
 import { computed, inject, ref, watch } from 'vue'
 import AppIcon from '../AppIcon.vue'
-import { questName,questPhase,questChapter } from '../lib/pixelQuest.js'
+import PixelQuestMap from './PixelQuestMap.vue'
+import { questPhase, questChapter, questWindow } from '../lib/pixelQuest.js'
+import { strengthNames } from '../lib/weeklyCards.js'
 
-const { state, view, openWorkout, profile } = inject('pegaPesoApp')
-const simulatedWins = ref(0)
-const selectedStage = ref(null)
-const chapter = ref(0)
+const {
+  state, view, profile, demoMode, openWorkout, openCreateModal, openCardioModal,
+  weeklyStrengthCards, toggleStrengthCard, quickFeedback,
+  strengthThisMonth, personalRecords, weeklyCardio, cycle, cycleDay
+} = inject('pegaPesoApp')
 
-// The registered order remains the source of stage types, but stage numbers
-// never reset: 1, 2, 3 ... 6, 7, 8 ... regardless of how many fichas exist.
-const workoutNames = computed(() => {
-  const known = (state.value.workouts || []).map(w => w.name)
-  return [...new Set([...(state.value.rotation || []).filter(n => known.includes(n)), ...known])]
-})
-const completedInHistory = computed(() => (state.value.history || []).filter(h => h.kind === 'forca').length)
-const currentStage = computed(() => questPhase(completedInHistory.value,simulatedWins.value))
-const chapterOfCurrent = computed(() => questChapter(currentStage.value))
-const slots = [
-  { x: 46, y: 83 }, { x: 66, y: 68 }, { x: 35, y: 53 },
-  { x: 63, y: 37 }, { x: 44, y: 21 }
+const workoutNames = computed(()=>strengthNames(state.value))
+const completedSessions = computed(()=>(state.value.history||[]).filter(h=>h.kind==='forca').length)
+// Only an in-memory visual overlay. Never counts as a recorded workout.
+const simulatedWins=ref(0)
+const currentStage=computed(()=>questPhase(completedSessions.value,simulatedWins.value))
+const currentArea=computed(()=>questChapter(currentStage.value))
+const chapter=ref(0)
+const selectedStage=ref(1)
+const slots=[
+  {x:46,y:83},{x:66,y:68},{x:35,y:53},
+  {x:63,y:37},{x:44,y:21}
 ]
-const stages = computed(() => slots.map((point, i) => {
-  const number = chapter.value * slots.length + i + 1
-  const name = questName(workoutNames.value,number)
-  return { ...point, number, name, completed: number < currentStage.value, current: number === currentStage.value, locked: number > currentStage.value }
-}))
-const activeNode = computed(() => stages.value.find(s => s.current))
-const selected = computed(() => stages.value.find(s => s.number === selectedStage.value) || activeNode.value || stages.value[0])
-watch(currentStage, () => {
-  chapter.value = chapterOfCurrent.value
-  selectedStage.value = currentStage.value
-}, { immediate: true })
-function choose(stage) { selectedStage.value = stage.number }
-function win() {
-  if (!workoutNames.value.length) return
-  simulatedWins.value++
+const stages=computed(()=>questWindow(chapter.value,workoutNames.value,
+  completedSessions.value,simulatedWins.value).map((s,i)=>({...s,...slots[i]})))
+const selected=computed(()=>stages.value.find(s=>s.number===selectedStage.value)||stages.value.find(s=>s.current)||stages.value[0])
+const currentWeekCard=computed(()=>weeklyStrengthCards.value.find(w=>w.name===selected.value?.name))
+const canQuickMark=computed(()=>selected.value?.current&&workoutNames.value.length>0&&!currentWeekCard.value?.completed)
+const selectedExercises=computed(()=>
+  state.value.workouts.find(w=>w.name===selected.value?.name)?.exercises?.length||0
+)
+const lastCompletion=computed(()=>completedSessions.value)
+watch(currentStage,phase=>{
+  chapter.value=questChapter(phase)
+  selectedStage.value=phase
+},{immediate:true})
+watch(lastCompletion,(next,previous)=>{
+  // An actual recorded session replaces any temporary simulated victories.
+  if(next!==previous&&simulatedWins.value)simulatedWins.value=0
+})
+function chooseStage(phase){selectedStage.value=phase}
+function changeArea(delta){
+  chapter.value=Math.max(0,chapter.value+delta)
+  selectedStage.value=chapter.value*5+1
 }
-function resetDemo() { simulatedWins.value = 0; chapter.value = chapterOfCurrent.value; selectedStage.value = currentStage.value }
-function openSelected() {
-  if (selected.value?.name && workoutNames.value.includes(selected.value.name)) openWorkout(selected.value.name)
-  else view.value = 'list'
+function openSelected(){
+  if(workoutNames.value.includes(selected.value?.name))openWorkout(selected.value.name)
+  else { view.value='list'; openCreateModal() }
 }
+function markAsDone(){
+  if(!canQuickMark.value)return
+  toggleStrengthCard(selected.value.name)
+}
+function resetSimulation(){simulatedWins.value=0;chapter.value=currentArea.value;selectedStage.value=currentStage.value}
+function simulateVictory(){if(!demoMode||!workoutNames.value.length)return;simulatedWins.value++}
 </script>
 
 <template>
   <div class="pixel-home">
     <section class="pixel-title">
-      <div class="pixel-title-top"><span class="pixel-kicker">PEGA PESO, MULHER! · MODO AVENTURA</span><span class="pixel-chip">DEMO</span></div>
+      <div class="pixel-title-top">
+        <span class="pixel-kicker">PEGA PESO, MULHER! · MODO AVENTURA</span>
+        <span class="pixel-chip">{{demoMode?'DEMONSTRAÇÃO':'SUA JORNADA'}}</span>
+      </div>
       <h1>A trilha <em>da força</em></h1>
-      <p>Uma floresta, muitos desafios. Você é a protagonista da sua evolução.</p>
+      <p>Olá, {{profile.nickname||'aventureira'}}! Seus treinos são missões. Evolua no seu ritmo.</p>
       <div class="pixel-status">
-        <span>✦ FASE <strong>{{ currentStage }}</strong></span>
-        <span>◆ {{ workoutNames.length }} {{ workoutNames.length === 1 ? 'ficha cadastrada' : 'fichas cadastradas' }}</span>
+        <span>FASE <strong>{{currentStage}}</strong></span>
+        <span>{{workoutNames.length}} {{workoutNames.length===1?'ficha':'fichas'}} na ordem</span>
+        <span>{{completedSessions}} {{completedSessions===1?'missão registrada':'missões registradas'}}</span>
       </div>
     </section>
 
-    <div class="pixel-map-frame">
-      <div class="pixel-map" role="group" aria-label="Mapa de fases dos treinos">
-        <div class="pixel-map-art" aria-hidden="true"></div>
-        <div class="pixel-chapter-banner">CAPÍTULO {{ chapter + 1 }} · BOSQUE DO MOVIMENTO</div>
-        <button v-for="s in stages" :key="s.number" type="button"
-          class="pixel-stage" :class="{ 'is-cleared':s.completed, 'is-active':s.current, 'is-locked':s.locked, 'is-selected':selected?.number===s.number }"
-          :style="{ left:s.x+'%', top:s.y+'%' }" :aria-label="'Fase '+s.number+': '+s.name+(s.completed?' concluída':s.current?' atual':' futura')"
-          @click="choose(s)">
-          <span class="pixel-stage-circle">{{s.completed?'✓':s.number}}</span>
-          <span class="pixel-stage-name">{{s.name}}</span>
-        </button>
-        <div v-if="activeNode" class="pixel-avatar" :style="{ left:activeNode.x+'%', top:activeNode.y+'%' }">
-          <img src="/pixel-hero-girl.svg" alt="Menina de cabelo castanho, protagonista da aventura"/>
-        </div>
-        <span class="pixel-ghost-one" aria-hidden="true">✧</span>
-        <span class="pixel-ghost-two" aria-hidden="true">✧</span>
-        <span class="pixel-map-bottom">✦ O PESO VARIA. A EVOLUÇÃO CONTINUA. ✦</span>
-      </div>
-    </div>
+    <PixelQuestMap :stages="stages" :chapter="chapter" :selected-number="selectedStage"
+      @select="chooseStage"/>
 
     <section class="pixel-mission" aria-live="polite">
-      <div class="pixel-mission-label"><span>MISSÃO SELECIONADA</span><span>FASE {{selected?.number}}</span></div>
-      <h2>{{selected?.name || 'Crie sua primeira ficha'}}</h2>
-      <p v-if="selected?.current">Seu próximo desafio está pronto! Escolha acompanhar o treino ou simular uma vitória.</p>
-      <p v-else-if="selected?.completed">Missão concluída. A sua trilha continua!</p>
-      <p v-else>Uma fase futura da sua sequência. Continue avançando para chegar até ela.</p>
+      <div class="pixel-mission-label">
+        <span>MISSÃO SELECIONADA</span><span>FASE {{selected?.number}}</span>
+      </div>
+      <h2>{{selected?.name||'Crie sua primeira ficha'}}</h2>
+      <p v-if="!workoutNames.length">A aventura começa quando você cadastrar uma ficha de treino.</p>
+      <p v-else-if="selected?.current">Sua próxima missão! {{selectedExercises}} {{selectedExercises===1?'exercício cadastrado':'exercícios cadastrados'}}.</p>
+      <p v-else-if="selected?.completed">Missão já superada. Você pode consultar ou editar a ficha.</p>
+      <p v-else>Missão futura na sequência. Você pode consultar a ficha sem alterar seu progresso.</p>
       <div class="pixel-mission-actions">
         <button class="pixel-action-primary" type="button" @click="openSelected">
-          <AppIcon name="dumbbell" :size="17"/> {{workoutNames.length?'Ver ficha':'Criar treino'}}
+          <AppIcon name="dumbbell" :size="17"/> {{workoutNames.length?'Ver / editar ficha':'Criar treino'}}
         </button>
-        <button class="pixel-action-secondary" type="button" :disabled="!workoutNames.length" @click="win">
-          <AppIcon name="check" :size="17"/> Simular vitória
+        <button v-if="canQuickMark" class="pixel-action-secondary" type="button" @click="markAsDone">
+          <AppIcon name="check" :size="17"/> Já fiz
         </button>
+        <button v-else-if="selected?.current&&currentWeekCard?.completed" class="pixel-action-secondary"
+          type="button" disabled>Feito nesta semana</button>
       </div>
-      <p class="pixel-demo-note">A simulação é só visual: não registra peso, treino ou conclusão no Supabase.</p>
+      <p v-if="quickFeedback" class="pixel-demo-note" role="status">{{quickFeedback}}</p>
+      <p class="pixel-demo-note">
+        {{demoMode?'As alterações aqui são fictícias e desaparecem ao atualizar.':
+          'Conclua uma sessão real ou use Já fiz para registrar a missão. O mapa acompanha seu histórico.'}}
+      </p>
     </section>
 
-    <section class="pixel-nav-chapters">
-      <button type="button" :disabled="chapter===0" @click="chapter--; selectedStage=null">◀ Área anterior</button>
-      <span>Área {{chapter + 1}}</span>
-      <button type="button" @click="chapter++; selectedStage=null">Próxima área ▶</button>
+    <section class="pixel-nav-chapters" aria-label="Navegar entre áreas da aventura">
+      <button type="button" :disabled="chapter===0" @click="changeArea(-1)">◀ Anterior</button>
+      <span>Área {{chapter+1}} · fases {{chapter*5+1}}–{{chapter*5+5}}</span>
+      <button type="button" @click="changeArea(1)">Próxima ▶</button>
     </section>
+
+    <section class="pixel-hub" aria-label="Atalhos para outras telas">
+      <div class="pixel-hub-heading">
+        <strong>Seu cantinho da aventura</strong>
+        <span>Mesmos recursos, novo caminho</span>
+      </div>
+      <div class="pixel-hub-grid">
+        <button type="button" @click="view='list'"><AppIcon name="dumbbell" :size="20"/><strong>Treinos</strong><small>Criar e editar fichas</small></button>
+        <button type="button" @click="view='routine'"><AppIcon name="calendar" :size="20"/><strong>Rotina</strong><small>Ordem e cardio</small></button>
+        <button type="button" @click="view='stats'"><AppIcon name="chart" :size="20"/><strong>Evolução</strong><small>{{strengthThisMonth}} treinos no mês</small></button>
+        <button type="button" @click="view='cycle'"><AppIcon name="flower" :size="20"/><strong>Ciclo</strong><small>{{cycle.enabled&&cycleDay?'Dia '+cycleDay:'Opcional'}}</small></button>
+      </div>
+      <div class="pixel-hub-cardio">
+        <div><AppIcon name="timer" :size="19"/><span>Cardio · {{weeklyCardio}}/{{state.cardioGoal||0}} min na semana</span></div>
+        <button type="button" @click="openCardioModal">Iniciar cardio</button>
+      </div>
+      <p class="pixel-hub-hint">Você continua podendo alterar fichas, exercícios, dias, cargas e metas nas outras telas, como antes.</p>
+    </section>
+
     <div class="pixel-footer-actions">
-      <span>Olá, {{profile.nickname || 'aventureira'}}!</span>
-      <button type="button" @click="resetDemo">Reiniciar simulação</button>
+      <button type="button" @click="profile.homeMode='classic'">Ver painel clássico</button>
+      <button v-if="demoMode" type="button" @click="simulateVictory">Simular próxima fase</button>
+      <button v-else type="button" @click="view='profile'">Meu perfil</button>
+      <button v-if="simulatedWins" type="button" @click="resetSimulation">Reiniciar simulação</button>
     </div>
   </div>
 </template>
