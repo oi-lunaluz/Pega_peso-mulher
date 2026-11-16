@@ -57,7 +57,7 @@ Full body</textarea>
 </main>
 <script>
 (function(){
- const positions=[[46,86],[66,73],[36,61],[63,49],[39,37],[59,25],[47,13]];
+ const positions=[[46,83],[66,68],[35,53],[63,37],[44,21]];
  let names=['Quadríceps','Superiores A','Posterior e glúteos','Superiores B','Full body'],wins=0,chapter=0,chosen=1;
  const el=id=>document.getElementById(id);
  const active=()=>wins+1;
@@ -69,7 +69,7 @@ Full body</textarea>
    el('area').textContent='Área '+(chapter+1);el('prev').disabled=chapter===0;
    document.querySelectorAll('.pixel-stage').forEach(n=>n.remove());
    positions.forEach((p,i)=>{
-      const n=chapter*7+i+1,button=document.createElement('button');
+      const n=chapter*5+i+1,button=document.createElement('button');
       button.type='button';button.className='pixel-stage '+(n<active()?'is-cleared':n===active()?'is-active':'is-locked')+(chosen===n?' is-selected':'');
       button.style.left=p[0]+'%';button.style.top=p[1]+'%';
       button.setAttribute('aria-label','Fase '+n+': '+name(n));
@@ -79,16 +79,16 @@ Full body</textarea>
       button.onclick=()=>{chosen=n;render()};
       el('map').append(button);
    });
-   const i=active()-chapter*7-1;
-   el('avatar').style.display=i>=0&&i<7?'block':'none';
-   if(i>=0&&i<7){el('avatar').style.left=positions[i][0]+'%';el('avatar').style.top=positions[i][1]+'%'}
+   const i=active()-chapter*5-1;
+   el('avatar').style.display=i>=0&&i<5?'block':'none';
+   if(i>=0&&i<5){el('avatar').style.left=positions[i][0]+'%';el('avatar').style.top=positions[i][1]+'%'}
    el('selected-number').textContent='FASE '+chosen;el('selected-name').textContent=name(chosen);
    el('selected-description').textContent=chosen<active()?'Missão concluída!':chosen===active()?'Seu próximo desafio está pronto!':'Uma missão futura da sua sequência.';
  }
- el('win').onclick=()=>{wins++;chosen=active();chapter=Math.floor((active()-1)/7);notify('Vitória simulada! Agora é a fase '+active());render()};
+ el('win').onclick=()=>{wins++;chosen=active();chapter=Math.floor((active()-1)/5);notify('Vitória simulada! Agora é a fase '+active());render()};
  el('show').onclick=()=>notify('Esta é a prévia visual da ficha '+name(chosen)+'. No projeto Vue, este botão abre a ficha.');
- el('prev').onclick=()=>{if(chapter){chapter--;chosen=chapter*7+1;render()}};
- el('next').onclick=()=>{chapter++;chosen=chapter*7+1;render()};
+ el('prev').onclick=()=>{if(chapter){chapter--;chosen=chapter*5+1;render()}};
+ el('next').onclick=()=>{chapter++;chosen=chapter*5+1;render()};
  el('apply').onclick=()=>{const v=el('names').value.split('\n').map(s=>s.trim()).filter(Boolean);if(!v.length)return notify('Informe um treino.');names=v;wins=0;chosen=1;chapter=0;notify('Sequência aplicada. Numeração continua até onde você avançar.');render()};
  el('reset').onclick=()=>{wins=0;chosen=1;chapter=0;render();notify('Simulação reiniciada.')};
  render();
