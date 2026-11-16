@@ -28,9 +28,10 @@ const activeNode=computed(()=>props.stages.find(s=>s.current)||null)
         <span class="pixel-stage-circle">{{stage.completed?'✓':stage.number}}</span>
         <span class="pixel-stage-name">{{stage.name}}</span>
       </button>
-      <div v-if="activeNode" class="pixel-avatar"
+      <div v-if="activeNode" class="pixel-party"
         :style="{left:activeNode.x+'%',top:activeNode.y+'%'}">
-        <img src="/pixel-hero-girl.svg" alt="Menina de cabelo castanho no caminho da aventura"/>
+        <img class="pixel-party-girl" src="/pixel-hero-girl.svg" alt="Menina de cabelo castanho avançando no mapa"/>
+        <img class="pixel-party-mary" src="/pixel-caramary.svg" alt="CaraMary acompanha a aventureira"/>
       </div>
       <span class="pixel-ghost-one" aria-hidden="true">✧</span>
       <span class="pixel-ghost-two" aria-hidden="true">✧</span>
