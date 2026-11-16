@@ -5,6 +5,7 @@ import { clockLabel, validSet, totalSetVolume, maximumWeight, lastWeight } from 
 import { saveCloudSnapshot } from '../lib/cloudData.js'
 import { emptyTrainingState } from '../lib/onboarding.js'
 import { toggleQuickWorkout } from '../lib/quickWorkout.js'
+import { weekStrength, toggleWeekStrength, weekLabel } from '../lib/weeklyCards.js'
 
 /** 
  * Estado e ações da aplicação.
@@ -110,6 +111,36 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
 
 
   
+  // Interface principal: a semana é segunda-domingo; cada ficha aparece uma
+  // vez, independentemente de qual dia a pessoa a realizou.
+  const weeklyStrengthCards=computed(()=>weekStrength(state.value,calendarNow.value))
+  const currentWeekLabel=computed(()=>weekLabel(calendarNow.value))
+  const currentDayLabel=computed(()=>calendarNow.value.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}))
+  const cardioPlacement=computed({
+    get:()=>state.value.cardioPlacement==='junto'?'junto':'separado',
+    set:value=>{state.value.cardioPlacement=value==='junto'?'junto':'separado'}
+  })
+  function setWorkoutCardio(name,minutes){
+    const w=state.value.workouts.find(w=>w.name===name)
+    if(!w)return
+    const n=Number(minutes)
+    if(!Number.isFinite(n)||n<0||n>10080)return
+    w.cardioMinutes=Math.round(n)
+  }
+  function cardioForWorkout(name){
+    const w=state.value.workouts.find(w=>w.name===name)
+    if(cardioPlacement.value!=='junto')return 0
+    const n=Number(w?.cardioMinutes)
+    return Number.isFinite(n)&&n>=0&&w?.cardioMinutes!=null?n:Math.max(0,Number(state.value.cardioSessionTarget)||0)
+  }
+  function toggleStrengthCard(name){
+    quickFeedback.value=''
+    try{
+      const result=toggleWeekStrength(state.value,name,calendarNow.value)
+      state.value=result.state
+      quickFeedback.value=result.checked?'Ficha marcada como feita nesta semana.':'Marcação desfeita. Você pode fazê-la novamente.'
+    }catch(e){quickFeedback.value=e.message||'Não foi possível atualizar a ficha.'}
+  }
   const view=ref('home')
   const rotation=computed(()=>state.value.rotation.filter(name=>state.value.workouts.some(w=>w.name===name)))
   const rotationIndex=computed(()=>rotation.value.length?((state.value.rotationIndex%rotation.value.length)+rotation.value.length)%rotation.value.length:0)
@@ -195,7 +226,12 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
       modality:kind.value==='cardio'?activeCardioModality.value:null,
       seconds:elapsed.value,sets:JSON.parse(JSON.stringify(sets.value))
     })
-    if(kind.value==='forca'){sequenceAdvanced.value=completedName===nextWorkoutName.value;advanceRotation(completedName)}
+    if(kind.value==='forca'){
+      sequenceAdvanced.value=completedName===nextWorkoutName.value
+      const upcoming=weekStrength(state.value,new Date()).find(c=>!c.completed)
+      const names=rotation.value
+      if(names.length)state.value.rotationIndex=upcoming?names.indexOf(upcoming.name):0
+    }
     calendarNow.value=new Date()
     view.value='done'
   }
@@ -307,6 +343,13 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
 
   return {
     state,
+    weeklyStrengthCards,
+    currentWeekLabel,
+    currentDayLabel,
+    cardioPlacement,
+    cardioForWorkout,
+    setWorkoutCardio,
+    toggleStrengthCard,
     syncStatus,
     syncMessage,
     retryCloudSync,
