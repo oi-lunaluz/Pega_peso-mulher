@@ -11,6 +11,8 @@ import SessionScreen from './screens/SessionScreen.vue'
 import ExerciseScreen from './screens/ExerciseScreen.vue'
 import FinishedScreen from './screens/FinishedScreen.vue'
 import ProfileScreen from './screens/ProfileScreen.vue'
+import PixelSceneHeader from './screens/PixelSceneHeader.vue'
+import PixelRewardPopup from './screens/PixelRewardPopup.vue'
 import { useAppState } from './composables/useAppState.js'
 
 const props=defineProps({accountId:{type:String,required:true},accountName:{type:String,required:true},initialCloud:{type:Object,default:null},cloudRevision:{type:Number,default:0},freshSetup:{type:Boolean,default:false},demoMode:{type:Boolean,default:false}})
@@ -44,6 +46,9 @@ const {
   start,
   cycle,
   profile,
+  rewardPopup,
+  rewardIsPreview,
+  closeRewardPopup,
   newWorkout,
   createError,
   exercise,
@@ -51,7 +56,7 @@ const {
 </script>
 
 <template>
-<div class="app" :class="{'on-home':view==='home','brazil-app':view!=='home','pixel-preview-shell':demoMode}">
+<div class="app" :class="{'on-home':view==='home','brazil-app':view!=='home','pixel-preview-shell':demoMode,'pixel-app-skin':profile.homeMode!=='classic'}">
 <header :class="{'home-header':view==='home','brazil-header':view!=='home'}">
 <div><small class="brand-wordmark"><span class="brand-mark"><AppIcon name="dumbbell" :size="17"/></span> PEGA PESO, MULHER!</small><h1 v-if="view!=='home'">{{view==='edit'?'Minha sequência':view==='list'?'Meus treinos':view==='stats'?'Minha evolução':view==='cycle'?'Meu ciclo':view==='routine'?'Ordem dos treinos':view==='profile'?'Meu perfil':view==='done'?'Missão cumprida!':view==='session'?'Treino em ação':view==='exercise'?exercise:workoutName||'Seu treino'}}</h1></div>
 <button v-if="view!=='profile'" class="header-profile" title="Meu perfil" aria-label="Abrir meu perfil" @click="view='profile'"><AppIcon name="user" :size="21"/></button>
@@ -64,6 +69,7 @@ const {
 <div v-else-if="syncStatus==='saving'" class="cloud-sync-indicator" role="status">Salvando na nuvem...</div>
 <div v-if="demoMode" class="preview-badge" role="status">PRÉVIA EXPERIMENTAL · sem login e sem salvamento</div>
 <main>
+<PixelSceneHeader v-if="view!=='home'&&profile.homeMode!=='classic'" :view="view" :name="workoutName"/>
 <HomeScreen v-if="view==='home'"/>
 <RoutineScreen v-else-if="view==='routine'"/>
 <ProgressScreen v-else-if="view==='stats'"/>
@@ -74,7 +80,7 @@ const {
 <ExerciseScreen v-else-if="view==='exercise'"/>
 <FinishedScreen v-else-if="view==='done'"/>
 <ProfileScreen v-else-if="view==='profile'"/>
-</main><div v-if="cardioModal" class="modal-backdrop" @click.self="cardioModal=false">
+</main><PixelRewardPopup v-if="rewardPopup" :reward="rewardPopup" :preview="rewardIsPreview" @close="closeRewardPopup"/><div v-if="cardioModal" class="modal-backdrop" @click.self="cardioModal=false">
 <div class="modal-sheet cardio-modal" role="dialog" aria-modal="true" aria-labelledby="cardio-modal-title">
 <div class="modal-head"><div><small>SESSÃO DE CARDIO</small><h2 id="cardio-modal-title">Qual modalidade?</h2></div><button class="close-modal" type="button" aria-label="Fechar" @click="cardioModal=false"><AppIcon name="close" :size="19"/></button></div>
 <p class="muted">Escolha o tipo de cardio antes de iniciar o cronômetro.</p>
