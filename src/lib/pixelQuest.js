@@ -12,13 +12,13 @@ export function questPhase(completed, simulated=0){
   return Math.max(0,Math.floor(Number(completed)||0))+
     Math.max(0,Math.floor(Number(simulated)||0))+1
 }
-export function questChapter(phase,perChapter=7){
+export function questChapter(phase,perChapter=5){
   return Math.floor((Math.max(1,phase)-1)/perChapter)
 }
 export function questWindow(chapter,workouts,completed,simulated=0){
   const active=questPhase(completed,simulated)
-  return Array.from({length:7},(_,index)=>{
-    const number=chapter*7+index+1
+  return Array.from({length:5},(_,index)=>{
+    const number=chapter*5+index+1
     return {number,name:questName(workouts,number),current:number===active,
       completed:number<active,locked:number>active}
   })
