@@ -67,12 +67,27 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   const dueWorkouts=computed(()=>pendingIncludingToday(scheduleInputs.value))
   function toggleTrainingDay(day){
     const oldOverdue=overdueWorkouts.value
-    const next=new Set(scheduledDays.value)
+    const oldDays=scheduledDays.value
+    const next=new Set(oldDays)
     next.has(day)?next.delete(day):next.add(day)
+    const nextDays=cleanDays([...next])
+    // Remember earlier commitments when the plan changes. A revision starts
+    // tomorrow so removing a missed day today cannot retroactively erase it.
+    const revisionDate=fromDateKey(dateToday.value)
+    revisionDate.setDate(revisionDate.getDate()+1)
+    const effectiveOn=dateKey(revisionDate)
+    const history=Array.isArray(state.value.scheduleTimeline)
+      ?[...state.value.scheduleTimeline]:[
+        {effectiveOn:state.value.scheduleAnchor||dateToday.value,days:[...oldDays]}
+      ]
+    const existing=history.findIndex(h=>h.effectiveOn===effectiveOn)
+    if(existing>=0)history[existing]={effectiveOn,days:nextDays}
+    else history.push({effectiveOn,days:nextDays})
+    state.value.scheduleTimeline=history
     state.value.scheduleCarry=oldOverdue
     state.value.scheduleCompleted=0
     state.value.scheduleAnchor=dateToday.value
-    state.value.scheduledDays=cleanDays([...next])
+    state.value.scheduledDays=nextDays
   }
   const weekPlan=computed(()=>createWeekPlan({
     ...scheduleInputs.value,
@@ -298,6 +313,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   // They are not incremented by navigation, cardio or fake game victories.
   const gamification=computed(()=>calculateStreak({
     history:state.value.history,scheduledDays:state.value.scheduledDays,
+    scheduleTimeline:state.value.scheduleTimeline,
     scheduleAnchor:state.value.scheduleAnchor,now:calendarNow.value
   }))
   const rewardPopup=ref(null)
