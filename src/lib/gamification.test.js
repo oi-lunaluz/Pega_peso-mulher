@@ -30,7 +30,8 @@ test('hoje programado ainda não concluído não quebra e treino duplicado vale 
 })
 test('cardio nunca avança medalha e dias sem agenda não geram conquistas',()=>{
  const entries=[log('09/11/2026'),log('10/11/2026','cardio')]
- assert.equal(evaluate(entries).current,1)
+ assert.equal(evaluate(entries).current,0)
+ assert.equal(evaluate(entries).qualified,1)
  assert.equal(evaluate(entries,'2026-11-16',[]).unlocked.length,0)
 })
 test('15 e 30 dias planejados geram insígnias, sem repetir prêmio',()=>{
