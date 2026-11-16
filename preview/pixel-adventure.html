@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pega Peso, Mulher! — A trilha da força (prévia local)</title>
+<link rel="stylesheet" href="../src/styles/pixel-adventure.css"/>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#2b332d;padding:15px 10px;font-family:system-ui,sans-serif}
+  .pixel-home{background:#f9ecd0;max-width:510px;margin:auto;border:4px solid #2c2b28;box-shadow:6px 7px #171e19;padding:12px}
+  .pixel-map-art{background-image:url('../public/pixel-forest.svg')}
+  .pixel-avatar{width:clamp(50px,15%,90px)}
+  .pixel-mission-actions button{cursor:pointer}
+  .demo-settings{background:#fff2d2;border:2px solid #9a7853;padding:14px}
+  .demo-settings summary{font:900 11px monospace;cursor:pointer}
+  .demo-settings textarea{width:100%;min-height:84px;font:12px/1.5 monospace;margin:11px 0 4px}
+  .demo-settings button{background:#95556b;color:white;padding:10px;border:0;font:900 11px monospace}
+  .demo-toast{padding:9px;background:#d9edb7;color:#36532b;font:900 11px monospace;display:none}
+  .pixel-avatar img{width:100%}
+</style>
+</head>
+<body>
+<main class="pixel-home">
+<header class="pixel-title">
+ <div class="pixel-title-top"><span class="pixel-kicker">PEGA PESO, MULHER! · MODO AVENTURA</span><span class="pixel-chip">DEMO LOCAL</span></div>
+ <h1>A trilha <em>da força</em></h1>
+ <p>Uma floresta, muitos desafios. Você é a protagonista da sua evolução.</p>
+ <div class="pixel-status"><span>✦ FASE <strong id="current">1</strong></span><span>◆ <b id="count">5</b> treinos na sequência</span></div>
+</header>
+<div class="pixel-map-frame"><section class="pixel-map" id="map" aria-label="Mapa de fases">
+<div class="pixel-map-art"></div><div class="pixel-chapter-banner" id="chapter">CAPÍTULO 1 · BOSQUE DO MOVIMENTO</div>
+<div class="pixel-avatar" id="avatar"><img src="../public/pixel-hero-girl.svg" alt="Menina de cabelo castanho em pixel art"/></div>
+<div class="pixel-map-bottom">✦ O PESO VARIA. A EVOLUÇÃO CONTINUA. ✦</div>
+</section></div>
+<section class="pixel-mission">
+ <div class="pixel-mission-label"><span>MISSÃO SELECIONADA</span><span id="selected-number">FASE 1</span></div>
+ <h2 id="selected-name">Quadríceps</h2><p id="selected-description">Seu próximo desafio está pronto!</p>
+ <div class="pixel-mission-actions">
+  <button type="button" class="pixel-action-primary" id="show">Ver ficha</button>
+  <button type="button" class="pixel-action-secondary" id="win">✓ Simular vitória</button>
+ </div>
+ <p class="pixel-demo-note">Somente visual: não salva nenhum treino ou dado no Supabase.</p>
+</section>
+<div class="pixel-nav-chapters"><button id="prev">◀ Área anterior</button><span id="area">Área 1</span><button id="next">Próxima área ▶</button></div>
+<details class="demo-settings"><summary>⚙ PERSONALIZAR NOMES DOS TREINOS</summary>
+  <p>Um treino por linha, na ordem em que você cadastrou:</p>
+  <textarea id="names">Quadríceps
+Superiores A
+Posterior e glúteos
+Superiores B
+Full body</textarea>
+  <button id="apply">Aplicar sequência</button>
+</details>
+<div class="demo-toast" id="toast" role="status"></div>
+<div class="pixel-footer-actions"><span>Arquivo local · sem servidor</span><button id="reset">Reiniciar demo</button></div>
+</main>
+<script>
+(function(){
+ const positions=[[46,86],[66,73],[36,61],[63,49],[39,37],[59,25],[47,13]];
+ let names=['Quadríceps','Superiores A','Posterior e glúteos','Superiores B','Full body'],wins=0,chapter=0,chosen=1;
+ const el=id=>document.getElementById(id);
+ const active=()=>wins+1;
+ const name=n=>names[(n-1)%names.length];
+ function notify(message){el('toast').textContent=message;el('toast').style.display='block';}
+ function render(){
+   el('current').textContent=active();el('count').textContent=names.length;
+   el('chapter').textContent='CAPÍTULO '+(chapter+1)+' · BOSQUE DO MOVIMENTO';
+   el('area').textContent='Área '+(chapter+1);el('prev').disabled=chapter===0;
+   document.querySelectorAll('.pixel-stage').forEach(n=>n.remove());
+   positions.forEach((p,i)=>{
+      const n=chapter*7+i+1,button=document.createElement('button');
+      button.type='button';button.className='pixel-stage '+(n<active()?'is-cleared':n===active()?'is-active':'is-locked')+(chosen===n?' is-selected':'');
+      button.style.left=p[0]+'%';button.style.top=p[1]+'%';
+      button.setAttribute('aria-label','Fase '+n+': '+name(n));
+      const circle=document.createElement('span');circle.className='pixel-stage-circle';circle.textContent=n<active()?'✓':n;
+      const caption=document.createElement('span');caption.className='pixel-stage-name';caption.textContent=name(n);
+      button.append(circle,caption);
+      button.onclick=()=>{chosen=n;render()};
+      el('map').append(button);
+   });
+   const i=active()-chapter*7-1;
+   el('avatar').style.display=i>=0&&i<7?'block':'none';
+   if(i>=0&&i<7){el('avatar').style.left=positions[i][0]+'%';el('avatar').style.top=positions[i][1]+'%'}
+   el('selected-number').textContent='FASE '+chosen;el('selected-name').textContent=name(chosen);
+   el('selected-description').textContent=chosen<active()?'Missão concluída!':chosen===active()?'Seu próximo desafio está pronto!':'Uma missão futura da sua sequência.';
+ }
+ el('win').onclick=()=>{wins++;chosen=active();chapter=Math.floor((active()-1)/7);notify('Vitória simulada! Agora é a fase '+active());render()};
+ el('show').onclick=()=>notify('Esta é a prévia visual da ficha '+name(chosen)+'. No projeto Vue, este botão abre a ficha.');
+ el('prev').onclick=()=>{if(chapter){chapter--;chosen=chapter*7+1;render()}};
+ el('next').onclick=()=>{chapter++;chosen=chapter*7+1;render()};
+ el('apply').onclick=()=>{const v=el('names').value.split('\n').map(s=>s.trim()).filter(Boolean);if(!v.length)return notify('Informe um treino.');names=v;wins=0;chosen=1;chapter=0;notify('Sequência aplicada. Numeração continua até onde você avançar.');render()};
+ el('reset').onclick=()=>{wins=0;chosen=1;chapter=0;render();notify('Simulação reiniciada.')};
+ render();
+})();
+</script></body></html>
