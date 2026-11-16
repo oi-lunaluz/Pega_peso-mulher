@@ -1,0 +1,69 @@
+
+/* Semana simplificada: calendário permanece segunda a domingo em lógica,
+   enquanto as fichas, não os dias, são a unidade visual e de conclusão. */
+.week-cards-shell{display:flex;flex-direction:column;gap:13px;min-width:0}
+.week-today-tile{display:flex;align-items:center;gap:12px;background:#fff0d7;border:1px solid #f1d3a9;border-radius:18px;padding:13px 14px}
+.week-today-icon{flex:0 0 45px;width:45px;height:45px;border-radius:13px;background:#ed146d;color:#fff;display:grid;place-items:center}
+.week-today-tile>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.week-today-tile small{color:#a35729;font-size:10px;font-weight:1000;letter-spacing:.8px}
+.week-today-tile strong{font-size:16px;font-weight:950;color:#56304a;text-transform:capitalize;line-height:1.15}
+.week-today-tile div span{font-size:10px;font-weight:750;color:#94704f}
+.week-cards-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 1px 0}
+.week-cards-heading h3{color:#542941!important;font-size:19px!important;margin:2px 0 0;line-height:1.13}
+.week-edit-fichas{flex-shrink:0;background:#fff0f7!important;color:#b91964!important;font-size:11px!important;padding:9px 10px!important;border:1px solid #f2d3e1!important}
+.week-card-explain{font-size:11px;line-height:1.5;color:#816571;margin:0 1px}
+.week-card-stack{display:flex;flex-direction:column;gap:10px}
+.week-strength-card{min-width:0;display:flex;flex-direction:column;gap:12px;background:#fff;border:1px solid #f1d6e0;border-radius:18px;padding:14px}
+.week-strength-card.completed{border-color:#b5e3c6;background:#f6fff9}
+.week-card-main{display:flex;align-items:center;gap:10px;min-width:0}
+.week-card-count{flex:0 0 39px;width:39px;height:39px;border-radius:12px;display:grid;place-items:center;background:#f7dbe8;color:#be1b66;font-size:19px;font-weight:1000}
+.week-strength-card.completed .week-card-count{background:#d9f5e4;color:#1c734d}
+.week-card-title{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.week-card-title small{font-size:10px;font-weight:950;letter-spacing:.5px;color:#b44a76}
+.week-card-title strong{font-size:16px;font-weight:900;color:#503345;line-height:1.2;overflow-wrap:anywhere}
+.week-card-title span{font-size:10px;color:#8b6579;font-weight:650}
+.week-card-done{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border-radius:100%;background:#1fa16a;color:#fff}
+.week-card-controls{display:flex;align-items:center;gap:9px}
+.week-card-controls button{min-width:0;min-height:42px!important;font-size:12px!important;font-weight:900;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:10px!important}
+.week-card-open{flex:1;background:#fff0f7!important;color:#a12a61!important;border:1px solid #f3d6e3!important}
+.week-card-mark{flex:1.1;background:#e4146b!important;color:#fff!important}
+.week-card-mark.marked{background:#d9f4e4!important;color:#267550!important}
+.week-card-detail-tag{font-size:11px;color:#268457;font-weight:800;padding:8px 4px}
+.week-card-attached{display:flex;align-items:center;gap:7px;background:#e4f7ed;border:1px solid #c6e6d4;border-radius:11px;padding:9px;color:#1e734b}
+.week-card-attached span{flex:1;font-size:11px;line-height:1.3;font-weight:800}
+.week-card-attached button{font-size:11px!important;padding:8px 10px!important;background:#157c51!important;color:#fff!important;border-radius:9px!important}
+.week-card-empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:25px 16px;border:1px dashed #edc6d8;border-radius:18px;background:#fff7fb;text-align:center}
+.week-card-empty strong{font-size:16px;color:#6f3552}
+.week-card-empty p{font-size:12px;color:#947082;line-height:1.4;margin:0}
+.week-card-empty button{background:#e4146b!important;color:#fff!important}
+.week-cardio-separate{display:flex;flex-direction:column;gap:10px;padding:14px;background:#e8f9ef;border:1px solid #bce4ce;border-radius:18px}
+.week-cardio-head{display:flex;align-items:center;gap:12px}
+.week-cardio-head>svg{flex:0 0 auto;color:#218156}
+.week-cardio-head>div{display:flex;flex-direction:column;gap:3px}
+.week-cardio-head span{font-size:10px;letter-spacing:.5px;font-weight:950;color:#1e9062}
+.week-cardio-head strong{font-size:16px;color:#256544}
+.week-cardio-head small{font-size:11px;color:#53836b}
+.week-cardio-separate p{margin:0;font-size:11px;color:#4c7b64}
+.week-cardio-separate button{background:#167c50!important;color:#fff!important;width:100%;font-weight:900}
+.week-settings{border:1px solid #f2dce4;border-radius:16px;background:#fff;overflow:hidden}
+.week-settings-toggle{display:flex;gap:10px;align-items:center;width:100%;padding:14px!important;background:#fff!important;color:#82445f!important;text-align:left;font-size:13px;font-weight:900}
+.week-settings-toggle span{flex:1}
+.week-settings-toggle>svg:last-child{transition:transform .15s}
+.week-settings-toggle[aria-expanded="true"]>svg:last-child{transform:rotate(90deg)}
+.week-settings-inner{display:flex;flex-direction:column;gap:13px;padding:14px;border-top:1px solid #f2dce4}
+.week-settings-inner h3{font-size:14px!important;color:#6f3b55;margin:0}
+.week-settings-info{font-size:11px;color:#896979;line-height:1.4;margin:0}
+.week-cardio-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.week-cardio-options label{display:flex;flex-direction:column;align-items:flex-start;gap:6px;background:#fff9fc;border:1px solid #eed5df;padding:12px;border-radius:12px;margin:0;cursor:pointer;min-width:0}
+.week-cardio-options label.active{background:#eaf9f0;border-color:#8cceb0}
+.week-cardio-options input{accent-color:#ed146d}
+.week-cardio-options strong{font-size:11px;color:#674153;line-height:1.35}
+.week-cardio-options small{font-size:10px;color:#927384;line-height:1.4}
+.week-cardio-per-workout{display:flex;gap:8px;align-items:center}
+.week-cardio-per-workout label{flex:1;min-width:0;font-size:12px;color:#6a4c5c}
+.week-cardio-per-workout input{flex:0 0 70px;width:70px;min-height:38px;font-size:15px}
+.week-cardio-per-workout small{color:#6a4c5c}
+.week-legacy-days{background:#fff8ef;border-radius:11px;padding:12px}
+.week-legacy-days summary{cursor:pointer;font-size:12px;font-weight:900;color:#79553c}
+.week-legacy-days p{font-size:11px;line-height:1.4;color:#956a50}
+@media(max-width:360px){.week-today-tile{padding:10px}.week-card-controls{gap:6px}.week-strength-card{padding:11px}.week-card-controls button{font-size:11px!important;padding:8px!important}.week-cardio-options{grid-template-columns:1fr}}
