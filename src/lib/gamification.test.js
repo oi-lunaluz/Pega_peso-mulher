@@ -49,3 +49,33 @@ test('check desfeito remove progresso, sem registrar vitória fictícia',()=>{
  assert.equal(two.unlocked.length,0)
  assert.equal(two.best,2)
 })
+
+test('mudar a agenda não apaga faltas de dias planejados anteriormente',()=>{
+ const result=calculateStreak({
+   history:[log('09/11/2026'),log('10/11/2026'),log('12/11/2026'),log('13/11/2026')],
+   scheduledDays:[1,2,4,5],
+   scheduleTimeline:[
+     {effectiveOn:'2026-11-09',days:[1,2,3,4,5]},
+     {effectiveOn:'2026-11-12',days:[1,2,4,5]}
+   ],
+   scheduleAnchor:'2026-11-12',
+   now:new Date('2026-11-16T12:00:00')
+ })
+ assert.equal(result.best,2)
+ assert.equal(result.current,2)
+ assert.equal(result.unlocked.length,0)
+})
+test('editar a agenda preserva medalha já conquistada antes da alteração',()=>{
+ const records=['09','10','11','12','13'].map(d=>log(d+'/11/2026'))
+ const result=calculateStreak({
+  history:records,scheduledDays:[1,3,5],
+  scheduleTimeline:[
+   {effectiveOn:'2026-11-09',days:[1,2,3,4,5]},
+   {effectiveOn:'2026-11-17',days:[1,3,5]}
+  ],
+  scheduleAnchor:'2026-11-16',
+  now:new Date('2026-11-16T12:00:00')
+ })
+ assert.equal(result.best,5)
+ assert.equal(result.unlocked[0].threshold,5)
+})
