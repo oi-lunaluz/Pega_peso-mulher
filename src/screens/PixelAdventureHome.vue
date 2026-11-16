@@ -18,8 +18,8 @@ const completedInHistory = computed(() => (state.value.history || []).filter(h =
 const currentStage = computed(() => questPhase(completedInHistory.value,simulatedWins.value))
 const chapterOfCurrent = computed(() => questChapter(currentStage.value))
 const slots = [
-  { x: 46, y: 86 }, { x: 66, y: 73 }, { x: 36, y: 61 },
-  { x: 63, y: 49 }, { x: 39, y: 37 }, { x: 59, y: 25 }, { x: 47, y: 13 }
+  { x: 46, y: 83 }, { x: 66, y: 68 }, { x: 35, y: 53 },
+  { x: 63, y: 37 }, { x: 44, y: 21 }
 ]
 const stages = computed(() => slots.map((point, i) => {
   const number = chapter.value * slots.length + i + 1
