@@ -71,6 +71,7 @@ const form=reactive({
   bodyWeightKg:'',
   usualLoadKg:'',
   cardioMinutes:0,
+  cardioPlacement:'separado',
   goal:'',
   trackCycle:false,
   lastPeriod:'',
@@ -243,6 +244,20 @@ function next(){
               min="0" max="10080" step="1" inputmode="numeric" required/>
             <small>Some o cardio de todos os dias. Se não pretende fazer, coloque 0.</small>
           </div>
+          <fieldset v-if="Number(form.cardioMinutes)>0" class="onboard-fieldset">
+            <legend>Como você prefere organizar esse cardio?</legend>
+            <small>Isso muda onde o cardio aparece nos seus treinos. Você pode alterar depois.</small>
+            <div class="onboard-cycle-toggle">
+              <label :class="{selected:form.cardioPlacement==='junto'}">
+                <input type="radio" name="onb-cardio-placement" value="junto" v-model="form.cardioPlacement"/>
+                Junto com os treinos de força
+              </label>
+              <label :class="{selected:form.cardioPlacement==='separado'}">
+                <input type="radio" name="onb-cardio-placement" value="separado" v-model="form.cardioPlacement"/>
+                Separado, em outro horário ou dia
+              </label>
+            </div>
+          </fieldset>
         </template>
 
         <template v-else>
@@ -283,7 +298,7 @@ function next(){
             <span>{{form.days.length}} {{form.days.length===1?'dia':'dias'}} de treino por semana</span>
             <span>{{Object.values(form.workoutNames).filter(n=>String(n).trim()).length}} dias com nomes de treino</span>
             <span>{{Object.values(form.workoutExercises).reduce((sum,items)=>sum+(items?.length||0),0)}} exercícios importados do texto</span>
-            <span>{{form.cardioMinutes||0}} minutos de cardio planejados por semana</span>
+            <span>{{form.cardioMinutes||0}} minutos de cardio planejados por semana · {{form.cardioPlacement==='junto'?'junto da força':'separado'}}</span>
             <span>Nenhuma série ou treino registrado ainda</span>
           </div>
         </template>
