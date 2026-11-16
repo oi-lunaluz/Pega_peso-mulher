@@ -49,3 +49,34 @@
 .pixel-footer-actions button{background:none!important;color:#99576b!important;text-decoration:underline;font:900 11px monospace;padding:5px!important}
 @media(min-width:550px){.pixel-home{padding:0 12px 16px}.pixel-map{min-height:0}}
 @media(prefers-reduced-motion:reduce){.pixel-stage.is-active .pixel-stage-circle{animation:none}}
+
+
+/* Integração ao shell real: mesmo menu inferior e telas editáveis */
+.pixel-preview-shell .preview-badge{background:#514632;color:#fff3c5;font:850 10px/1.3 monospace;text-align:center;padding:8px 12px;letter-spacing:.2px}
+.pixel-preview-shell .bottom-nav{border-top:3px solid #a47950}
+.pixel-preview-shell .bottom-nav button.active{background:#f8e3b0;color:#68472e}
+.pixel-home .pixel-hub{padding:14px;background:#f8e9c4;border:3px solid #72523b;box-shadow:4px 4px #3d342b;display:flex;flex-direction:column;gap:11px;border-radius:0}
+.pixel-hub-heading{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:5px;color:#60432f}
+.pixel-hub-heading strong{font-size:15px;font-weight:950}
+.pixel-hub-heading span{font:750 10px monospace;color:#80634b}
+.pixel-hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.pixel-hub-grid button{min-width:0;min-height:91px;padding:11px 9px!important;display:flex;flex-direction:column;align-items:flex-start;gap:6px;background:#fff7df!important;color:#624939!important;border:2px solid #ac8e62!important;border-radius:2px!important;text-align:left}
+.pixel-hub-grid button svg{color:#a55369}
+.pixel-hub-grid button strong{font-size:13px;line-height:1.15;font-weight:950}
+.pixel-hub-grid button small{font-size:10px;line-height:1.35;color:#7b6656}
+.pixel-hub-cardio{display:flex;gap:7px;align-items:center;justify-content:space-between;padding:11px;background:#dcebc5;border:2px solid #a1bd84}
+.pixel-hub-cardio>div{display:flex;gap:7px;align-items:center;min-width:0}
+.pixel-hub-cardio>div span{font:800 10px/1.35 monospace;color:#486a3d}
+.pixel-hub-cardio>div svg{color:#476b42;flex-shrink:0}
+.pixel-hub-cardio button{padding:10px 8px!important;background:#547c50!important;color:#fff!important;flex-shrink:0;border-radius:1px!important;font:850 11px monospace}
+.pixel-hub-hint{margin:0;font:700 10px/1.5 monospace;color:#8a694a}
+.pixel-home .pixel-footer-actions{flex-wrap:wrap;justify-content:center;gap:7px;padding:5px 0}
+.pixel-home .pixel-footer-actions button{background:#f7e6bd!important;border:1px solid #a9875b!important;padding:9px 11px!important;color:#75475b!important;font:850 10px monospace;text-decoration:none;border-radius:2px!important}
+.home-mode-return{width:100%;margin-bottom:13px;background:#f1dfb2!important;color:#75513d!important;border:2px solid #b99970!important;font:850 12px/1.4 monospace!important}
+.profile-home-preference{padding:14px;background:#fff3df;border:1px solid #e5cda9;border-radius:15px}
+.profile-home-preference strong{font-size:14px;color:#6a4652}
+.profile-home-preference p{font-size:12px;color:#846d70;line-height:1.5}
+.profile-home-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.profile-home-options button{font-size:11px!important;padding:10px!important;background:#f5e4dc!important;border:1px solid #dab7ac!important;color:#76535b!important}
+.profile-home-options button.active{background:#d95387!important;color:#fff!important}
+@media(max-width:350px){.pixel-hub-grid button{min-height:88px}.pixel-hub-cardio{flex-wrap:wrap}.pixel-hub-cardio button{width:100%}}
