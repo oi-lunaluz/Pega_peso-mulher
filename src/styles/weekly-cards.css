@@ -67,3 +67,7 @@
 .week-legacy-days summary{cursor:pointer;font-size:12px;font-weight:900;color:#79553c}
 .week-legacy-days p{font-size:11px;line-height:1.4;color:#956a50}
 @media(max-width:360px){.week-today-tile{padding:10px}.week-card-controls{gap:6px}.week-strength-card{padding:11px}.week-card-controls button{font-size:11px!important;padding:8px!important}.week-cardio-options{grid-template-columns:1fr}}
+
+/* A tela inicial tem só um painel de cardio, apresentado pelas fichas. */
+.home-bottom-grid.week-home-tail{display:block}
+.week-home-tail .home-cycle{display:flex;width:100%;height:auto;min-height:130px}
