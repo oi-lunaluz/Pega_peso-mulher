@@ -15,26 +15,35 @@ const todayKey=now=>dateKey(new Date(now.getFullYear(),now.getMonth(),now.getDat
  * Dias de descanso não quebram a sequência. Só há quebra quando um dia
  * PROGRAMADO termina sem um registro de musculação na data correspondente.
  * Registros repetidos no mesmo dia contam uma vez. Cardio não conta.
- * Para históricos anteriores a mudanças na agenda, utiliza a agenda atual:
- * a interface informa esta limitação para não fingir precisão histórica.
+ * As revisões de agenda preservam o planejamento anterior. Em dados legados
+ * sem revisões, utiliza a agenda atual como aproximação histórica.
  */
-export function calculateStreak({history=[],scheduledDays=[],scheduleAnchor,now=new Date()}={}){
+export function calculateStreak({history=[],scheduledDays=[],scheduleTimeline=[],scheduleAnchor,now=new Date()}={}){
  const days=new Set(cleanDays(scheduledDays))
+ const revisions=(Array.isArray(scheduleTimeline)?scheduleTimeline:[])
+   .filter(r=>fromDateKey(r?.effectiveOn)&&Array.isArray(r.days))
+   .sort((a,b)=>a.effectiveOn.localeCompare(b.effectiveOn))
+ const hasPlan=days.size>0||revisions.some(r=>cleanDays(r.days).length>0)
  const end=todayKey(now)
  const entries=[...new Set((Array.isArray(history)?history:[])
   .filter(h=>h?.kind==='forca').map(h=>fromBrazilDate(h.date))
   .filter(Boolean).map(dateKey))].sort()
  const valid=entries.filter(d=>d<=end)
- if(!days.size)return {current:0,best:0,total:valid.length,qualified:0,unlocked:[],next:REWARDS[0],remaining:5,hasSchedule:false}
+ if(!hasPlan)return {current:0,best:0,total:valid.length,qualified:0,unlocked:[],next:REWARDS[0],remaining:5,hasSchedule:false}
  const anchor=fromDateKey(scheduleAnchor)||fromDateKey(valid[0])||fromDateKey(end)
  const first=valid.length&&fromDateKey(valid[0])<anchor?fromDateKey(valid[0]):anchor
  const counted=new Set(valid)
  let run=0,best=0,qualified=0
+ let revision=0
+ let activeDays=new Set(revisions.length?cleanDays(revisions[0].days):[...days])
  let count=0
  // The start date is included. Clamp very old installations to avoid excessive iteration.
  for(let day=new Date(first);dateKey(day)<=end&&count<36525;day=addDays(day,1),count++){
    const key=dateKey(day)
-   if(!days.has(day.getDay()))continue
+   while(revision+1<revisions.length&&revisions[revision+1].effectiveOn<=key)revision++
+   if(revisions.length&&revisions[revision].effectiveOn<=key)
+     activeDays=new Set(cleanDays(revisions[revision].days))
+   if(!activeDays.has(day.getDay()))continue
    if(counted.has(key)){
      run++
      qualified++
