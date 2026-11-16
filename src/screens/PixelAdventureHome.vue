@@ -1,6 +1,7 @@
 <script setup>
 import { computed, inject, ref, watch } from 'vue'
 import AppIcon from '../AppIcon.vue'
+import { questName,questPhase,questChapter } from '../lib/pixelQuest.js'
 
 const { state, view, openWorkout, profile } = inject('pegaPesoApp')
 const simulatedWins = ref(0)
@@ -14,20 +15,19 @@ const workoutNames = computed(() => {
   return [...new Set([...(state.value.rotation || []).filter(n => known.includes(n)), ...known])]
 })
 const completedInHistory = computed(() => (state.value.history || []).filter(h => h.kind === 'forca').length)
-const currentStage = computed(() => completedInHistory.value + simulatedWins.value + 1)
-const chapterOfCurrent = computed(() => Math.floor((currentStage.value - 1) / 7))
+const currentStage = computed(() => questPhase(completedInHistory.value,simulatedWins.value))
+const chapterOfCurrent = computed(() => questChapter(currentStage.value))
 const slots = [
   { x: 46, y: 86 }, { x: 66, y: 73 }, { x: 36, y: 61 },
   { x: 63, y: 49 }, { x: 39, y: 37 }, { x: 59, y: 25 }, { x: 47, y: 13 }
 ]
 const stages = computed(() => slots.map((point, i) => {
   const number = chapter.value * slots.length + i + 1
-  const name = workoutNames.value.length ? workoutNames.value[(number - 1) % workoutNames.value.length] : 'Crie uma ficha'
+  const name = questName(workoutNames.value,number)
   return { ...point, number, name, completed: number < currentStage.value, current: number === currentStage.value, locked: number > currentStage.value }
 }))
 const activeNode = computed(() => stages.value.find(s => s.current))
 const selected = computed(() => stages.value.find(s => s.number === selectedStage.value) || activeNode.value || stages.value[0])
-const percent = computed(() => workoutNames.value.length ? (completedInHistory.value + simulatedWins.value) % workoutNames.value.length : 0)
 watch(currentStage, () => {
   chapter.value = chapterOfCurrent.value
   selectedStage.value = currentStage.value
