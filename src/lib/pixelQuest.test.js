@@ -15,10 +15,10 @@ test('sequência cadastrada sempre permanece na ordem independente da quantidade
 test('capítulos têm fases contínuas e o protótipo não altera dados originais',()=>{
  const names=['A','B']
  const before=[...names]
- assert.equal(questChapter(7),0)
- assert.equal(questChapter(8),1)
- const chapter=questWindow(1,names,7)
- assert.deepEqual(chapter.map(s=>s.number),[8,9,10,11,12,13,14])
+ assert.equal(questChapter(5),0)
+ assert.equal(questChapter(6),1)
+ const chapter=questWindow(1,names,5)
+ assert.deepEqual(chapter.map(s=>s.number),[6,7,8,9,10])
  assert.equal(chapter[0].current,true)
  assert.deepEqual(names,before)
 })
