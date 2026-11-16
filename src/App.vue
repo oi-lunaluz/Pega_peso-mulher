@@ -6,7 +6,10 @@ import OnboardingScreen from './screens/OnboardingScreen.vue'
 import { supabase } from './lib/supabase.js'
 import { loadCloudSnapshot, saveCloudSnapshot, legacyDataForEmail, unscopedLegacyData } from './lib/cloudData.js'
 import { isUnconfiguredSnapshot } from './lib/onboarding.js'
+import { createAdventureDemoSnapshot } from './lib/adventureDemo.js'
 
+const previewDemo= new URLSearchParams(window.location.search).get('demo')==='1'
+const demoSnapshot=previewDemo?createAdventureDemoSnapshot():null
 const account=ref(null)
 const cloud=ref(null)
 const revision=ref(0)
@@ -136,12 +139,13 @@ async function start(){
   })
   listener=sub.subscription
 }
-onMounted(start)
+onMounted(()=>{if(!previewDemo)void start()})
 onUnmounted(()=>{++requestVersion;listener?.unsubscribe()})
 </script>
 
 <template>
-  <div v-if="loading" class="auth-loading" role="status">Carregando seus treinos...</div>
+  <AppWorkspace v-if="previewDemo" account-id="pixel-adventure-demo" account-name="Aventureira" :initial-cloud="demoSnapshot" :demo-mode="true"/>
+  <div v-else-if="loading" class="auth-loading" role="status">Carregando seus treinos...</div>
   <div v-else-if="loadError" class="auth-loading">
     <strong>Não foi possível acessar os dados da nuvem.</strong>
     <p>{{loadError}}</p>
