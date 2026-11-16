@@ -15,7 +15,7 @@ export function emptyTrainingState(now=new Date()){
     workouts:[],rotation:[],rotationIndex:0,history:[],
     scheduledDays:[],scheduleAnchor:dateKey(now),
     scheduleCompleted:0,scheduleCarry:0,
-    cardioGoal:0,cardioSessionTarget:0
+    cardioGoal:0,cardioSessionTarget:0,cardioPlacement:'separado'
   }
 }
 
@@ -95,7 +95,8 @@ export function createOnboardingPayload(values,now=new Date()){
     state:{
       ...emptyTrainingState(now),
       routine,workouts,rotation:unique,scheduledDays:selected,
-      cardioGoal:cardio,cardioSessionTarget:sessionTarget
+      cardioGoal:cardio,cardioSessionTarget:sessionTarget,
+      cardioPlacement:values.cardioPlacement==='junto'?'junto':'separado'
     },
     profile:{
       nickname:String(values.nickname||'').trim().slice(0,60),
