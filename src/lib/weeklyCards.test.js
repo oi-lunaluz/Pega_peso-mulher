@@ -35,3 +35,23 @@ test('aceita Proxy reativo vindo de Vue',()=>{
  const s=toggleWeekStrength(new Proxy(base(),{}),'Glúteos',thu)
  assert.equal(s.checked,true)
 })
+
+test('check legado feito por dia pode ser desfeito na ficha semanal sem perder treinos',()=>{
+ const s=base()
+ s.history=[{kind:'forca',name:'Inferiores',date:'09/11/2026',quick:true,seconds:0,sets:{}}]
+ s.scheduleCompleted=1
+ s.scheduleAnchor='2026-11-09'
+ s.quickAnchorBefore='2026-11-12'
+ assert.equal(weekStrength(s,thu)[0].quick,true)
+ const result=toggleWeekStrength(s,'Inferiores',thu)
+ assert.equal(result.checked,false)
+ assert.equal(result.state.history.length,0)
+ assert.equal(result.state.scheduleCompleted,0)
+ assert.equal(result.state.scheduleAnchor,'2026-11-12')
+})
+test('cardio histórico não é alterado pelos checks da musculação',()=>{
+ const s=base()
+ s.history=[{kind:'cardio',name:'Cardio',date:'10/11/2026',modality:'Bike',seconds:1800,sets:{}}]
+ const result=toggleWeekStrength(s,'Inferiores',thu)
+ assert.equal(result.state.history.filter(x=>x.kind==='cardio').length,1)
+})
