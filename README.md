@@ -133,3 +133,11 @@ Na etapa 1 do formulário existe **Colar treino do personal**. Cole um texto com
 ### Check rápido de treino realizado (sem acompanhamento)
 
 Na **Rotina > Esta semana**, o botão **Fiz** marca um dia de musculação de hoje ou do passado como realizado. Na **Tela inicial > Sua semana**, selecionar um dia de treino exibe **Já fiz esse treino ✓**. Isso cria uma entrada no histórico com `quick: true`, sem inventar séries, cargas ou duração. A sequência avança, a semana calcula pendências corretamente e o calendário mostra o check. É possível desfazer um check; quando já há uma sessão detalhada posterior, a alteração retroativa é bloqueada para preservar a sequência. Treinos detalhados existentes não podem receber marcação duplicada pelo botão rápido. A gravação segue a sincronização já protegida no Supabase.
+
+### Lista de treinos por semana (novembro de 2026)
+
+A interface principal agora mostra **o dia de hoje e o intervalo da semana (segunda a domingo)**. A frente do calendário é a **lista das fichas cadastradas** (Treino 1, Treino 2, Treino 3…), sem vincular sua conclusão a dias fixos. Cada ficha pode ser aberta para ver os exercícios ou receber um check **Já fiz** sem séries/pesos/cronômetro. Os checks são identificados por nome de ficha e semana, e voltam a ficar pendentes na segunda-feira seguinte. Treinos detalhados já realizados na semana também contam como concluídos; não podem ser apagados pelo check livre.
+
+O cardio possui preferência **junto** ou **separado**. Quando junto, aparece na mesma ficha de musculação, com minutos de referência e botão de iniciar a sessão. Quando separado, aparece um bloco de cardio **abaixo das fichas** para fazer em outro horário. A escolha é feita na configuração inicial e pode ser alterada na tela **Rotina → Configurar dias e cardio**; nessa tela também é possível definir os minutos por ficha. Sessões de cardio continuam registradas independentemente, sem completar automaticamente uma sessão de força.
+
+Os dados antigos de treinos, histórico, ciclo e configurações são mantidos. Checks anteriores feitos pelo calendário são reconhecidos pelas fichas por nome. Não há alteração de tabelas Supabase nem de preço.
