@@ -1,6 +1,7 @@
 <script setup>
 import { inject } from 'vue'
 import AppIcon from '../AppIcon.vue'
+import PixelRewardShelf from './PixelRewardShelf.vue'
 
 const {
   workout,
@@ -25,6 +26,7 @@ const {
 
 <template>
 <div class="brazil-banner pink-banner"><div><span class="kicker"><AppIcon name="chart" :size="17"/> O PESO VARIA...</span><h2>Sua evolução<br/>continua!</h2><p>Cada repetição conta. <AppIcon name="heart" :size="17"/></p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
+<PixelRewardShelf/>
 <div class="stats-workout-filter">
 <label class="brazil-label" for="filter-workout">Filtrar por treino</label>
 <select id="filter-workout" class="brazil-select" v-model="selectedWorkoutStat" @change="onWorkoutStatChange">
