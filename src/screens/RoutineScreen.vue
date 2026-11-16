@@ -1,76 +1,106 @@
 <script setup>
-import { inject } from 'vue'
+import {inject,ref} from 'vue'
 import AppIcon from '../AppIcon.vue'
+import WeeklyWorkoutCards from './WeeklyWorkoutCards.vue'
 
-const {
-  state,
-  scheduledDays,
-  overdueWorkouts,
-  toggleTrainingDay,
-  weekPlan,
-  quickFeedback,
-  toggleDayDone,
-  canQuickCheck,
-  view,
-  rotation,
-  rotationIndex,
-  nextWorkoutName,
-  addRotationName,
-  availableForRotation,
-  moveRotation,
-  removeRotation,
-  addRotation,
-  openCardioModal,
-  weeklyCardio,
-} = inject('pegaPesoApp')
+const {state,cardioPlacement,scheduledDays,toggleTrainingDay,rotation,
+  rotationIndex,moveRotation,removeRotation,addRotationName,
+  availableForRotation,addRotation,view,weeklyCardio,setWorkoutCardio}=inject('pegaPesoApp')
+const showSettings=ref(false)
+const showOrder=ref(false)
 </script>
 
 <template>
-<div class="brazil-banner yellow"><div><span class="kicker">SEU PLANEJAMENTO</span><h2>Semana flexível!</h2><p>Os dias continuam. Os treinos se reorganizam.</p></div><img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/></div>
-<div v-if="overdueWorkouts" class="schedule-overdue" role="status"><strong>{{overdueWorkouts}} {{overdueWorkouts===1?'treino pendente':'treinos pendentes'}}</strong><p>Você perdeu um dia planejado. Vamos fazer {{nextWorkoutName}} no próximo dia de treino, sem pular sua sequência.</p></div>
-<div class="rotation-intro"><strong>Como funciona</strong><p>Escolha os dias em que costuma treinar. Se faltar, o treino não é perdido: ele passa para o próximo dia disponível e os demais seguem a ordem.</p></div>
-<div class="brazil-row-title"><h3>Meus dias de treino</h3><span>Toque para marcar ou desmarcar</span></div>
-<div class="schedule-day-picker">
-<button v-for="d in [{day:1,label:'Seg'},{day:2,label:'Ter'},{day:3,label:'Qua'},{day:4,label:'Qui'},{day:5,label:'Sex'},{day:6,label:'Sáb'},{day:0,label:'Dom'}]"
-:key="d.day" :aria-pressed="scheduledDays.includes(d.day)" :class="{selected:scheduledDays.includes(d.day)}" @click="toggleTrainingDay(d.day)">{{d.label}}</button>
-</div>
-<div class="brazil-row-title"><h3>Esta semana</h3><span>Reorganizada automaticamente</span></div>
-<div class="quick-workout-tip"><AppIcon name="check" :size="17"/> Já treinou e não anotou pesos? Marque o dia como feito aqui. O próximo treino será ajustado automaticamente.</div>
-<p v-if="quickFeedback" class="quick-workout-feedback" role="status">{{quickFeedback}}</p>
-<div class="brazil-list">
-  <div v-for="d in weekPlan" :key="d.date" class="brazil-list-row schedule-day-row" :class="{isToday:d.isToday,isLate:d.status==='pendente'}">
-    <span class="schedule-date">{{d.short}}</span>
-    <span class="row-info"><strong>{{d.scheduled?(d.name|| (d.past?'Treino programado':nextWorkoutName)):'Descanso / cardio livre'}}</strong><small>{{d.full}} · {{d.status==='pendente'?'Faltou — treino mantido na sequência':d.status==='concluído'?'Treino registrado':d.status==='reorganizado'?'Treino já reorganizado':d.status==='hoje'?'Treino previsto para hoje':d.status==='previsto'?'Próximo na ordem':'Dia livre'}}</small></span>
-    <button v-if="canQuickCheck(d)" type="button" class="quick-workout-check"
-      :class="{checked:d.recorded}" :aria-pressed="d.recorded"
-      :aria-label="d.recorded?'Desfazer check de '+d.full:'Marcar treino de '+d.full+' como feito'"
-      @click="toggleDayDone(d.date)">
-      <AppIcon name="check" :size="18"/>
-      <span>{{d.recorded?'Feito':'Fiz'}}</span>
-    </button>
-    <AppIcon v-else-if="d.recorded" name="check" :size="19"/>
-    <span v-else-if="d.status==='pendente'" class="schedule-late-tag">Pendente</span>
-  </div>
-</div>
-<div class="brazil-row-title"><h3>Ordem das fichas</h3><span>Arraste usando as setas</span></div>
-<div class="brazil-list">
-  <div v-for="(name,i) in rotation" :key="name" class="brazil-list-row rotation-list-row" :class="{'is-next':i===rotationIndex}">
-    <span class="rotation-order-number">{{i+1}}</span>
-    <span class="row-info"><strong>{{name}}</strong><small>{{i===rotationIndex?'Próximo a fazer':'Treino '+(i+1)}}</small></span>
-    <div class="rotation-row-controls">
-      <button :disabled="i===0" :aria-label="'Mover '+name+' para cima'" @click="moveRotation(i,-1)">↑</button>
-      <button :disabled="i===rotation.length-1" :aria-label="'Mover '+name+' para baixo'" @click="moveRotation(i,1)">↓</button>
-      <button class="rotation-remove" :aria-label="'Retirar '+name+' da sequência'" @click="removeRotation(i)">×</button>
+  <div class="brazil-banner yellow">
+    <div>
+      <span class="kicker">SUA ROTINA</span>
+      <h2>Uma semana, seus treinos!</h2>
+      <p>Seu plano fica organizado de segunda a domingo, mas você escolhe quando fazer cada ficha.</p>
     </div>
+    <img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/>
   </div>
-</div>
-<div v-if="!rotation.length" class="brazil-empty">Sua sequência está vazia. Adicione uma ficha abaixo.</div>
-<div class="rotation-add"><label for="rotation-add-select">Adicionar treino à sequência</label><div><select id="rotation-add-select" v-model="addRotationName"><option value="">Selecione uma ficha</option><option v-for="w in availableForRotation" :value="w.name" :key="w.name">{{w.name}}</option></select><button :disabled="!addRotationName" @click="addRotation"><AppIcon name="plus" :size="17"/></button></div></div>
-<button class="outline brazil-outline" @click="view='list'">Gerenciar minhas fichas</button>
-<div class="cardio-goal-panel"><h3>Cardio independente</h3><p>Você pode fazer cardio em qualquer dia; isso não muda a ordem dos treinos de força.</p>
-  <div class="cardio-goal-fields"><div><label for="cardio-week-goal">Meta semanal (min)</label><input id="cardio-week-goal" type="number" min="0" v-model.number="state.cardioGoal"/></div>
-  <div><label for="cardio-session-goal">Referência por sessão (min)</label><input id="cardio-session-goal" type="number" min="0" v-model.number="state.cardioSessionTarget"/></div></div>
-  <div class="rotation-cardio-progress"><span>{{weeklyCardio}} de {{state.cardioGoal}} min realizados nesta semana</span><span class="progress-track"><i :style="{width:Math.min(100,weeklyCardio/Math.max(1,state.cardioGoal)*100)+'%'}"></i></span></div>
-  <button class="brazil-primary" @click="openCardioModal">Iniciar cardio</button>
-</div>
+  <WeeklyWorkoutCards/>
+  <section class="week-settings">
+    <button type="button" class="week-settings-toggle" :aria-expanded="showSettings" @click="showSettings=!showSettings">
+      <AppIcon name="pencil" :size="18"/>
+      <span>Configurar dias e cardio</span>
+      <AppIcon name="chevron" :size="18"/>
+    </button>
+    <div v-if="showSettings" class="week-settings-inner">
+      <h3>Como prefere fazer o cardio?</h3>
+      <div class="week-cardio-options">
+        <label :class="{active:cardioPlacement==='junto'}">
+          <input v-model="cardioPlacement" type="radio" value="junto" name="cardio-placement"/>
+          <strong>Junto da musculação</strong>
+          <small>Mostra o cardio dentro de cada ficha de força.</small>
+        </label>
+        <label :class="{active:cardioPlacement==='separado'}">
+          <input v-model="cardioPlacement" type="radio" value="separado" name="cardio-placement"/>
+          <strong>Separado</strong>
+          <small>O treino de cardio fica embaixo das fichas, para outro horário.</small>
+        </label>
+      </div>
+      <template v-if="cardioPlacement==='junto'">
+        <h3>Cardio em cada ficha</h3>
+        <div v-for="w in state.workouts" :key="w.name" class="week-cardio-per-workout">
+          <label :for="'cardio-for-'+w.name">{{w.name}}</label>
+          <input :id="'cardio-for-'+w.name" type="number" inputmode="numeric" min="0" max="10080"
+            :value="w.cardioMinutes??state.cardioSessionTarget"
+            @change="setWorkoutCardio(w.name,$event.target.value)"/>
+          <small>min</small>
+        </div>
+      </template>
+      <div class="cardio-goal-panel">
+        <h3>Meta semanal de cardio</h3>
+        <p>É a soma total de todas as sessões. Cardio e musculação têm registros independentes.</p>
+        <div class="cardio-goal-fields">
+          <div><label for="cardio-week-goal">Total por semana (min)</label>
+            <input id="cardio-week-goal" type="number" min="0" max="10080" v-model.number="state.cardioGoal"/></div>
+          <div><label for="cardio-session-goal">Referência por sessão (min)</label>
+            <input id="cardio-session-goal" type="number" min="0" max="1440" v-model.number="state.cardioSessionTarget"/></div>
+        </div>
+        <div class="rotation-cardio-progress">
+          <span>{{weeklyCardio}} de {{state.cardioGoal}} min realizados nesta semana</span>
+          <span class="progress-track"><i :style="{width:Math.min(100,weeklyCardio/Math.max(1,state.cardioGoal)*100)+'%'}"></i></span>
+        </div>
+      </div>
+      <details class="week-legacy-days">
+        <summary>Dias em que pretendo treinar</summary>
+        <p>Esses dias são preferências de agenda. Não são botões de concluir exercícios.</p>
+        <div class="schedule-day-picker">
+          <button v-for="d in [{day:1,label:'Seg'},{day:2,label:'Ter'},{day:3,label:'Qua'},{day:4,label:'Qui'},{day:5,label:'Sex'},{day:6,label:'Sáb'},{day:0,label:'Dom'}]"
+            :key="d.day" type="button" :aria-pressed="scheduledDays.includes(d.day)"
+            :class="{selected:scheduledDays.includes(d.day)}" @click="toggleTrainingDay(d.day)">{{d.label}}</button>
+        </div>
+      </details>
+    </div>
+  </section>
+  <section class="week-settings">
+    <button type="button" class="week-settings-toggle" :aria-expanded="showOrder" @click="showOrder=!showOrder">
+      <AppIcon name="dumbbell" :size="18"/>
+      <span>Organizar a ordem das fichas</span>
+      <AppIcon name="chevron" :size="18"/>
+    </button>
+    <div v-if="showOrder" class="week-settings-inner">
+      <p class="week-settings-info">A ordem aparece na lista. Você pode concluir qualquer ficha, sem precisar seguir o dia fixo.</p>
+      <div class="brazil-list">
+        <div v-for="(name,i) in rotation" :key="name" class="brazil-list-row rotation-list-row" :class="{'is-next':i===rotationIndex}">
+          <span class="rotation-order-number">{{i+1}}</span>
+          <span class="row-info"><strong>{{name}}</strong></span>
+          <div class="rotation-row-controls">
+            <button type="button" :disabled="i===0" :aria-label="'Mover '+name+' para cima'" @click="moveRotation(i,-1)">↑</button>
+            <button type="button" :disabled="i===rotation.length-1" :aria-label="'Mover '+name+' para baixo'" @click="moveRotation(i,1)">↓</button>
+            <button type="button" class="rotation-remove" :aria-label="'Tirar '+name+' da sequência'" @click="removeRotation(i)">×</button>
+          </div>
+        </div>
+      </div>
+      <div class="rotation-add"><label for="rotation-add-select">Adicionar ficha à sequência</label>
+        <div><select id="rotation-add-select" v-model="addRotationName">
+          <option value="">Selecione uma ficha</option>
+          <option v-for="w in availableForRotation" :key="w.name" :value="w.name">{{w.name}}</option>
+        </select><button type="button" :disabled="!addRotationName" @click="addRotation"><AppIcon name="plus" :size="17"/></button></div>
+      </div>
+      <button type="button" class="outline brazil-outline" @click="view='list'">Gerenciar fichas e exercícios</button>
+    </div>
+  </section>
 </template>
