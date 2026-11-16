@@ -12,13 +12,13 @@ import { weekStrength, toggleWeekStrength, weekLabel } from '../lib/weeklyCards.
  * Mantém os dados anteriores (localStorage) e centraliza as regras do MVP.
  * A matemática do calendário vive em lib/planner.js e tem testes de regressão.
  */
-export function useAppState({accountId,accountName,initialCloud=null,cloudRevision=0}={}) {
+export function useAppState({accountId,accountName,initialCloud=null,cloudRevision=0,demoMode=false}={}) {
   if(!accountId)throw new Error('Cadastro local obrigatório para iniciar o aplicativo.')
   const scopedKey=(base)=>`${base}-${accountId}`
   const key=scopedKey('pega-peso-mulher-mvp-v1')
   const initial=emptyTrainingState()
-  const state=ref(normalizeTrainingState(initialCloud?.state||readJson(key,initial),initial))
-  watch(state,v=>writeJson(key,v),{deep:true})
+  const state=ref(normalizeTrainingState(initialCloud?.state||(demoMode?initial:readJson(key,initial)),initial))
+  if(!demoMode)watch(state,v=>writeJson(key,v),{deep:true})
   // Migração: preserva fichas, histórico e preferências anteriores sem manter dias fixos.
   const workoutNames=()=>state.value.workouts.map(w=>w.name)
   if(!Array.isArray(state.value.rotation)){
@@ -253,10 +253,10 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   const cycleKey=scopedKey('pega-peso-mulher-cycle-v1')
   const cycle=ref({
     enabled:false,start:'',length:28,period:5,notes:[],
-    ...(initialCloud?.cycle||readJson(cycleKey,{}))
+    ...(initialCloud?.cycle||(demoMode?{}:readJson(cycleKey,{})))
   })
   if(!Array.isArray(cycle.value.notes))cycle.value.notes=[]
-  watch(cycle,v=>writeJson(cycleKey,v),{deep:true})
+  if(!demoMode)watch(cycle,v=>writeJson(cycleKey,v),{deep:true})
   const noteDate=ref(dateKey(new Date())),noteEnergy=ref('normal'),noteSymptoms=ref(''),noteDifficulty=ref('normal')
   const cycleDay=computed(()=>{if(!cycle.value.start)return null;const diff=Math.floor((new Date().setHours(12,0,0,0)-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);return ((diff%Math.max(1,cycle.value.length))+Math.max(1,cycle.value.length))%Math.max(1,cycle.value.length)+1})
   function addNote(){cycle.value.notes.unshift({date:noteDate.value,energy:noteEnergy.value,symptoms:noteSymptoms.value,difficulty:noteDifficulty.value});noteSymptoms.value=''}
@@ -270,8 +270,8 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   const chartWeeks=computed(()=>{const now=new Date();return Array.from({length:4},(_,i)=>{const newest=3-i;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()-newest*7,23,59,59);const start=new Date(end.getFullYear(),end.getMonth(),end.getDate()-6);const value=statsSessions.value.reduce((total,h)=>{const parts=h.date?.split('/');if(!parts||parts.length!==3)return total;const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]));return d>=start&&d<=end?total+totalSetVolume(h.sets):total},0);return {label:'S'+(i+1),value}})})
   const chartMax=computed(()=>Math.max(1,...chartWeeks.value.map(x=>x.value)))
   const profileKey=scopedKey('pega-peso-mulher-profile-v1')
-  const profile=ref({nickname:accountName||'',goal:'Ganhar força e massa muscular',...(initialCloud?.profile||readJson(profileKey,{}))})
-  watch(profile,value=>writeJson(profileKey,value),{deep:true})
+  const profile=ref({nickname:accountName||'',goal:'Ganhar força e massa muscular',...(initialCloud?.profile||(demoMode?{}:readJson(profileKey,{})))})
+  if(!demoMode)watch(profile,value=>writeJson(profileKey,value),{deep:true})
   
   const strengthThisMonth=computed(()=>{const prefix=new Date().toLocaleDateString('pt-BR').slice(3);return state.value.history.filter(h=>h.kind==='forca'&&h.date?.slice(3)===prefix).length})
   const personalRecords=computed(()=>new Set(state.value.history.flatMap(h=>Object.keys(h.sets||{}).filter(e=>(h.sets[e]||[]).length>0))).size)
@@ -315,6 +315,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     }
   }
   async function ensureCloudSaved(){
+    if(demoMode)return true
     if(syncTimer){clearTimeout(syncTimer);syncTimer=null}
     if(activeSave)await activeSave.catch(()=>{})
     if(dirty&&!halted)await flushCloud()
@@ -334,8 +335,8 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     halted=false
     scheduleCloud()
   }
-  watch([state,cycle,profile],scheduleCloud,{deep:true})
-  onMounted(()=>{if(cloudVersion===0)scheduleCloud()})
+  if(!demoMode)watch([state,cycle,profile],scheduleCloud,{deep:true})
+  onMounted(()=>{if(!demoMode&&cloudVersion===0)scheduleCloud()})
   onUnmounted(()=>{
     destroyed=true
     if(syncTimer)clearTimeout(syncTimer)
@@ -343,6 +344,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
 
   return {
     state,
+    demoMode,
     weeklyStrengthCards,
     currentWeekLabel,
     currentDayLabel,
