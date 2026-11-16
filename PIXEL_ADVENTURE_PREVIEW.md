@@ -8,7 +8,7 @@ Esta branch foi criada **só para testar a gamificação da tela inicial**. Não
 - Uma fase para cada ficha, seguindo a ordem definida no cadastro;
 - Fases **numeradas continuamente**. Com cinco fichas, por exemplo, as fases 1–5 usam os cinco treinos; a **fase 6** utiliza novamente o primeiro treino, mas continua numerada como 6, depois 7, 8, e assim por diante;
 - Progresso real lido **somente** do histórico existente. O botão **Simular vitória** altera apenas o estado visual da sessão atual, sem salvar no banco;
-- Áreas com sete fases cada e navegação para áreas seguintes;
+- Áreas com cinco fases cada e navegação para áreas seguintes;
 - Arquivo de prévia sem dependências: `preview/pixel-adventure.html`. Abra-o diretamente no navegador após baixar/clonar a branch. Ele utiliza as ilustrações originais em `public/`.
 
 ## Rodar localmente
@@ -22,7 +22,7 @@ npm run dev
 
 Abra o endereço `http://localhost:5173` **no mesmo computador que estiver rodando o Vite**. O aplicativo Vue mantém o fluxo de autenticação existente, mas só a Home desta branch muda. Para ver o conceito **sem entrar em nenhuma conta**, abra `preview/pixel-adventure.html` depois de baixar o repositório.
 
-Se estiver em outro aparelho (celular), `localhost` se refere ao próprio celular, não ao computador. Use o endereço de rede local indicado pelo Vite, desde que ambos estejam na mesma rede. Não há URL pública de deploy criada manualmente para este protótipo.
+Se estiver em outro aparelho (celular), `localhost` se refere ao próprio celular, não ao computador. Use o endereço de rede local indicado pelo Vite, desde que ambos estejam na mesma rede. A branch é publicada automaticamente como Preview Deployment no Vercel; a demonstração independente fica em `/pixel-adventure.html` no endereço do deploy.
 
 ## Arquivos principais
 
