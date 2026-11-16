@@ -6,6 +6,9 @@ import { saveCloudSnapshot } from '../lib/cloudData.js'
 import { emptyTrainingState } from '../lib/onboarding.js'
 import { toggleQuickWorkout } from '../lib/quickWorkout.js'
 import { weekStrength, toggleWeekStrength, weekLabel } from '../lib/weeklyCards.js'
+import {
+  renameWorkoutState,renameExerciseState,removeExerciseState,removeWorkoutState
+} from '../lib/workoutManagement.js'
 
 /** 
  * Estado e ações da aplicação.
@@ -184,6 +187,23 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   function openWorkout(name){workoutName.value=name;view.value='workout'}
   function addWorkout(){const n=newWorkout.value.trim();if(!n){createError.value='Digite o nome do treino.';return}if(state.value.workouts.some(w=>w.name.toLowerCase()===n.toLowerCase())){createError.value='Você já tem um treino com esse nome.';return}const previous=nextWorkoutName.value;state.value.workouts.push({name:n,exercises:[]});state.value.rotation=[...rotation.value,n];state.value.rotationIndex=previous?state.value.rotation.indexOf(previous):0;createModal.value=false;newWorkout.value='';createError.value='';openWorkout(n)}
   function addExercise(){let n=newExercise.value.trim();if(!n||!workout.value)return;workout.value.exercises.push(n);newExercise.value=''}
+  function renameWorkout(newName){
+    const oldName=workoutName.value
+    state.value=renameWorkoutState(state.value,oldName,newName)
+    workoutName.value=String(newName).trim().replace(/\s+/g,' ')
+  }
+  function renameExercise(oldName,newName){
+    state.value=renameExerciseState(state.value,workoutName.value,oldName,newName)
+  }
+  function removeExercise(name){
+    state.value=removeExerciseState(state.value,workoutName.value,name)
+  }
+  function deleteWorkout(){
+    state.value=removeWorkoutState(state.value,workoutName.value)
+    workoutName.value=''
+    view.value='list'
+  }
+
   const started=ref(null),finished=ref(null),kind=ref('forca'),exercise=ref(''),kg=ref(''),reps=ref('10'),sets=ref({}),completed=ref([])
   const cardioModal=ref(false)
   const cardioModalities=['Esteira','Bike','Crosstraining','Escadas','Hyrox','Corrida']
@@ -393,6 +413,10 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     openWorkout,
     addWorkout,
     addExercise,
+    renameWorkout,
+    renameExercise,
+    removeExercise,
+    deleteWorkout,
     started,
     cardioModal,
     cardioModalities,
