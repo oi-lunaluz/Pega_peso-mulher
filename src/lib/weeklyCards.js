@@ -27,8 +27,8 @@ export function weekStrength(state,now){
   name,number:index+1,
   exercises:(state.workouts||[]).find(w=>w.name===name)?.exercises?.length||0,
   completed:namesDone.has(name),
-  quick:entries.some(e=>e.name===name&&e.weekCheck===true),
-  detailed:entries.some(e=>e.name===name&&!e.weekCheck),
+  quick:entries.some(e=>e.name===name&&e.quick===true),
+  detailed:entries.some(e=>e.name===name&&!e.quick),
   date:entries.find(e=>e.name===name)?.date||''
  }))
 }
@@ -41,7 +41,18 @@ export function toggleWeekStrength(raw,name,now){
  // Clone JSON rather than Vue proxies.
  const next=JSON.parse(JSON.stringify(raw))
  if(card.quick){
-  next.history=next.history.filter(h=>!(h.kind==='forca'&&h.name===name&&h.weekCheck===true&&fromBrazilDate(h.date)&&dateKey(fromBrazilDate(h.date))>=weekBounds(now).start&&dateKey(fromBrazilDate(h.date))<=weekBounds(now).end))
+  const bounds=weekBounds(now)
+  const matching=h=>h.kind==='forca'&&h.name===name&&h.quick===true&&
+    fromBrazilDate(h.date)&&dateKey(fromBrazilDate(h.date))>=bounds.start&&dateKey(fromBrazilDate(h.date))<=bounds.end
+  const legacyCount=next.history.filter(h=>matching(h)&&!h.weekCheck).length
+  next.history=next.history.filter(h=>!matching(h))
+  if(legacyCount){
+    next.scheduleCompleted=Math.max(0,(Number(next.scheduleCompleted)||0)-legacyCount)
+    if(!next.history.some(h=>h.quick&&!h.weekCheck)&&Object.hasOwn(next,'quickAnchorBefore')){
+      next.scheduleAnchor=next.quickAnchorBefore||next.scheduleAnchor
+      delete next.quickAnchorBefore
+    }
+  }
  }else{
   if(card.completed)throw new Error('Já existe um registro desta ficha nesta semana.')
   next.history.push({kind:'forca',name,date:now.toLocaleDateString('pt-BR'),weekCheck:true,quick:true,seconds:0,sets:{}})
