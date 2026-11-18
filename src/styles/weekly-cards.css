@@ -117,3 +117,20 @@
 .merged-add-order select{flex:1;font-size:13px;padding:9px}
 .merged-add-order button{background:#d91668!important;color:#fff!important;padding:9px!important}
 .merged-add-order button:disabled{opacity:.45}
+
+
+/* Exclusão de fichas e exercícios: ações visíveis, sem cliques acidentais. */
+.workout-exercise-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:3px 0}
+.workout-exercise-heading h3{font-size:16px!important;color:#66374f;margin:0}
+.workout-delete-link{display:inline-flex;align-items:center;gap:6px;background:#fff1f3!important;border:1px solid #f0cbd1!important;color:#b0344c!important;font-size:11px!important;padding:9px 10px!important}
+.workout-exercise-row{gap:8px!important}
+.workout-exercise-row>.row-info{flex:1;min-width:0}
+.workout-exercise-trash{margin-left:auto;flex:0 0 40px;display:grid;place-items:center;width:40px;min-width:40px;min-height:42px!important;padding:8px!important;background:#fff0f2!important;border:1px solid #f4d4dc!important;color:#a83c57!important;border-radius:10px}
+.workout-exercise-trash:focus-visible,.workout-delete-link:focus-visible{outline:3px solid #d71565;outline-offset:2px}
+.workout-delete-confirm{display:flex;flex-direction:column;align-items:stretch;gap:12px;text-align:center}
+.workout-delete-confirm-icon{align-self:center;width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:#ffe9ee;color:#b02b4b}
+.workout-delete-confirm h2{margin:0;font-size:21px!important;color:#613646}
+.workout-delete-confirm p{margin:0;font-size:13px;line-height:1.5;color:#7d6170}
+.workout-delete-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.workout-delete-confirm-actions button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;font-size:13px!important}
+.workout-delete-danger{background:#c63250!important;color:white!important}
