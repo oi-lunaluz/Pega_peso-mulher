@@ -1,13 +1,20 @@
 <script setup>
-import { inject } from 'vue'
+import { inject, ref } from 'vue'
 import AppIcon from '../AppIcon.vue'
 defineProps({showManageLink:{type:Boolean,default:true}})
 const {
   state,view,weeklyStrengthCards,currentWeekLabel,currentDayLabel,
   cardioPlacement,cardioForWorkout,toggleStrengthCard,
   quickFeedback,openWorkout,openCreateModal,openCardioModal,
+  deleteWorkoutByName,
   weeklyCardio
 }=inject('pegaPesoApp')
+const pendingDelete=ref('')
+function confirmRemove(){
+  if(!pendingDelete.value)return
+  deleteWorkoutByName(pendingDelete.value)
+  pendingDelete.value=''
+}
 </script>
 <template>
   <section class="week-cards-shell" aria-label="Seus treinos da semana">
@@ -21,7 +28,13 @@ const {
     </div>
     
     <div v-if="weeklyStrengthCards.length" class="week-card-stack">
-      <article v-for="card in weeklyStrengthCards" :key="card.name" class="week-strength-card" :class="{completed:card.completed}">
+      <article v-for="card in weeklyStrengthCards" :key="card.name" class="week-strength-card" :class="{completed:card.completed, 'week-card-can-delete':!showManageLink}">
+        <button v-if="!showManageLink" type="button" class="week-card-trash"
+          :title="'Excluir '+card.name"
+          :aria-label="'Excluir treino '+card.name"
+          @click.stop="pendingDelete=card.name">
+          <AppIcon name="trash" :size="18"/>
+        </button>
         <div class="week-card-main">
           <span class="week-card-count">{{card.number}}</span>
           <div class="week-card-title">
@@ -63,5 +76,22 @@ const {
       <p>{{weeklyCardio}} de {{state.cardioGoal}} minutos realizados nesta semana</p>
       <button type="button" @click="openCardioModal">Iniciar cardio</button>
     </section>
+    <div v-if="pendingDelete" class="modal-backdrop" @click.self="pendingDelete=''">
+      <div class="modal-sheet workout-delete-confirm" role="alertdialog" aria-modal="true"
+        aria-labelledby="week-delete-title" aria-describedby="week-delete-description">
+        <div class="workout-delete-confirm-icon"><AppIcon name="trash" :size="24"/></div>
+        <h2 id="week-delete-title">Excluir treino?</h2>
+        <p id="week-delete-description">
+          A ficha “{{pendingDelete}}” e seus exercícios serão removidos do planejamento.
+          O histórico dos treinos já realizados será mantido.
+        </p>
+        <div class="workout-delete-confirm-actions">
+          <button type="button" class="outline" @click="pendingDelete=''">Cancelar</button>
+          <button type="button" class="workout-delete-danger" @click="confirmRemove">
+            <AppIcon name="trash" :size="16"/> Excluir
+          </button>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
