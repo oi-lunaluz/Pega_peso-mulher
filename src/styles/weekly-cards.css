@@ -338,3 +338,34 @@
 .evolution-record-row>svg{color:#34956c}
 @media(max-width:360px){.evolution-overview{gap:5px}.evolution-overview-item{padding:9px 6px}.evolution-overview-item strong{font-size:20px}.evolution-medal{flex-basis:114px}.evolution-chart-bars{gap:8px}.evolution-achievements,.evolution-chart-block,.evolution-records{padding:12px!important}}
 @media(prefers-reduced-motion:reduce){.evolution-medal-rail{scroll-behavior:auto}}
+
+
+/* Edição explícita do calendário menstrual. Lápis e check ocupam o mesmo lugar. */
+.cycle-month-nav{display:grid;grid-template-columns:36px minmax(0,1fr) 36px 36px;gap:7px;align-items:center}
+.cycle-month-nav>strong{min-width:0;text-align:center;font-size:13px;color:#643751;text-transform:capitalize}
+.cycle-month-nav>button{height:36px;min-width:36px;min-height:36px!important;padding:5px!important;display:grid;place-items:center;border-radius:10px!important;background:#fff0f7!important;color:#ad356c!important}
+.cycle-month-nav .cycle-calendar-edit{width:36px;background:#fbe0eb!important;color:#b52d68!important;border:1px solid #ebbad0!important}
+.cycle-month-nav .cycle-calendar-edit.active{background:#d91069!important;border-color:#d91069!important;color:#fff!important}
+.cycle-month-nav button:focus-visible,.cycle-calendar-day.editing:focus-visible{outline:3px solid #ad1b64;outline-offset:2px}
+.cycle-calendar-grid{gap:4px}
+.cycle-calendar-day{width:100%;aspect-ratio:1/1;min-height:33px!important;padding:0!important;border:1px solid transparent!important;background:#fff9fb!important;font-size:12px!important;font-weight:800!important;cursor:default}
+.cycle-calendar-day.period-actual{background:#f46b9e!important;border-color:#dc417d!important;color:#fff!important}
+.cycle-calendar-day.period-estimated{background:#ffe4ee!important;color:#a44f78!important}
+.cycle-calendar-day.fertile:not(.period-actual):not(.period-estimated){background:#e5f5e9!important;color:#407b58!important}
+.cycle-calendar-day.today{outline:2px solid #c92574!important;outline-offset:-2px}
+.cycle-calendar-day.outside{opacity:.43}
+.cycle-calendar-card.is-editing{border-color:#e25c91;box-shadow:0 0 0 2px #f9dbe8}
+.cycle-calendar-card.is-editing .cycle-calendar-day:not(:disabled){cursor:pointer;border:1px dashed #e7bfd0!important}
+.cycle-calendar-card.is-editing .cycle-calendar-day:not(:disabled):active{transform:scale(.93)}
+.cycle-calendar-day:disabled{opacity:1}
+.cycle-calendar-day.outside:disabled{opacity:.43}
+.cycle-calendar-card.is-editing .cycle-calendar-day.disabled{opacity:.3;cursor:not-allowed}
+.cycle-edit-hint{background:#fff0f6;color:#9c3f6c;border-radius:10px;padding:9px 10px;font-size:11px;line-height:1.5;margin:2px 0 12px;font-weight:700}
+.cycle-calendar-legend{display:flex;gap:9px;align-items:center;margin-top:13px}
+.cycle-calendar-legend span{display:inline-flex;align-items:center;gap:4px;font-size:9px;color:#865a73}
+.cycle-calendar-legend i{display:inline-block;flex:0 0 12px;width:12px;height:12px;border-radius:4px}
+.cycle-legend-actual{background:#f46b9e}
+.cycle-legend-estimated{background:#ffe4ee;border:1px solid #f2bcce}
+.cycle-edit-feedback,.cycle-edit-count{margin:9px 0 0;font-size:11px;font-weight:850;color:#b72e6b;line-height:1.4}
+.cycle-settings-note{font-size:11px;color:#87697a;line-height:1.45;margin:-5px 3px 2px}
+@media(max-width:360px){.cycle-month-nav{grid-template-columns:32px minmax(0,1fr) 32px 32px;gap:4px}.cycle-month-nav>button{height:32px;min-width:32px;min-height:32px!important}.cycle-calendar-grid{gap:3px}.cycle-calendar-day{min-height:29px!important;font-size:11px!important}.cycle-calendar-legend{gap:5px}.cycle-calendar-legend span{font-size:8px}}
