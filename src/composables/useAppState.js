@@ -8,6 +8,7 @@ import { toggleQuickWorkout } from '../lib/quickWorkout.js'
 import { weekStrength, toggleWeekStrength, weekLabel } from '../lib/weeklyCards.js'
 import { weekProgress, weeklyStreak, toggleWeeklySlot } from '../lib/weeklyJourney.js'
 import { removeExerciseFromState, removeWorkoutFromState } from '../lib/deleteWorkouts.js'
+import { estimatedCyclePhase } from '../lib/cyclePhase.js'
 
 /** 
  * Estado e ações da aplicação.
@@ -287,6 +288,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     ...(initialCloud?.cycle||readJson(cycleKey,{}))
   })
   if(!Array.isArray(cycle.value.notes))cycle.value.notes=[]
+  const cyclePhase=computed(()=>estimatedCyclePhase(cycle.value,calendarNow.value))
   watch(cycle,v=>writeJson(cycleKey,v),{deep:true})
   const noteDate=ref(dateKey(new Date())),noteEnergy=ref('normal'),noteSymptoms=ref(''),noteDifficulty=ref('normal')
   const cycleDay=computed(()=>{if(!cycle.value.start)return null;const diff=Math.floor((new Date().setHours(12,0,0,0)-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);return ((diff%Math.max(1,cycle.value.length))+Math.max(1,cycle.value.length))%Math.max(1,cycle.value.length)+1})
@@ -464,6 +466,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     completedSessions,
     onWorkoutStatChange,
     cycle,
+    cyclePhase,
     noteDate,
     cycleDay,
     addNote,
