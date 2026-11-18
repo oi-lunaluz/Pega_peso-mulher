@@ -10,7 +10,7 @@ const showHistory=ref(false)
 
 <template>
   <div class="merged-trainings">
-    <WeeklyWorkoutCards/>
+    <WeeklyWorkoutCards :show-manage-link="false"/>
     <button type="button" class="merged-add-training" @click="openCreateModal">
       <AppIcon name="plus" :size="17"/> Nova ficha de treino
     </button>
