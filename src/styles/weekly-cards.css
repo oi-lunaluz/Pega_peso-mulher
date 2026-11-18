@@ -241,3 +241,16 @@
 .minimal-home-wellness .minimal-cycle-open{margin-top:auto;font-size:10px!important;gap:5px;padding:9px 8px!important}
 .minimal-home-wellness .minimal-cycle-info-button{flex-basis:32px;width:32px;min-height:32px}
 @media(max-width:359px){.minimal-home-wellness{gap:7px}.minimal-cardio-feature,.minimal-home-wellness .minimal-cycle-feature{padding:10px!important}.minimal-cardio-feature h3{font-size:22px!important}.minimal-cardio-feature h3 small{font-size:10px}.minimal-cardio-start{font-size:10px!important}}
+
+
+/* Meta de cardio no cartão semanal; cartão verde fica só para iniciar sessão. */
+.minimal-home-cardio-goal{display:flex;flex-direction:column;gap:8px;padding-top:13px;border-top:1px solid #f1e0e8}
+.minimal-home-cardio-goal-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.minimal-home-cardio-goal-heading>span{display:flex;align-items:center;gap:6px;color:#347f5a;font-size:12px;font-weight:900}
+.minimal-home-cardio-goal-heading>strong{color:#28754f;font-size:17px;font-weight:950;white-space:nowrap}
+.minimal-home-cardio-goal-heading>strong small{font-size:12px;color:#608874;font-weight:800}
+.minimal-home-cardio-goal .minimal-cardio-progress{height:9px}
+.minimal-home-cardio-goal>p{margin:0;color:#59846b;font-size:10px;font-weight:750}
+.minimal-cardio-launch{align-items:stretch;justify-content:space-between}
+.minimal-cardio-launch-icon{display:grid;place-items:center;color:#43a878;flex:1;min-height:45px}
+.minimal-cardio-launch .minimal-cardio-start{width:100%;margin-top:auto}
