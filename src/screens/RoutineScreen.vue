@@ -1,7 +1,6 @@
 <script setup>
 import {inject,ref} from 'vue'
 import AppIcon from '../AppIcon.vue'
-import WeeklyWorkoutCards from './WeeklyWorkoutCards.vue'
 
 const {state,cardioPlacement,scheduledDays,toggleTrainingDay,rotation,
   rotationIndex,moveRotation,removeRotation,addRotationName,
@@ -11,19 +10,10 @@ const showOrder=ref(false)
 </script>
 
 <template>
-  <div class="brazil-banner yellow">
-    <div>
-      <span class="kicker">SUA ROTINA</span>
-      <h2>Uma semana, seus treinos!</h2>
-      <p>Seu plano fica organizado de segunda a domingo, mas você escolhe quando fazer cada ficha.</p>
-    </div>
-    <img class="banner-dog" src="/caramelo-treino.svg" alt="" aria-hidden="true"/>
-  </div>
-  <WeeklyWorkoutCards/>
   <section class="week-settings">
     <button type="button" class="week-settings-toggle" :aria-expanded="showSettings" @click="showSettings=!showSettings">
       <AppIcon name="pencil" :size="18"/>
-      <span>Configurar dias e cardio</span>
+      <span>Cardio e dias</span>
       <AppIcon name="chevron" :size="18"/>
     </button>
     <div v-if="showSettings" class="week-settings-inner">
@@ -78,11 +68,11 @@ const showOrder=ref(false)
   <section class="week-settings">
     <button type="button" class="week-settings-toggle" :aria-expanded="showOrder" @click="showOrder=!showOrder">
       <AppIcon name="dumbbell" :size="18"/>
-      <span>Organizar a ordem das fichas</span>
+      <span>Ordem das fichas</span>
       <AppIcon name="chevron" :size="18"/>
     </button>
     <div v-if="showOrder" class="week-settings-inner">
-      <p class="week-settings-info">A ordem aparece na lista. Você pode concluir qualquer ficha, sem precisar seguir o dia fixo.</p>
+
       <div class="brazil-list">
         <div v-for="(name,i) in rotation" :key="name" class="brazil-list-row rotation-list-row" :class="{'is-next':i===rotationIndex}">
           <span class="rotation-order-number">{{i+1}}</span>
@@ -100,7 +90,7 @@ const showOrder=ref(false)
           <option v-for="w in availableForRotation" :key="w.name" :value="w.name">{{w.name}}</option>
         </select><button type="button" :disabled="!addRotationName" @click="addRotation"><AppIcon name="plus" :size="17"/></button></div>
       </div>
-      <button type="button" class="outline brazil-outline" @click="view='list'">Gerenciar fichas e exercícios</button>
+
     </div>
   </section>
 </template>
