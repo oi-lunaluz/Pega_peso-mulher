@@ -1,11 +1,12 @@
 <script setup>
-import {inject} from 'vue'
+import {inject, ref} from 'vue'
 import AppIcon from '../AppIcon.vue'
 const {
   view,homeGreeting,homeWeek,homeStreak,currentWeekLabel,
   quickFeedback,toggleHomeSlot,openHomeSlot,
-  cycle,cycleDay
+  cycle,cycleDay,cyclePhase
 }=inject('pegaPesoApp')
+const showPhaseInfo=ref(false)
 </script>
 
 <template>
@@ -91,10 +92,53 @@ const {
       <p v-if="quickFeedback" class="quick-workout-feedback" role="status">{{quickFeedback}}</p>
     </section>
 
-    <button class="minimal-home-cycle" type="button" @click="view='cycle'">
-      <AppIcon name="flower" :size="18"/>
-      <span>{{cycle.enabled&&cycleDay?'Ciclo · dia '+cycleDay:'Meu ciclo'}}</span>
-      <AppIcon name="chevron" :size="16"/>
-    </button>
+    <section class="minimal-cycle-feature" aria-label="Resumo do ciclo menstrual">
+      <div class="minimal-cycle-feature-head">
+        <span class="minimal-cycle-kicker"><AppIcon name="flower" :size="17"/> SEU CICLO</span>
+        <button v-if="cyclePhase" class="minimal-cycle-info-button" type="button"
+          aria-label="O que posso sentir nessa fase do ciclo?"
+          @click="showPhaseInfo=true">
+          <AppIcon name="help" :size="19"/>
+        </button>
+      </div>
+      <template v-if="cyclePhase">
+        <div class="minimal-cycle-phase-row">
+          <div>
+            <h3>Fase {{cyclePhase.name.toLowerCase()}}</h3>
+            <p>Dia {{cyclePhase.day}} do ciclo <span aria-hidden="true">·</span> {{cyclePhase.subtitle}}</p>
+          </div>
+          <span class="minimal-cycle-phase-icon"><AppIcon name="flower" :size="27"/></span>
+        </div>
+        <p class="minimal-cycle-phase-reminder">Uma estimativa com base nas datas cadastradas.</p>
+      </template>
+      <template v-else>
+        <h3>Seu ciclo, seu ritmo</h3>
+        <p class="minimal-cycle-empty-hint">{{cycle.enabled?'Informe a última menstruação para estimar sua fase.':'Ative o acompanhamento para ver sua fase aqui.'}}</p>
+      </template>
+      <button type="button" class="minimal-cycle-open" @click="view='cycle'">
+        {{cyclePhase?'Ver calendário e registros':'Configurar meu ciclo'}}
+        <AppIcon name="arrow" :size="15"/>
+      </button>
+    </section>
+
+    <div v-if="showPhaseInfo&&cyclePhase" class="modal-backdrop" @click.self="showPhaseInfo=false">
+      <div class="modal-sheet minimal-cycle-info-sheet" role="dialog" aria-modal="true"
+        aria-labelledby="cycle-phase-info-title" aria-describedby="cycle-phase-info-description">
+        <div class="minimal-cycle-info-head">
+          <span><AppIcon name="flower" :size="19"/> SOBRE SEU CICLO</span>
+          <button type="button" aria-label="Fechar informações da fase" @click="showPhaseInfo=false">
+            <AppIcon name="close" :size="19"/>
+          </button>
+        </div>
+        <h2 id="cycle-phase-info-title">Fase {{cyclePhase.name.toLowerCase()}}</h2>
+        <p id="cycle-phase-info-description">{{cyclePhase.description}}</p>
+        <div class="minimal-cycle-training-tip">
+          <AppIcon name="dumbbell" :size="20"/>
+          <div><strong>E os treinos?</strong><p>{{cyclePhase.training}}</p></div>
+        </div>
+        <p class="minimal-cycle-disclaimer">As fases e possíveis sintomas são estimativas. Seu corpo pode reagir de maneira diferente a cada ciclo. Não use esta previsão para contracepção ou diagnóstico.</p>
+        <button class="minimal-cycle-info-close" type="button" @click="showPhaseInfo=false">Entendi</button>
+      </div>
+    </div>
   </div>
 </template>
