@@ -36,7 +36,13 @@ export function estimatedCyclePhase(cycle,now=new Date()){
  const startLocal=new Date(start.getFullYear(),start.getMonth(),start.getDate())
  const elapsed=Math.round((Date.UTC(reference.getFullYear(),reference.getMonth(),reference.getDate())-
    Date.UTC(startLocal.getFullYear(),startLocal.getMonth(),startLocal.getDate()))/86400000)
- if(elapsed<0)return null
+ if(elapsed<0){
+  // Preserve historical menstrual dates even when a newer period became
+  // the reference for present-day phase estimates.
+  if(isActualPeriodDate(cycle,dateKey(reference)))
+   return {key:'menstrual',day:null,length,...PHASES.menstrual}
+  return null
+ }
  const day=(elapsed%length)+1
  const approxOvulation=length-14
  // Real calendar entries override an average-length menstrual estimate.
