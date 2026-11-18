@@ -406,3 +406,32 @@
 .cycle-phase-popup .cycle-phase-popup-disclaimer{font-size:10px;line-height:1.4;color:#967789}
 .cycle-phase-popup-close{min-height:42px;background:#d8196b!important;color:#fff!important;width:100%}
 @media(max-width:360px){.cycle-phase-legend{gap:5px}.cycle-phase-legend-item{padding:7px 5px!important;gap:5px}.cycle-phase-legend-item strong{font-size:10px}.cycle-phase-legend-item small{font-size:8px}.cycle-calendar-legend span{font-size:9px}}
+
+
+/* Topo da tela Início: mesma identidade amarela das outras abas. */
+.on-home>.home-header{
+  background:linear-gradient(110deg,#ffcf39,#ffe888)!important;
+  border-bottom:2px solid #f1c457!important;
+  min-height:70px;
+  padding:12px 16px!important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.on-home>.home-header .brand-wordmark{
+  display:inline-flex!important;
+  align-items:center;
+  gap:7px;
+  color:#69421a;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.8px!important;
+}
+.on-home>.home-header .brand-mark{background:#ed0b6b;color:white}
+.on-home>.home-header .header-profile{
+  background:#fff4cb;
+  color:#bc135d;
+  border:2px solid #ffffffa0;
+  border-radius:50%;
+}
