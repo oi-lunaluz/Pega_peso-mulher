@@ -220,3 +220,24 @@
 .minimal-cycle-info-sheet .minimal-cycle-disclaimer{font-size:10px;color:#927184}
 .minimal-cycle-info-close{width:100%;min-height:43px;background:#dd1768!important;color:#fff!important}
 @media(max-width:360px){.minimal-cycle-feature{padding:12px!important}.minimal-cycle-feature h3{font-size:19px!important}.minimal-cycle-phase-icon{flex-basis:44px;width:44px;height:44px}}
+
+
+/* Bem-estar da Home: cardio e fase do ciclo lado a lado, sem poluir a tela. */
+.minimal-home-wellness{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
+.minimal-home-wellness>section{min-width:0;margin:0;min-height:208px}
+.minimal-cardio-feature{display:flex;flex-direction:column;gap:10px;padding:13px!important;border:1px solid #b8e4c9;background:linear-gradient(145deg,#e9faef,#daf5e5);border-radius:18px}
+.minimal-cardio-kicker{display:flex;align-items:center;gap:6px;color:#277f57;font-size:10px;letter-spacing:.55px;font-weight:950}
+.minimal-cardio-feature h3{font-size:26px!important;line-height:1.1;color:#195a3c;margin:4px 0 1px;font-weight:1000;white-space:nowrap}
+.minimal-cardio-feature h3 small{font-size:12px;font-weight:800;color:#477962}
+.minimal-cardio-progress{height:9px;background:#b7dfc7;border-radius:99px;overflow:hidden}
+.minimal-cardio-progress span{display:block;height:100%;border-radius:99px;background:#21a66c;transition:width .2s}
+.minimal-cardio-feature p{color:#477761;font-size:11px;font-weight:750;line-height:1.4;margin:0}
+.minimal-cardio-start{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:auto;min-height:38px;padding:9px 7px!important;background:#167d51!important;color:white!important;border-radius:10px!important;font-size:11px!important;font-weight:900}
+.minimal-home-wellness .minimal-cycle-feature{min-height:208px;padding:13px!important;gap:8px}
+.minimal-home-wellness .minimal-cycle-feature h3{font-size:16px!important;overflow-wrap:anywhere;line-height:1.2}
+.minimal-home-wellness .minimal-cycle-feature p{font-size:10px;line-height:1.35}
+.minimal-home-wellness .minimal-cycle-phase-icon{display:none}
+.minimal-home-wellness .minimal-cycle-feature .minimal-cycle-phase-reminder{font-size:9px}
+.minimal-home-wellness .minimal-cycle-open{margin-top:auto;font-size:10px!important;gap:5px;padding:9px 8px!important}
+.minimal-home-wellness .minimal-cycle-info-button{flex-basis:32px;width:32px;min-height:32px}
+@media(max-width:359px){.minimal-home-wellness{gap:7px}.minimal-cardio-feature,.minimal-home-wellness .minimal-cycle-feature{padding:10px!important}.minimal-cardio-feature h3{font-size:22px!important}.minimal-cardio-feature h3 small{font-size:10px}.minimal-cardio-start{font-size:10px!important}}
