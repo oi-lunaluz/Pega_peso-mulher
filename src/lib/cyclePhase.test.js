@@ -29,3 +29,11 @@ test('atravessa mudança do ano sem erro de fuso',()=>{
  assert.equal(x.day,6)
  assert.equal(x.key,'follicular')
 })
+
+
+test('dia extra marcado no calendário aparece como fase menstrual, sem alterar média',()=>{
+ const cycle={...cfg,periodDays:['2026-11-06'],editedPeriodMonths:['2026-11']}
+ assert.equal(estimatedCyclePhase(cycle,at(6)).key,'menstrual')
+ assert.equal(estimatedCyclePhase(cycle,at(3)).key,'follicular')
+ assert.equal(cycle.period,5)
+})
