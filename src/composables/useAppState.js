@@ -294,6 +294,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   const cycleDay=computed(()=>{if(!cycle.value.start)return null;const diff=Math.floor((new Date().setHours(12,0,0,0)-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);return ((diff%Math.max(1,cycle.value.length))+Math.max(1,cycle.value.length))%Math.max(1,cycle.value.length)+1})
   function addNote(){cycle.value.notes.unshift({date:noteDate.value,energy:noteEnergy.value,symptoms:noteSymptoms.value,difficulty:noteDifficulty.value});noteSymptoms.value=''}
   const weeklyCardio=computed(()=>cardioMinutesThisWeek(state.value.history,calendarNow.value))
+  const cardioWeeklyTarget=computed(()=>{const value=Number(state.value.cardioGoal);return Number.isFinite(value)&&value>0?value:150})
   const cycleCalendarMonth=ref(new Date().getMonth())
   const cycleCalendarYear=ref(new Date().getFullYear())
   function moveCycleMonth(delta){const d=new Date(cycleCalendarYear.value,cycleCalendarMonth.value+delta,1);cycleCalendarMonth.value=d.getMonth();cycleCalendarYear.value=d.getFullYear()}
@@ -471,6 +472,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     cycleDay,
     addNote,
     weeklyCardio,
+    cardioWeeklyTarget,
     cycleCalendarMonth,
     cycleCalendarYear,
     moveCycleMonth,
