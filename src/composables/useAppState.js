@@ -189,11 +189,13 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   function deleteExercise(index){
     state.value=removeExerciseFromState(state.value,workoutName.value,index)
   }
-  function deleteWorkout(){
-    const name=workoutName.value
+  function deleteWorkoutByName(name){
     state.value=removeWorkoutFromState(state.value,name)
-    workoutName.value=''
-    view.value='list'
+    if(workoutName.value===name)workoutName.value=''
+    if(view.value==='workout')view.value='list'
+  }
+  function deleteWorkout(){
+    deleteWorkoutByName(workoutName.value)
   }
 
   const started=ref(null),finished=ref(null),kind=ref('forca'),exercise=ref(''),kg=ref(''),reps=ref('10'),sets=ref({}),completed=ref([])
@@ -405,6 +407,7 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     addExercise,
     deleteExercise,
     deleteWorkout,
+    deleteWorkoutByName,
     started,
     cardioModal,
     cardioModalities,
