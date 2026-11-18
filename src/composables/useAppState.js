@@ -6,6 +6,7 @@ import { saveCloudSnapshot } from '../lib/cloudData.js'
 import { emptyTrainingState } from '../lib/onboarding.js'
 import { toggleQuickWorkout } from '../lib/quickWorkout.js'
 import { weekStrength, toggleWeekStrength, weekLabel } from '../lib/weeklyCards.js'
+import { removeExerciseFromState, removeWorkoutFromState } from '../lib/deleteWorkouts.js'
 
 /** 
  * Estado e ações da aplicação.
@@ -184,6 +185,17 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   function openWorkout(name){workoutName.value=name;view.value='workout'}
   function addWorkout(){const n=newWorkout.value.trim();if(!n){createError.value='Digite o nome do treino.';return}if(state.value.workouts.some(w=>w.name.toLowerCase()===n.toLowerCase())){createError.value='Você já tem um treino com esse nome.';return}const previous=nextWorkoutName.value;state.value.workouts.push({name:n,exercises:[]});state.value.rotation=[...rotation.value,n];state.value.rotationIndex=previous?state.value.rotation.indexOf(previous):0;createModal.value=false;newWorkout.value='';createError.value='';openWorkout(n)}
   function addExercise(){let n=newExercise.value.trim();if(!n||!workout.value)return;workout.value.exercises.push(n);newExercise.value=''}
+
+  function deleteExercise(index){
+    state.value=removeExerciseFromState(state.value,workoutName.value,index)
+  }
+  function deleteWorkout(){
+    const name=workoutName.value
+    state.value=removeWorkoutFromState(state.value,name)
+    workoutName.value=''
+    view.value='list'
+  }
+
   const started=ref(null),finished=ref(null),kind=ref('forca'),exercise=ref(''),kg=ref(''),reps=ref('10'),sets=ref({}),completed=ref([])
   const cardioModal=ref(false)
   const cardioModalities=['Esteira','Bike','Crosstraining','Escadas','Hyrox','Corrida']
@@ -391,6 +403,8 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     openWorkout,
     addWorkout,
     addExercise,
+    deleteExercise,
+    deleteWorkout,
     started,
     cardioModal,
     cardioModalities,
