@@ -6,6 +6,7 @@ import { saveCloudSnapshot } from '../lib/cloudData.js'
 import { emptyTrainingState } from '../lib/onboarding.js'
 import { toggleQuickWorkout } from '../lib/quickWorkout.js'
 import { weekStrength, toggleWeekStrength, weekLabel } from '../lib/weeklyCards.js'
+import { weekProgress, weeklyStreak, toggleWeeklySlot } from '../lib/weeklyJourney.js'
 import { removeExerciseFromState, removeWorkoutFromState } from '../lib/deleteWorkouts.js'
 
 /** 
@@ -114,6 +115,22 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   
   // Interface principal: a semana é segunda-domingo; cada ficha aparece uma
   // vez, independentemente de qual dia a pessoa a realizou.
+  const homeWeek=computed(()=>weekProgress(state.value,calendarNow.value))
+  const homeStreak=computed(()=>weeklyStreak(state.value,calendarNow.value))
+  function toggleHomeSlot(number){
+    quickFeedback.value=''
+    try{
+      const result=toggleWeeklySlot(state.value,number,calendarNow.value)
+      state.value=result.state
+      quickFeedback.value=result.checked?'Treino marcado. Sua semana foi atualizada.':'Check desfeito.'
+    }catch(error){
+      quickFeedback.value=error.message||'Não foi possível atualizar o treino.'
+    }
+  }
+  function openHomeSlot(name){
+    if(name)openWorkout(name)
+    else{view.value='list';openCreateModal()}
+  }
   const weeklyStrengthCards=computed(()=>weekStrength(state.value,calendarNow.value))
   const currentWeekLabel=computed(()=>weekLabel(calendarNow.value))
   const currentDayLabel=computed(()=>calendarNow.value.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}))
@@ -358,6 +375,10 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   return {
     state,
     weeklyStrengthCards,
+    homeWeek,
+    homeStreak,
+    toggleHomeSlot,
+    openHomeSlot,
     currentWeekLabel,
     currentDayLabel,
     cardioPlacement,
