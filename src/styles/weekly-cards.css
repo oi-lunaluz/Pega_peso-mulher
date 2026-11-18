@@ -138,7 +138,7 @@
 
 /* Lixeira no canto superior direito da ficha, sem abrir o treino. */
 .week-strength-card.week-card-can-delete{position:relative;padding-top:15px}
-.week-card-can-delete .week-card-main{padding-right:42px}
-.week-card-trash{position:absolute;right:10px;top:10px;display:grid;place-items:center;width:38px;height:38px;min-width:38px;min-height:38px;padding:7px!important;border-radius:10px!important;border:1px solid #f1cfd9!important;background:#fff1f4!important;color:#ae3654!important;z-index:1}
+.week-card-can-delete .week-card-main{padding-right:33px}
+.week-card-trash{position:absolute;right:10px;top:10px;display:grid;place-items:center;width:30px;height:30px;min-width:30px;min-height:30px!important;padding:5px!important;border-radius:8px!important;border:1px solid #f1cfd9!important;background:#fff1f4!important;color:#ae3654!important;z-index:1}
 .week-card-trash:focus-visible{outline:3px solid #b0195d;outline-offset:2px}
-.week-card-can-delete .week-card-done{position:absolute;right:14px;top:54px;width:24px;height:24px;flex-basis:24px}
+.week-card-can-delete .week-card-done{position:absolute;right:13px;top:46px;width:24px;height:24px;flex-basis:24px}
