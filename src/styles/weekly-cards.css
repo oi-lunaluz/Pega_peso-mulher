@@ -262,3 +262,79 @@
 .minimal-cardio-mary-call{position:absolute;right:-2px;top:2px;max-width:90px;background:#fff;color:#b92b69;padding:5px 7px;border:1px solid #efbed3;border-radius:12px 12px 12px 3px;font-size:10px;line-height:1.15;font-weight:950;transform:rotate(-5deg);box-shadow:0 2px 0 #c67a9c25;text-align:center}
 .minimal-cardio-launch .minimal-cardio-start{position:relative;z-index:1}
 @media(max-width:359px){.minimal-cardio-mary img{height:101px}.minimal-cardio-mary-call{font-size:9px;max-width:73px;padding:4px 5px}}
+
+
+/* Evolução: painel minimalista, medalhas horizontais e progresso com foco mobile. */
+.evolution-page{display:flex;flex-direction:column;gap:13px;min-width:0}
+.evolution-page>section{flex-shrink:0;min-width:0}
+.evolution-intro{position:relative;display:flex;align-items:center;min-height:101px;overflow:hidden;border-radius:18px;background:linear-gradient(115deg,#ffebf1,#ffdfc6);border:1px solid #f2d9df;padding:15px 16px}
+.evolution-intro>div{position:relative;z-index:1;max-width:73%}
+.evolution-eyebrow{font-size:10px;letter-spacing:.7px;font-weight:950;color:#a8567b}
+.evolution-intro h2{font-size:22px!important;color:#583447;line-height:1.12;letter-spacing:-.45px;margin:6px 0}
+.evolution-intro p{font-size:11px;color:#895f71;margin:0}
+.evolution-intro img{position:absolute;right:-21px;bottom:-52px;width:128px;height:145px;object-fit:contain}
+.evolution-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0!important;background:none}
+.evolution-overview-item{display:flex;align-items:flex-start;flex-direction:column;gap:5px;padding:11px 8px;background:#fff;border:1px solid #f0dce4;border-radius:14px;min-width:0}
+.evolution-overview-item>svg{color:#c83d81}
+.evolution-overview-item strong{font-size:22px;line-height:1.05;font-weight:1000;color:#563347}
+.evolution-overview-item strong small{font-size:11px;color:#926d80}
+.evolution-overview-item span{font-size:9px;line-height:1.25;color:#947484;font-weight:750}
+.evolution-achievements,.evolution-chart-block,.evolution-records{background:#fff;border:1px solid #f0dae3;border-radius:18px;padding:14px!important;min-width:0}
+.evolution-section-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.evolution-section-top h3{font-size:17px!important;color:#5b3448;margin:3px 0 0!important;font-weight:950}
+.evolution-section-top h3 small{font-size:11px;margin-left:4px;color:#aa758d}
+.evolution-arrows{display:flex;gap:6px}
+.evolution-arrows button{width:33px;height:33px;min-width:33px;display:grid;place-items:center;padding:4px!important;border-radius:50%!important;background:#fff1f7!important;color:#ab3973!important;border:1px solid #f1d4e0!important}
+.evolution-prev{transform:rotate(180deg)}
+.evolution-swipe-hint,.evolution-achievements-note{font-size:10px;line-height:1.4;color:#967587;margin:7px 0 0}
+.evolution-medal-rail{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;padding:13px 0 7px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.evolution-medal-rail::-webkit-scrollbar{display:none}
+.evolution-medal{flex:0 0 127px;min-height:173px;display:flex;align-items:center;flex-direction:column;gap:9px;padding:12px 9px!important;text-align:center;background:#f8f5f7!important;border:1px solid #ebe2e7!important;border-radius:16px!important;color:#957a89!important;scroll-snap-align:start;position:relative}
+.evolution-medal.earned{background:linear-gradient(145deg,#fff5d7,#fff0e4)!important;border-color:#ecd49e!important;color:#985a26!important}
+.evolution-medal.chosen{outline:2px solid #de5e9a;outline-offset:-2px}
+.evolution-medal-emblem{position:relative;flex:0 0 65px;width:65px;height:65px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#eae3e8,#d7ced5);border:3px solid #d2c6ce;color:#a89aa4;box-shadow:0 3px 0 #a9a0a733}
+.evolution-medal.earned .evolution-medal-emblem{background:linear-gradient(145deg,#fff3b1,#eeb85c);border-color:#d99d36;color:#945b13;box-shadow:0 3px 0 #bf822f44}
+.evolution-medal-lock{position:absolute;right:-6px;bottom:-1px;background:#fff;border-radius:50%;padding:2px;box-sizing:content-box;color:#b1a1aa}
+.evolution-medal>strong{min-height:28px;font-size:11px;font-weight:950;line-height:1.25;display:flex;align-items:center;justify-content:center;overflow-wrap:anywhere}
+.evolution-medal>small{font-size:9px;color:inherit;font-weight:800}
+.evolution-medal-progress{display:block;width:100%;height:5px;background:#e7dfe5;border-radius:100px;overflow:hidden;margin-top:auto}
+.evolution-medal-progress>span{display:block;height:100%;background:#bfadb9;border-radius:100px}
+.evolution-medal.earned .evolution-medal-progress>span{background:#e6aa35}
+.evolution-badge-detail{background:#fff9e9;border:1px solid #f4e0b3;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.evolution-badge-detail-title{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.evolution-badge-detail-title strong{font-size:12px;color:#744b38}
+.evolution-badge-detail-title span{font-size:10px;font-weight:800;color:#a16e45}
+.evolution-badge-detail p{font-size:11px;line-height:1.4;color:#755849;margin:0}
+.evolution-badge-detail small{font-size:10px;line-height:1.4;color:#99735d}
+.evolution-chart-filter{display:flex;align-items:center;gap:10px;margin-top:14px}
+.evolution-chart-filter label{flex:0 0 auto;font-size:11px;color:#8d6278}
+.evolution-chart-filter select{flex:1;width:100%;min-width:0;min-height:39px;padding:8px 10px;font-size:13px;background:#fff9fc}
+.evolution-chart-numbers{display:flex;gap:13px;flex-wrap:wrap;margin-top:12px;font-size:10px;color:#916f82}
+.evolution-chart-numbers strong{font-size:15px;color:#6f3d5b}
+.evolution-chart-bars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;align-items:end;height:146px;padding:8px 7px 0;background:repeating-linear-gradient(0deg,transparent,transparent 31px,#f7eff3 32px);margin-top:10px}
+.evolution-chart-column{display:flex;align-items:center;justify-content:flex-end;flex-direction:column;height:100%;gap:5px;min-width:0}
+.evolution-chart-column>strong{font-size:10px;color:#9c5480;white-space:nowrap}
+.evolution-chart-rail{display:flex;align-items:flex-end;justify-content:center;height:109px;width:100%}
+.evolution-chart-rail>div{width:57%;background:linear-gradient(180deg,#fb509e,#e79fc3);border-radius:8px 8px 3px 3px}
+.evolution-chart-column>small{font-size:10px;color:#8c647a;font-weight:850}
+.evolution-chart-note{font-size:10px;line-height:1.4;color:#9d7c8e;margin:11px 0 0}
+.evolution-top-note{font-size:10px;color:#9d7c8e;font-weight:750}
+.evolution-records-details{margin-top:11px}
+.evolution-records-details summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;min-height:42px;padding:9px 11px;border-radius:11px;background:#fff0f7;color:#a82b67;font-size:12px;font-weight:900;list-style:none}
+.evolution-records-details summary::-webkit-details-marker{display:none}
+.evolution-records-details[open] summary svg{transform:rotate(90deg)}
+.evolution-records-inner{display:flex;flex-direction:column;gap:9px;margin-top:13px}
+.evolution-records-inner label{font-size:11px;font-weight:850;color:#75465e}
+.evolution-records-inner select{min-height:40px;font-size:13px;padding:9px}
+.evolution-records-inner h4{font-size:12px;color:#683b53;margin:10px 0 0}
+.evolution-no-data{font-size:11px;color:#9b7f8b;line-height:1.45;margin:4px}
+.evolution-record-list{display:flex;flex-direction:column}
+.evolution-record-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #f5e9ef;padding:10px 2px}
+.evolution-record-row:last-child{border-bottom:0}
+.evolution-record-row>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.evolution-record-row strong{font-size:12px;color:#613d51;overflow-wrap:anywhere}
+.evolution-record-row small{font-size:10px;color:#987586}
+.evolution-record-row>span{white-space:nowrap;color:#ae3e78;font-size:12px;font-weight:900}
+.evolution-record-row>svg{color:#34956c}
+@media(max-width:360px){.evolution-overview{gap:5px}.evolution-overview-item{padding:9px 6px}.evolution-overview-item strong{font-size:20px}.evolution-medal{flex-basis:114px}.evolution-chart-bars{gap:8px}.evolution-achievements,.evolution-chart-block,.evolution-records{padding:12px!important}}
+@media(prefers-reduced-motion:reduce){.evolution-medal-rail{scroll-behavior:auto}}
