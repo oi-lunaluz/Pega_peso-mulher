@@ -4,17 +4,15 @@ import AppIcon from '../AppIcon.vue'
 import {GOAL_OPTIONS} from '../lib/onboarding.js'
 
 const {view,profile,logout,syncStatus}=inject('pegaPesoApp')
-const fileInput=ref(null)
 const photoBusy=ref(false)
 const photoError=ref('')
-const confirmSignout=ref(false)
 
 function readImage(file){
  return new Promise((resolve,reject)=>{
   const image=new Image()
   const url=URL.createObjectURL(file)
   image.onload=()=>{URL.revokeObjectURL(url);resolve(image)}
-  image.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Não foi possível abrir essa imagem.'))}
+  image.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Não consegui abrir essa imagem. Experimente JPG ou PNG.'))}
   image.src=url
  })
 }
@@ -23,18 +21,18 @@ async function choosePhoto(event){
  event.target.value=''
  if(!file)return
  photoError.value=''
- if(!['image/jpeg','image/png','image/webp'].includes(file.type)){
-  photoError.value='Escolha uma foto JPG, PNG ou WebP.'
+ if(file.type&&!file.type.startsWith('image/')){
+  photoError.value='Selecione uma imagem da galeria ou da câmera.'
   return
  }
- if(file.size>8*1024*1024){
-  photoError.value='A foto deve ter até 8 MB.'
+ if(file.size>20*1024*1024){
+  photoError.value='A foto deve ter até 20 MB.'
   return
  }
  photoBusy.value=true
  try{
   const image=await readImage(file)
-  const square=256
+  const square=192
   const canvas=document.createElement('canvas')
   canvas.width=square;canvas.height=square
   const ctx=canvas.getContext('2d')
@@ -44,8 +42,8 @@ async function choosePhoto(event){
   ctx.fillStyle='#fff'
   ctx.fillRect(0,0,square,square)
   ctx.drawImage(image,x,y,side,side,0,0,square,square)
-  const encoded=canvas.toDataURL('image/jpeg',0.74)
-  if(encoded.length>110000)throw new Error('Esta foto ficou grande demais. Tente outra.')
+  const encoded=canvas.toDataURL('image/jpeg',0.68)
+  if(!encoded.startsWith('data:image/jpeg,'))throw new Error('Não foi possível converter sua foto.')
   profile.value.photoDataUrl=encoded
  }catch(error){photoError.value=error.message||'Não foi possível carregar sua foto.'}
  finally{photoBusy.value=false}
@@ -66,19 +64,19 @@ function removePhoto(){photoError.value='';profile.value.photoDataUrl=''}
         <img v-if="profile.photoDataUrl" :src="profile.photoDataUrl" alt="Foto de perfil cadastrada"/>
         <AppIcon v-else name="user" :size="37"/>
       </div>
-      <button type="button" class="profile-photo-edit" :disabled="photoBusy" aria-label="Escolher foto de perfil" @click="fileInput?.click()">
+      <label class="profile-photo-edit" for="profile-photo-input" aria-label="Escolher foto de perfil">
         <AppIcon name="pencil" :size="15"/>
-      </button>
-      <input ref="fileInput" class="profile-hidden-upload" type="file" accept="image/jpeg,image/png,image/webp" aria-label="Escolher imagem de perfil" @change="choosePhoto"/>
+      </label>
+      <input id="profile-photo-input" class="profile-hidden-upload" type="file" accept="image/*" aria-label="Escolher imagem de perfil" :disabled="photoBusy" @change="choosePhoto"/>
     </div>
     <strong>{{profile.nickname||'Mulher poderosa!'}}</strong>
     <p>Foto e nome aparecem na sua conta.</p>
     <div class="profile-photo-actions">
-      <button type="button" :disabled="photoBusy" @click="fileInput?.click()">{{photoBusy?'Preparando foto...':'Adicionar ou trocar foto'}}</button>
+      <label class="profile-photo-choose" for="profile-photo-input">{{photoBusy?'Preparando foto...':'Adicionar ou trocar foto'}}</label>
       <button v-if="profile.photoDataUrl" type="button" class="profile-remove-photo" @click="removePhoto">Remover</button>
     </div>
     <small v-if="photoError" class="profile-photo-error" role="alert">{{photoError}}</small>
-    <small v-else class="profile-photo-hint">JPG, PNG ou WebP · até 8 MB. A imagem é reduzida para caber no perfil.</small>
+    <small v-else class="profile-photo-hint">Escolha uma foto da galeria ou câmera (até 20 MB). Ela será reduzida automaticamente.</small>
   </section>
 
   <section class="profile-settings">
@@ -93,8 +91,7 @@ function removePhoto(){photoError.value='';profile.value.photoDataUrl=''}
     <div class="profile-initial-data">
       <label class="brazil-label" for="profile-weight-kg">Peso atual (kg) · opcional</label>
       <input id="profile-weight-kg" type="number" min="0.1" max="650" step="0.1" inputmode="decimal" :value="profile.bodyWeightKg??''" @change="profile.bodyWeightKg=$event.target.value===''?null:Number($event.target.value)"/>
-      <label class="brazil-label" for="profile-load-kg">Carga habitual de referência (kg) · opcional</label>
-      <input id="profile-load-kg" type="number" min="0" max="1000" step="0.5" inputmode="decimal" :value="profile.usualLoadKg??''" @change="profile.usualLoadKg=$event.target.value===''?null:Number($event.target.value)"/>
+
     </div>
     <p class="profile-save-hint"><AppIcon name="check" :size="14"/> {{syncStatus==='saving'?'Salvando alterações...':syncStatus==='error'?'Falha ao sincronizar: confira o aviso no topo.':'Alterações salvas automaticamente na sua conta.'}}</p>
   </section>
