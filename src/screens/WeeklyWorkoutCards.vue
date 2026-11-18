@@ -33,7 +33,7 @@ function confirmRemove(){
           :title="'Excluir '+card.name"
           :aria-label="'Excluir treino '+card.name"
           @click.stop="pendingDelete=card.name">
-          <AppIcon name="trash" :size="18"/>
+          <AppIcon name="trash" :size="15"/>
         </button>
         <div class="week-card-main">
           <span class="week-card-count">{{card.number}}</span>
