@@ -4,7 +4,8 @@ import AppIcon from '../AppIcon.vue'
 const {
   view,homeGreeting,homeWeek,homeStreak,currentWeekLabel,
   quickFeedback,toggleHomeSlot,openHomeSlot,
-  cycle,cycleDay,cyclePhase
+  cycle,cycleDay,cyclePhase,
+  weeklyCardio,cardioWeeklyTarget,openCardioModal
 }=inject('pegaPesoApp')
 const showPhaseInfo=ref(false)
 </script>
@@ -92,6 +93,22 @@ const showPhaseInfo=ref(false)
       <p v-if="quickFeedback" class="quick-workout-feedback" role="status">{{quickFeedback}}</p>
     </section>
 
+    <div class="minimal-home-wellness" aria-label="Ciclo e cardio da semana">
+      <section class="minimal-cardio-feature" aria-label="Meta semanal de cardio">
+        <div class="minimal-cardio-kicker"><AppIcon name="timer" :size="17"/> CARDIO</div>
+        <h3>{{weeklyCardio}} <small>/ {{cardioWeeklyTarget}} min</small></h3>
+        <div class="minimal-cardio-progress" role="progressbar"
+          :aria-label="'Cardio da semana: '+weeklyCardio+' de '+cardioWeeklyTarget+' minutos'"
+          :aria-valuenow="Math.min(weeklyCardio,cardioWeeklyTarget)"
+          :aria-valuemin="0" :aria-valuemax="cardioWeeklyTarget">
+          <span :style="{width:Math.min(100,weeklyCardio/cardioWeeklyTarget*100)+'%'}"></span>
+        </div>
+        <p>{{weeklyCardio>=cardioWeeklyTarget?'Meta semanal atingida!':(cardioWeeklyTarget-weeklyCardio)+' min para sua meta'}}</p>
+        <button type="button" class="minimal-cardio-start" @click="openCardioModal">
+          <AppIcon name="arrow" :size="15"/> Iniciar cardio
+        </button>
+      </section>
+
     <section class="minimal-cycle-feature" aria-label="Resumo do ciclo menstrual">
       <div class="minimal-cycle-feature-head">
         <span class="minimal-cycle-kicker"><AppIcon name="flower" :size="17"/> SEU CICLO</span>
@@ -120,6 +137,8 @@ const showPhaseInfo=ref(false)
         <AppIcon name="arrow" :size="15"/>
       </button>
     </section>
+
+    </div>
 
     <div v-if="showPhaseInfo&&cyclePhase" class="modal-backdrop" @click.self="showPhaseInfo=false">
       <div class="modal-sheet minimal-cycle-info-sheet" role="dialog" aria-modal="true"
