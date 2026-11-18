@@ -369,3 +369,40 @@
 .cycle-edit-feedback,.cycle-edit-count{margin:9px 0 0;font-size:11px;font-weight:850;color:#b72e6b;line-height:1.4}
 .cycle-settings-note{font-size:11px;color:#87697a;line-height:1.45;margin:-5px 3px 2px}
 @media(max-width:360px){.cycle-month-nav{grid-template-columns:32px minmax(0,1fr) 32px 32px;gap:4px}.cycle-month-nav>button{height:32px;min-width:32px;min-height:32px!important}.cycle-calendar-grid{gap:3px}.cycle-calendar-day{min-height:29px!important;font-size:11px!important}.cycle-calendar-legend{gap:5px}.cycle-calendar-legend span{font-size:8px}}
+
+
+/* Fases do calendário: menstrual rosa, folicular verde, ovulatória azul, lútea lilás. */
+.cycle-calendar-day.phase-menstrual:not(.recorded){background:#ffe2ed!important;color:#a4446e!important}
+.cycle-calendar-day.phase-follicular{background:#daf5e7!important;color:#216b51!important}
+.cycle-calendar-day.phase-ovulatory{background:#dceeff!important;color:#28628f!important}
+.cycle-calendar-day.phase-luteal{background:#efe3ff!important;color:#714a9c!important}
+.cycle-calendar-day.recorded,.cycle-calendar-day.phase-menstrual.recorded{background:#ed6098!important;color:#fff!important;border-color:#db397a!important}
+.cycle-calendar-day:not(:disabled){cursor:pointer}
+.cycle-calendar-card.is-editing .cycle-calendar-day:not(:disabled){cursor:pointer}
+.cycle-phase-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:13px}
+.cycle-phase-legend-item{display:flex;align-items:flex-start;gap:7px;min-width:0;text-align:left;background:#fffafc!important;color:#593a4b!important;border:1px solid #f0dae5!important;border-radius:12px!important;padding:9px 7px!important}
+.cycle-phase-legend-item>span{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+.cycle-phase-legend-item strong{font-size:11px;font-weight:950;line-height:1.15}
+.cycle-phase-legend-item small{font-size:9px;line-height:1.3;color:#937587}
+.cycle-phase-legend-item>svg{margin-top:3px;color:#a87995}
+.cycle-phase-dot{display:block;flex:0 0 14px;width:14px;height:14px;border-radius:5px;margin-top:1px}
+.cycle-phase-dot.phase-menstrual,.cycle-phase-popup-dot.phase-menstrual{background:#f6a6c5;color:#a33c70}
+.cycle-phase-dot.phase-follicular,.cycle-phase-popup-dot.phase-follicular{background:#bcebd3;color:#227b53}
+.cycle-phase-dot.phase-ovulatory,.cycle-phase-popup-dot.phase-ovulatory{background:#badcfa;color:#2873ad}
+.cycle-phase-dot.phase-luteal,.cycle-phase-popup-dot.phase-luteal{background:#e1d0fa;color:#794daa}
+.cycle-calendar-legend{margin-top:10px;padding-top:9px;border-top:1px solid #f5e7ef}
+.cycle-calendar-legend span{font-size:10px}
+.cycle-phase-popup{display:flex;flex-direction:column;gap:12px;padding:18px!important;text-align:left}
+.cycle-phase-popup-head{display:flex;justify-content:space-between;align-items:center}
+.cycle-phase-popup-dot{height:45px;width:45px;display:grid;place-items:center;border-radius:15px}
+.cycle-phase-popup-head>button{height:36px;min-width:36px;padding:7px!important;border-radius:50%!important;background:#fff0f6!important;color:#a63b70!important}
+.cycle-phase-popup h2{font-size:22px!important;color:#60344b;line-height:1.2;margin:0}
+.cycle-phase-popup>p{margin:0;font-size:12px;line-height:1.55;color:#735868}
+.cycle-phase-popup .cycle-phase-popup-date{font-size:11px;color:#a5547a;font-weight:750}
+.cycle-phase-popup-training{display:flex;align-items:flex-start;gap:9px;background:#eaf7ef;padding:12px;border-radius:13px;color:#297654}
+.cycle-phase-popup-training>svg{flex:0 0 auto}
+.cycle-phase-popup-training strong{font-size:12px;color:#27694b}
+.cycle-phase-popup-training p{font-size:11px;line-height:1.5;margin:5px 0 0;color:#49775c}
+.cycle-phase-popup .cycle-phase-popup-disclaimer{font-size:10px;line-height:1.4;color:#967789}
+.cycle-phase-popup-close{min-height:42px;background:#d8196b!important;color:#fff!important;width:100%}
+@media(max-width:360px){.cycle-phase-legend{gap:5px}.cycle-phase-legend-item{padding:7px 5px!important;gap:5px}.cycle-phase-legend-item strong{font-size:10px}.cycle-phase-legend-item small{font-size:8px}.cycle-calendar-legend span{font-size:9px}}
