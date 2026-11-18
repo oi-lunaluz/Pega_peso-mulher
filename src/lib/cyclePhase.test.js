@@ -37,3 +37,18 @@ test('dia extra marcado no calendário aparece como fase menstrual, sem alterar 
  assert.equal(estimatedCyclePhase(cycle,at(3)).key,'follicular')
  assert.equal(cycle.period,5)
 })
+
+
+test('menstruação antiga registrada continua visível após cadastrar ciclo mais recente',()=>{
+ const cycle={...cfg,start:'2026-11-15',periodDays:['2026-11-02','2026-11-03'],editedPeriodMonths:['2026-11']}
+ const phase=estimatedCyclePhase(cycle,at(2))
+ assert.equal(phase.key,'menstrual')
+ assert.equal(phase.day,null)
+})
+test('fases diferentes existem em datas diferentes do calendário, sem considerar mês todo fértil',()=>{
+ const p=(day)=>estimatedCyclePhase(cfg,at(day))?.key
+ assert.equal(p(3),'menstrual')
+ assert.equal(p(9),'follicular')
+ assert.equal(p(14),'ovulatory')
+ assert.equal(p(24),'luteal')
+})
