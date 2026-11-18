@@ -71,3 +71,23 @@
 /* A tela inicial tem só um painel de cardio, apresentado pelas fichas. */
 .home-bottom-grid.week-home-tail{display:block}
 .week-home-tail .home-cycle{display:flex;width:100%;height:auto;min-height:130px}
+
+
+/* Aba única de Treinos: fichas primeiro, opções secundárias recolhidas. */
+.app>.bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))}
+.merged-trainings{display:flex;flex-direction:column;gap:12px;min-width:0}
+.merged-add-training{display:flex;gap:8px;justify-content:center;align-items:center;width:100%;min-height:43px;background:#fff0f7!important;color:#b71960!important;border:1px dashed #e9b7cd!important;font-size:12px!important}
+.merged-extra{padding:0!important;background:#fff;border:1px solid #f1dbe4;border-radius:14px;overflow:hidden}
+.merged-extra-toggle{display:flex;align-items:center;gap:9px;text-align:left;width:100%;background:#fff!important;color:#75435b!important;font-size:12px!important;font-weight:850;padding:12px!important}
+.merged-extra-toggle>svg:last-child{margin-left:auto}
+.merged-extra-toggle[aria-expanded=true]>svg:last-child{transform:rotate(90deg)}
+.merged-extra-count{font-size:11px;margin-left:3px;color:#977586}
+.merged-extra-body{padding:0 12px 12px;display:flex;flex-direction:column;gap:10px}
+.merged-extra-body>.week-settings{box-shadow:none}
+.merged-history{display:flex;flex-direction:column;gap:3px}
+.merged-history-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid #f8edf1}
+.merged-history-row>svg{color:#35996d;flex:0 0 auto}
+.merged-history-row>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.merged-history-row strong{font-size:12px;color:#69485a}
+.merged-history-row small,.merged-empty{font-size:11px;color:#987b8a}
+.merged-empty{margin:0}
