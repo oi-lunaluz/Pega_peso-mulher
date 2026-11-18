@@ -28,8 +28,8 @@ function confirmRemove(){
     </div>
     
     <div v-if="weeklyStrengthCards.length" class="week-card-stack">
-      <article v-for="card in weeklyStrengthCards" :key="card.name" class="week-strength-card" :class="{completed:card.completed, 'week-card-can-delete':!showManageLink}">
-        <button v-if="!showManageLink" type="button" class="week-card-trash"
+      <article v-for="card in weeklyStrengthCards" :key="card.name" class="week-strength-card" :class="{completed:card.completed, 'week-card-can-delete':true}">
+        <button type="button" class="week-card-trash"
           :title="'Excluir '+card.name"
           :aria-label="'Excluir treino '+card.name"
           @click.stop="pendingDelete=card.name">
