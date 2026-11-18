@@ -435,3 +435,40 @@
   border:2px solid #ffffffa0;
   border-radius:50%;
 }
+
+
+/* Perfil: foto editável, dados essenciais e saída clara para outra conta. */
+.profile-screen{display:flex;flex-direction:column;gap:13px;min-width:0}
+.profile-heading{position:relative;isolation:isolate;display:flex;align-items:center;min-height:110px;border-radius:19px;padding:16px;overflow:hidden;background:linear-gradient(110deg,#ffe6f0,#ffddc4);border:1px solid #f1cdda}
+.profile-heading>div{position:relative;z-index:1;width:75%}
+.profile-eyebrow{font-size:10px;font-weight:950;letter-spacing:.6px;color:#a64e78}
+.profile-heading h2{font-size:24px!important;margin:5px 0!important;color:#5f324b}
+.profile-heading p{font-size:11px;color:#8e6277;margin:0}
+.profile-heading img{position:absolute;width:130px;height:145px;object-fit:contain;right:-17px;bottom:-42px}
+.profile-identity,.profile-settings,.profile-account{border:1px solid #f0dce5;background:#fff;border-radius:18px;padding:15px;display:flex;flex-direction:column;gap:9px}
+.profile-identity{align-items:center;text-align:center;gap:7px}
+.profile-photo-control{position:relative;width:100px;height:100px;margin-bottom:5px}
+.profile-photo-preview{display:grid;place-items:center;width:100px;height:100px;overflow:hidden;border-radius:50%;border:3px solid #f4bed6;color:#c0357b;background:#fff0f6}
+.profile-photo-preview img{height:100%;width:100%;object-fit:cover}
+.profile-photo-edit{position:absolute;right:0;bottom:0;display:grid;place-items:center;min-width:32px;width:32px;min-height:32px!important;height:32px;padding:6px!important;border-radius:50%!important;background:#e51772!important;color:#fff!important;border:2px solid #fff!important}
+.profile-hidden-upload{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden;pointer-events:none}
+.profile-identity>strong{font-size:18px;font-weight:950;color:#573346}
+.profile-identity>p{font-size:11px;color:#8a7280;margin:0}
+.profile-photo-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:5px}
+.profile-photo-actions button{font-size:11px!important;font-weight:850;padding:9px 12px!important;border-radius:10px!important;color:#a52967!important;background:#fff1f7!important;border:1px solid #f0d1df!important}
+.profile-photo-actions button.profile-remove-photo{color:#856879!important;background:#f7f4f6!important}
+.profile-photo-hint,.profile-photo-error{font-size:10px;line-height:1.4;color:#8f7180}
+.profile-photo-error{color:#bb3455}
+.profile-settings h3,.profile-account h3{font-size:15px!important;color:#5b374b;margin:0 0 5px!important}
+.profile-settings label{font-size:11px;font-weight:850;color:#6b4559}
+.profile-settings>input,.profile-settings>select,.profile-settings .profile-initial-data>input{width:100%;min-height:44px;padding:10px 12px!important;background:#fffdfd;border:1px solid #edcfdd;border-radius:11px;font-size:15px}
+.profile-settings .profile-initial-data{display:flex;flex-direction:column;gap:8px;margin-top:3px}
+.profile-save-hint{display:flex;align-items:center;gap:6px;font-size:10px;color:#45865f;line-height:1.4;margin:5px 0 0}
+.profile-shortcuts{display:flex;flex-direction:column;gap:8px}
+.profile-account p{margin:0;font-size:11px;line-height:1.5;color:#927385}
+.profile-account>button{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:43px;border-radius:11px!important;font-size:12px!important;font-weight:900}
+.profile-new-account{background:#e7186d!important;color:white!important}
+.profile-account .profile-signout{background:#fff7fa!important;color:#b0306a!important;border:1px solid #eed0dd!important}
+.profile-account>small{font-size:10px;color:#927b87;line-height:1.4}
+.header-profile{overflow:hidden;padding:0!important}
+.header-profile-photo{height:100%;width:100%;object-fit:cover;display:block;border-radius:50%}
