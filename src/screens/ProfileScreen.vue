@@ -6,49 +6,58 @@ import {GOAL_OPTIONS} from '../lib/onboarding.js'
 const {view,profile,logout,syncStatus}=inject('pegaPesoApp')
 const photoBusy=ref(false)
 const photoError=ref('')
+const photoMessage=ref('')
 
-function readImage(file){
+// Ler a foto como arquivo local é mais compatível com a galeria Android e WebViews.
+function readPhotoAsDataUrl(file){
  return new Promise((resolve,reject)=>{
-  const image=new Image()
-  const url=URL.createObjectURL(file)
-  image.onload=()=>{URL.revokeObjectURL(url);resolve(image)}
-  image.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Não consegui abrir essa imagem. Experimente JPG ou PNG.'))}
-  image.src=url
+  const reader=new FileReader()
+  reader.onload=()=>typeof reader.result==='string'?resolve(reader.result):reject(new Error('Não foi possível ler a foto.'))
+  reader.onerror=()=>reject(new Error('O celular não permitiu ler este arquivo.'))
+  reader.readAsDataURL(file)
+ })
+}
+function decodePhoto(source){
+ return new Promise((resolve,reject)=>{
+  const img=new Image()
+  img.onload=()=>resolve(img)
+  img.onerror=()=>reject(new Error('Não foi possível abrir esse formato. Tente uma foto JPG ou um print da galeria.'))
+  img.src=source
  })
 }
 async function choosePhoto(event){
  const file=event.target.files?.[0]
+ // Limpar após guardar o arquivo permite escolher a mesma imagem de novo.
  event.target.value=''
- if(!file)return
+ if(!file){photoMessage.value='Nenhuma foto foi selecionada.';return}
  photoError.value=''
- if(file.type&&!file.type.startsWith('image/')){
-  photoError.value='Selecione uma imagem da galeria ou da câmera.'
-  return
- }
- if(file.size>20*1024*1024){
-  photoError.value='A foto deve ter até 20 MB.'
-  return
+ photoMessage.value='Lendo foto da galeria...'
+ if(file.size>20*1024*1024){photoError.value='A imagem precisa ter até 20 MB.';photoMessage.value='';return}
+ if(file.type&&!file.type.startsWith('image/')&&!/\\.(heic|heif|jpg|jpeg|png|webp)$/i.test(file.name)){
+  photoError.value='Escolha uma imagem da galeria (JPG, PNG, WebP ou HEIC).';photoMessage.value='';return
  }
  photoBusy.value=true
  try{
-  const image=await readImage(file)
-  const square=192
+  const source=await readPhotoAsDataUrl(file)
+  photoMessage.value='Preparando sua foto...'
+  const image=await decodePhoto(source)
   const canvas=document.createElement('canvas')
-  canvas.width=square;canvas.height=square
+  canvas.width=192;canvas.height=192
   const ctx=canvas.getContext('2d')
-  if(!ctx)throw new Error('Não foi possível preparar sua foto.')
+  if(!ctx)throw new Error('O navegador não permitiu ajustar a foto.')
   const side=Math.min(image.naturalWidth,image.naturalHeight)
-  const x=(image.naturalWidth-side)/2,y=(image.naturalHeight-side)/2
-  ctx.fillStyle='#fff'
-  ctx.fillRect(0,0,square,square)
-  ctx.drawImage(image,x,y,side,side,0,0,square,square)
-  const encoded=canvas.toDataURL('image/jpeg',0.68)
-  if(!encoded.startsWith('data:image/jpeg,'))throw new Error('Não foi possível converter sua foto.')
-  profile.value.photoDataUrl=encoded
- }catch(error){photoError.value=error.message||'Não foi possível carregar sua foto.'}
- finally{photoBusy.value=false}
+  if(!side)throw new Error('Essa imagem não tem dimensões válidas.')
+  ctx.drawImage(image,(image.naturalWidth-side)/2,(image.naturalHeight-side)/2,side,side,0,0,192,192)
+  const data=canvas.toDataURL('image/jpeg',0.7)
+  if(!data.startsWith('data:image/jpeg,'))throw new Error('Não foi possível converter a imagem.')
+  profile.value.photoDataUrl=data
+  photoMessage.value='Foto selecionada! Salvando na sua conta...'
+ }catch(error){
+  photoError.value=error?.message||'Não foi possível usar essa foto.'
+  photoMessage.value=''
+ }finally{photoBusy.value=false}
 }
-function removePhoto(){photoError.value='';profile.value.photoDataUrl=''}
+function removePhoto(){photoError.value='';photoMessage.value='Foto removida.';profile.value.photoDataUrl=''}
 </script>
 
 <template>
@@ -72,13 +81,13 @@ function removePhoto(){photoError.value='';profile.value.photoDataUrl=''}
       <label for="profile-photo-input">Escolher foto da galeria</label>
       <input id="profile-photo-input" type="file" accept="image/*" :disabled="photoBusy"
         aria-label="Selecionar foto da galeria do celular" @change="choosePhoto"/>
-      <span v-if="photoBusy" class="profile-photo-upload-status" role="status">Preparando sua foto...</span>
+      <span v-if="photoMessage" class="profile-photo-upload-status" role="status">{{photoMessage}}</span>
     </div>
     <div v-if="profile.photoDataUrl" class="profile-photo-actions">
       <button type="button" class="profile-remove-photo" @click="removePhoto">Remover foto</button>
     </div>
     <small v-if="photoError" class="profile-photo-error" role="alert">{{photoError}}</small>
-    <small v-else class="profile-photo-hint">Selecione uma foto normal da galeria (JPG, PNG ou WebP). Ela será ajustada para o perfil.</small>
+    <small v-else class="profile-photo-hint">Escolha uma foto da galeria. Se não funcionar, uma captura de tela em JPG/PNG também serve.</small>
   </section>
 
   <section class="profile-settings">
