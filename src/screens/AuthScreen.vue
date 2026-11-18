@@ -3,8 +3,9 @@ import { ref } from 'vue'
 import AppIcon from '../AppIcon.vue'
 import { supabase } from '../lib/supabase.js'
 
+const props=defineProps({initialMode:{type:String,default:'login'}})
 const emit=defineEmits(['authenticated'])
-const mode=ref('login')
+const mode=ref(props.initialMode==='signup'?'signup':'login')
 const name=ref('')
 const email=ref('')
 const password=ref('')
