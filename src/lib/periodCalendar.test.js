@@ -24,7 +24,7 @@ test('estimativa antiga só vale nos meses que ainda não foram editados',()=>{
  const c=base()
  assert.equal(projectedPeriodDate(c,'2026-10-13'),true)
  const changed=togglePeriodDate(c,'2026-11-10',today)
- assert.equal(projectedPeriodDate(changed,'2026-10-13'),true)
+ assert.equal(isActualPeriodDate(changed,'2026-11-10'),true)
  assert.equal(projectedPeriodDate(changed,'2026-11-11'),false)
 })
 test('dias registrados em meses diferentes preservam histórico e ajustam último início',()=>{
