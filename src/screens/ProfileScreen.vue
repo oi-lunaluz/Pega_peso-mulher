@@ -33,7 +33,7 @@ async function choosePhoto(event){
  photoError.value=''
  photoMessage.value='Lendo foto da galeria...'
  if(file.size>20*1024*1024){photoError.value='A imagem precisa ter até 20 MB.';photoMessage.value='';return}
- if(file.type&&!file.type.startsWith('image/')&&!/\\.(heic|heif|jpg|jpeg|png|webp)$/i.test(file.name)){
+ if(file.type&&!file.type.startsWith('image/')&&!/\.(heic|heif|jpg|jpeg|png|webp)$/i.test(file.name)){
   photoError.value='Escolha uma imagem da galeria (JPG, PNG, WebP ou HEIC).';photoMessage.value='';return
  }
  photoBusy.value=true
