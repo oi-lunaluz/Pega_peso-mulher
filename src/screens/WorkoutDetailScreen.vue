@@ -48,7 +48,7 @@ function confirmDelete(){
       <button type="button" class="workout-exercise-trash"
         :aria-label="'Excluir exercício '+e" :title="'Excluir '+e"
         @click="askDeleteExercise(i,e)">
-        <AppIcon name="trash" :size="18"/>
+        <AppIcon name="trash" :size="15"/>
       </button>
     </div>
   </div>
