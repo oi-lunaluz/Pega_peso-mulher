@@ -21,41 +21,67 @@ function decodePhoto(source){
  return new Promise((resolve,reject)=>{
   const img=new Image()
   img.onload=()=>resolve(img)
-  img.onerror=()=>reject(new Error('Não foi possível abrir esse formato. Tente uma foto JPG ou um print da galeria.'))
+  img.onerror=()=>reject(new Error('Não consegui abrir este formato. Tente JPG ou PNG.'))
   img.src=source
  })
 }
-async function choosePhoto(event){
- const file=event.target.files?.[0]
- // Limpar após guardar o arquivo permite escolher a mesma imagem de novo.
- event.target.value=''
- if(!file){photoMessage.value='Nenhuma foto foi selecionada.';return}
- photoError.value=''
- photoMessage.value='Lendo foto da galeria...'
- if(file.size>20*1024*1024){photoError.value='A imagem precisa ter até 20 MB.';photoMessage.value='';return}
- if(file.type&&!file.type.startsWith('image/')&&!/\.(heic|heif|jpg|jpeg|png|webp)$/i.test(file.name)){
-  photoError.value='Escolha uma imagem da galeria (JPG, PNG, WebP ou HEIC).';photoMessage.value='';return
- }
+async function applyPhoto(file){
+ if(!file)throw new Error('Nenhuma imagem foi recebida.')
+ if(file.size>20*1024*1024)throw new Error('A imagem precisa ter até 20 MB.')
+ if(file.type&&!file.type.startsWith('image/'))throw new Error('Selecione uma imagem da galeria.')
+ const source=await readPhotoAsDataUrl(file)
+ photoMessage.value='Preparando a imagem...'
+ const image=await decodePhoto(source)
+ const canvas=document.createElement('canvas')
+ canvas.width=192;canvas.height=192
+ const ctx=canvas.getContext('2d')
+ if(!ctx)throw new Error('Não foi possível processar a foto neste navegador.')
+ const side=Math.min(image.naturalWidth,image.naturalHeight)
+ if(!side)throw new Error('A imagem está vazia.')
+ ctx.drawImage(image,(image.naturalWidth-side)/2,(image.naturalHeight-side)/2,side,side,0,0,192,192)
+ const data=canvas.toDataURL('image/jpeg',0.68)
+ if(!data.startsWith('data:image/jpeg,'))throw new Error('Não foi possível converter a foto.')
+ profile.value.photoDataUrl=data
+ photoMessage.value='Foto colocada no perfil! Salvando na conta...'
+}
+async function processPhoto(file){
+ if(photoBusy.value)return
  photoBusy.value=true
+ photoError.value=''
+ photoMessage.value='Lendo imagem...'
+ try{await applyPhoto(file)}
+ catch(error){photoError.value=error?.message||'Falha ao adicionar foto.';photoMessage.value=''}
+ finally{photoBusy.value=false}
+}
+function choosePhoto(event){
+ const file=event.target.files?.[0]
+ event.target.value=''
+ if(!file){photoMessage.value='O seletor fechou sem escolher imagem.';return}
+ void processPhoto(file)
+}
+async function pastePhoto(){
+ if(photoBusy.value)return
+ photoError.value=''
+ photoMessage.value='Lendo área de transferência...'
  try{
-  const source=await readPhotoAsDataUrl(file)
-  photoMessage.value='Preparando sua foto...'
-  const image=await decodePhoto(source)
-  const canvas=document.createElement('canvas')
-  canvas.width=192;canvas.height=192
-  const ctx=canvas.getContext('2d')
-  if(!ctx)throw new Error('O navegador não permitiu ajustar a foto.')
-  const side=Math.min(image.naturalWidth,image.naturalHeight)
-  if(!side)throw new Error('Essa imagem não tem dimensões válidas.')
-  ctx.drawImage(image,(image.naturalWidth-side)/2,(image.naturalHeight-side)/2,side,side,0,0,192,192)
-  const data=canvas.toDataURL('image/jpeg',0.7)
-  if(!data.startsWith('data:image/jpeg,'))throw new Error('Não foi possível converter a imagem.')
-  profile.value.photoDataUrl=data
-  photoMessage.value='Foto selecionada! Salvando na sua conta...'
- }catch(error){
-  photoError.value=error?.message||'Não foi possível usar essa foto.'
-  photoMessage.value=''
- }finally{photoBusy.value=false}
+  if(!navigator.clipboard?.read)throw new Error('Este navegador não permite colar imagens. Abra o site no Chrome.')
+  const items=await navigator.clipboard.read()
+  for(const item of items){
+   const type=item.types.find(type=>type.startsWith('image/'))
+   if(type){
+    const blob=await item.getType(type)
+    await processPhoto(new File([blob],'foto-colada.png',{type:blob.type||type}))
+    return
+   }
+  }
+  throw new Error('Não há uma imagem copiada. Copie uma foto da galeria e tente novamente.')
+ }catch(error){photoError.value=error?.message||'Não foi possível colar a imagem.';photoMessage.value=''}
+}
+function pasteFromEvent(event){
+ const file=[...(event.clipboardData?.files||[])].find(x=>x.type.startsWith('image/'))
+ if(!file)return
+ event.preventDefault()
+ void processPhoto(file)
 }
 function removePhoto(){photoError.value='';photoMessage.value='Foto removida.';profile.value.photoDataUrl=''}
 </script>
@@ -77,17 +103,20 @@ function removePhoto(){photoError.value='';photoMessage.value='Foto removida.';p
     </div>
     <strong>{{profile.nickname||'Mulher poderosa!'}}</strong>
     <p>Foto e nome aparecem na sua conta.</p>
-    <div class="profile-photo-upload">
+    <div class="profile-photo-upload" @paste="pasteFromEvent">
       <label for="profile-photo-input">Escolher foto da galeria</label>
       <input id="profile-photo-input" type="file" accept="image/*" :disabled="photoBusy"
         aria-label="Selecionar foto da galeria do celular" @change="choosePhoto"/>
       <span v-if="photoMessage" class="profile-photo-upload-status" role="status">{{photoMessage}}</span>
+      <button type="button" class="profile-photo-paste" :disabled="photoBusy" @click="pastePhoto">
+        <AppIcon name="clipboard" :size="16"/> Colar foto copiada
+      </button>
     </div>
     <div v-if="profile.photoDataUrl" class="profile-photo-actions">
       <button type="button" class="profile-remove-photo" @click="removePhoto">Remover foto</button>
     </div>
     <small v-if="photoError" class="profile-photo-error" role="alert">{{photoError}}</small>
-    <small v-else class="profile-photo-hint">Escolha uma foto da galeria. Se não funcionar, uma captura de tela em JPG/PNG também serve.</small>
+    <small v-else class="profile-photo-hint">Também pode copiar uma imagem no celular e tocar em “Colar foto copiada”.</small>
   </section>
 
   <section class="profile-settings">
