@@ -488,3 +488,8 @@
 .profile-photo-upload>input[type=file]::file-selector-button{min-height:32px;margin-right:9px;border:0;border-radius:8px;background:#d81770;color:#fff;font:inherit;font-weight:900;padding:7px 10px;cursor:pointer}
 .profile-photo-upload>input[type=file]:focus-visible{outline:3px solid #a62568;outline-offset:2px}
 .profile-photo-upload-status{font-size:11px;color:#a22b67;font-weight:850}
+
+
+/* Via alternativa quando o seletor da galeria é bloqueado no navegador do celular. */
+.profile-photo-paste{display:flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:9px 12px!important;background:#fff1f7!important;border:1px solid #dfb5ca!important;border-radius:10px!important;color:#a12966!important;font-size:12px!important;font-weight:900}
+.profile-photo-paste:disabled{opacity:.55}
