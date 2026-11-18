@@ -21,9 +21,10 @@ onMounted(()=>{
     if(!app.state.value.workouts.length)app.openCreateModal()
   }
 })
-app.logout=async()=>{
+app.logout=async(mode='login')=>{
   const saved=await app.ensureCloudSaved()
-  if(saved)emit('logout')
+  if(saved)emit('logout',mode)
+  else app.syncMessage.value=app.syncMessage.value||'Não foi possível salvar antes de sair. Tente novamente.'
 }
 provide('pegaPesoApp', app)
 const {
@@ -52,7 +53,7 @@ const {
 <div class="app" :class="{'on-home':view==='home','brazil-app':view!=='home'}">
 <header :class="{'home-header':view==='home','brazil-header':view!=='home'}">
 <div><small class="brand-wordmark"><span class="brand-mark"><AppIcon name="dumbbell" :size="17"/></span> PEGA PESO, MULHER!</small><h1 v-if="view!=='home'">{{view==='edit'?'Minha sequência':view==='list'?'Meus treinos':view==='stats'?'Minha evolução':view==='cycle'?'Meu ciclo':view==='profile'?'Meu perfil':view==='done'?'Missão cumprida!':view==='session'?'Treino em ação':view==='exercise'?exercise:workoutName||'Seu treino'}}</h1></div>
-<button v-if="view!=='profile'" class="header-profile" title="Meu perfil" aria-label="Abrir meu perfil" @click="view='profile'"><AppIcon name="user" :size="21"/></button>
+<button v-if="view!=='profile'" class="header-profile" title="Meu perfil" aria-label="Abrir meu perfil" @click="view='profile'"><img v-if="profile.photoDataUrl" class="header-profile-photo" :src="profile.photoDataUrl" alt=""/><AppIcon v-else name="user" :size="21"/></button>
 <button v-else class="header-profile" aria-label="Voltar ao início" @click="view='home'"><AppIcon name="close" :size="20"/></button>
 </header>
 <div v-if="syncStatus==='error'" class="cloud-sync-error" role="alert">
