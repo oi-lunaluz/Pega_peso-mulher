@@ -109,7 +109,10 @@ const showPhaseInfo=ref(false)
     <div class="minimal-home-wellness" aria-label="Ciclo e cardio da semana">
       <section class="minimal-cardio-feature minimal-cardio-launch" aria-label="Iniciar treino de cardio">
         <div class="minimal-cardio-kicker"><AppIcon name="timer" :size="17"/> CARDIO</div>
-        <div class="minimal-cardio-launch-icon"><AppIcon name="activity" :size="26"/></div>
+        <div class="minimal-cardio-mary">
+          <img src="/mary-cardio-corrida.svg" alt="CaraMary correndo e chamando para o cardio" loading="lazy"/>
+          <span class="minimal-cardio-mary-call">Vem pro cardio!</span>
+        </div>
         <button type="button" class="minimal-cardio-start" @click="openCardioModal">
           <AppIcon name="arrow" :size="15"/> Iniciar cardio
         </button>
