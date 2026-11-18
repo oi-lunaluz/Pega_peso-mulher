@@ -9,6 +9,7 @@ import { weekStrength, toggleWeekStrength, weekLabel } from '../lib/weeklyCards.
 import { weekProgress, weeklyStreak, toggleWeeklySlot } from '../lib/weeklyJourney.js'
 import { removeExerciseFromState, removeWorkoutFromState } from '../lib/deleteWorkouts.js'
 import { estimatedCyclePhase } from '../lib/cyclePhase.js'
+import { togglePeriodDate,recordedPeriodDays,isActualPeriodDate,projectedPeriodDate,periodMonthEdited } from '../lib/periodCalendar.js'
 import { achievementSummary } from '../lib/achievements.js'
 
 /** 
@@ -289,6 +290,23 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     ...(initialCloud?.cycle||readJson(cycleKey,{}))
   })
   if(!Array.isArray(cycle.value.notes))cycle.value.notes=[]
+  if(!Array.isArray(cycle.value.periodDays))cycle.value.periodDays=[]
+  if(!Array.isArray(cycle.value.editedPeriodMonths))cycle.value.editedPeriodMonths=[]
+  const cycleEditing=ref(false)
+  const cycleEditFeedback=ref('')
+  const cycleRecordedCount=computed(()=>recordedPeriodDays(cycle.value).length)
+  function toggleCycleEditing(){
+    cycleEditing.value=!cycleEditing.value
+    cycleEditFeedback.value=''
+  }
+  function toggleCycleCalendarDate(date){
+    if(!cycleEditing.value)return
+    try{
+      const next=togglePeriodDate(cycle.value,date,calendarNow.value)
+      cycle.value=next
+      cycleEditFeedback.value='Dia atualizado. Toque em ✓ para concluir.'
+    }catch(error){cycleEditFeedback.value=error.message||'Não foi possível registrar esse dia.'}
+  }
   const cyclePhase=computed(()=>estimatedCyclePhase(cycle.value,calendarNow.value))
   const achievements=computed(()=>achievementSummary(state.value,cycle.value,calendarNow.value))
   watch(cycle,v=>writeJson(cycleKey,v),{deep:true})
@@ -302,7 +320,27 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
   function moveCycleMonth(delta){const d=new Date(cycleCalendarYear.value,cycleCalendarMonth.value+delta,1);cycleCalendarMonth.value=d.getMonth();cycleCalendarYear.value=d.getFullYear()}
   const dateISO=dateKey
   const calendarMonthName=computed(()=>new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'}))
-  const cycleCalendarDays=computed(()=>{const first=new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1);const offset=first.getDay();return Array.from({length:42},(_,i)=>{const d=new Date(first.getFullYear(),first.getMonth(),1-offset+i);let phase='';if(cycle.value.start){const n=Math.max(1,Number(cycle.value.length)||28);const diff=Math.round((new Date(dateISO(d)+'T12:00:00').getTime()-new Date(cycle.value.start+'T12:00:00').getTime())/86400000);if(diff>=0){const step=diff%n;phase=step<Number(cycle.value.period||5)?'period':Math.abs(step-(n-14))<=2?'fertile':''}}return {date:dateISO(d),number:d.getDate(),outside:d.getMonth()!==cycleCalendarMonth.value,phase,today:dateISO(d)===dateISO(new Date())}})})
+  const cycleCalendarDays=computed(()=>{
+    const first=new Date(cycleCalendarYear.value,cycleCalendarMonth.value,1)
+    const offset=first.getDay()
+    const now=dateISO(calendarNow.value)
+    return Array.from({length:42},(_,i)=>{
+      const d=new Date(first.getFullYear(),first.getMonth(),1-offset+i)
+      const day=dateISO(d)
+      const actual=isActualPeriodDate(cycle.value,day)
+      const predicted=!actual&&projectedPeriodDate(cycle.value,day)
+      let fertile=false
+      if(cycle.value.start&&fromDateKey(cycle.value.start)&&!periodMonthEdited(cycle.value,day)&&day>=cycle.value.start){
+        const n=Math.max(1,Number(cycle.value.length)||28)
+        const startDate=fromDateKey(cycle.value.start)
+        const diff=Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(startDate.getFullYear(),startDate.getMonth(),startDate.getDate()))/86400000)
+        fertile=Math.abs(diff%n-(n-14))<=2
+      }
+      const phase=actual?'period-actual':predicted?'period-estimated':fertile?'fertile':''
+      return {date:day,number:d.getDate(),outside:d.getMonth()!==cycleCalendarMonth.value,phase,
+        actual,predicted,today:day===now,future:day>now}
+    })
+  })
   const chartWeeks=computed(()=>{const now=new Date();return Array.from({length:4},(_,i)=>{const newest=3-i;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()-newest*7,23,59,59);const start=new Date(end.getFullYear(),end.getMonth(),end.getDate()-6);const value=statsSessions.value.reduce((total,h)=>{const parts=h.date?.split('/');if(!parts||parts.length!==3)return total;const d=new Date(Number(parts[2]),Number(parts[1])-1,Number(parts[0]));return d>=start&&d<=end?total+totalSetVolume(h.sets):total},0);return {label:'S'+(i+1),value}})})
   const chartMax=computed(()=>Math.max(1,...chartWeeks.value.map(x=>x.value)))
   const profileKey=scopedKey('pega-peso-mulher-profile-v1')
@@ -471,6 +509,11 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
     cycle,
     cyclePhase,
     achievements,
+    cycleEditing,
+    cycleEditFeedback,
+    cycleRecordedCount,
+    toggleCycleEditing,
+    toggleCycleCalendarDate,
     noteDate,
     cycleDay,
     addNote,
