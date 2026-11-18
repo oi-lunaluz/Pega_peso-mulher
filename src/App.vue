@@ -7,6 +7,7 @@ import { supabase } from './lib/supabase.js'
 import { loadCloudSnapshot, saveCloudSnapshot, legacyDataForEmail, unscopedLegacyData } from './lib/cloudData.js'
 import { isUnconfiguredSnapshot } from './lib/onboarding.js'
 
+const authLanding=ref('login')
 const account=ref(null)
 const cloud=ref(null)
 const revision=ref(0)
@@ -105,7 +106,8 @@ async function retryLoad(){
   if(data.user)await openAccount(data.user)
   else loading.value=false
 }
-async function logout(){
+async function logout(nextMode='login'){
+  authLanding.value=nextMode==='signup'?'signup':'login'
   ++requestVersion
   const {error}=await supabase.auth.signOut()
   if(error){loadError.value='Não foi possível sair da conta: '+error.message;return}
@@ -162,5 +164,5 @@ onUnmounted(()=>{++requestVersion;listener?.unsubscribe()})
   <AppWorkspace v-else-if="account" :key="account.id"
     :account-id="account.id" :account-name="account.name"
     :initial-cloud="cloud" :cloud-revision="revision" :fresh-setup="firstSetupFinished" @logout="logout"/>
-  <AuthScreen v-else @authenticated="openAccount"/>
+  <AuthScreen v-else :initial-mode="authLanding" @authenticated="openAccount"/>
 </template>
