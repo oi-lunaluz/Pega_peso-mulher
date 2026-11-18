@@ -472,3 +472,10 @@
 .profile-account>small{font-size:10px;color:#927b87;line-height:1.4}
 .header-profile{overflow:hidden;padding:0!important}
 .header-profile-photo{height:100%;width:100%;object-fit:cover;display:block;border-radius:50%}
+
+
+/* A seleção de foto usa <label for> nativo: abre galeria/câmera também no Android. */
+.profile-photo-edit{display:grid;place-items:center;cursor:pointer}
+.profile-photo-edit:focus-within,.profile-photo-choose:focus-visible{outline:3px solid #b02870;outline-offset:2px}
+.profile-photo-choose{display:inline-flex;justify-content:center;align-items:center;min-height:41px;cursor:pointer;background:#fff1f7!important;border:1px solid #f0d1df!important;border-radius:10px!important;padding:9px 12px!important;color:#a52967!important;font-size:11px!important;font-weight:850}
+.profile-photo-control .profile-hidden-upload{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0;left:0;bottom:0}
