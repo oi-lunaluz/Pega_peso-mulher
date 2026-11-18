@@ -192,3 +192,31 @@
 .minimal-home-cycle span{flex:1;text-align:left}
 .on-home>main:has(.minimal-home){gap:0}
 @media(max-width:360px){.minimal-home{gap:10px}.minimal-home-progress,.minimal-home-sequence{padding:12px!important}.minimal-home-header h2{font-size:18px!important}.minimal-home-streak{flex-basis:70px}.minimal-home-date{font-size:9px;padding:6px}.minimal-home-rail{gap:4px}.minimal-home-rail-cell{height:32px}}
+
+
+/* Destaque discreto para o ciclo e explicações da fase na Home minimalista */
+.minimal-cycle-feature{display:flex;flex-direction:column;gap:9px;background:linear-gradient(125deg,#fff1f6,#f9eaf3);border:1px solid #efcbdc;border-radius:18px;padding:15px!important}
+.minimal-cycle-feature-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.minimal-cycle-kicker{display:flex;gap:7px;align-items:center;font-size:10px;font-weight:950;letter-spacing:.65px;color:#a3326b}
+.minimal-cycle-info-button{flex:0 0 35px;display:grid;place-items:center;min-height:35px;width:35px;background:#fff!important;color:#a52f69!important;border:1px solid #ebc4d7!important;padding:6px!important;border-radius:50%!important}
+.minimal-cycle-info-button:focus-visible{outline:3px solid #c92a73;outline-offset:2px}
+.minimal-cycle-phase-row{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.minimal-cycle-phase-row>div{min-width:0}
+.minimal-cycle-feature h3{font-size:21px!important;line-height:1.2;color:#693352;margin:0;font-weight:950}
+.minimal-cycle-feature p{font-size:11px;line-height:1.4;color:#92657a;margin:4px 0 0}
+.minimal-cycle-phase-icon{display:grid;place-items:center;flex:0 0 51px;width:51px;height:51px;border-radius:15px;background:#f6d8e7;color:#bf377c}
+.minimal-cycle-feature .minimal-cycle-phase-reminder{font-size:10px;color:#986d83;margin:0}
+.minimal-cycle-open{display:flex;align-items:center;gap:7px;justify-content:space-between;text-align:left;font-size:11px!important;font-weight:850;background:#fff7fb!important;color:#af306b!important;border:1px solid #efd1df!important;border-radius:10px!important;padding:10px 12px!important}
+.minimal-cycle-info-sheet{display:flex;flex-direction:column;gap:12px;padding:18px!important;text-align:left}
+.minimal-cycle-info-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.minimal-cycle-info-head span{display:flex;align-items:center;gap:6px;color:#a83370;font-size:10px;letter-spacing:.5px;font-weight:950}
+.minimal-cycle-info-head button{display:grid;place-items:center;width:36px;min-width:36px;height:36px;padding:6px!important;background:#fff2f7!important;color:#a33268!important}
+.minimal-cycle-info-sheet h2{font-size:23px!important;line-height:1.2;color:#643450;margin:0}
+.minimal-cycle-info-sheet>p{font-size:13px;line-height:1.55;color:#725466;margin:0}
+.minimal-cycle-training-tip{display:flex;align-items:flex-start;gap:10px;background:#f1f8f2;border:1px solid #d3e9d9;border-radius:14px;padding:12px;color:#2a7852}
+.minimal-cycle-training-tip>svg{flex:0 0 auto;margin-top:1px}
+.minimal-cycle-training-tip strong{font-size:13px;color:#266b4c}
+.minimal-cycle-training-tip p{font-size:12px;line-height:1.5;color:#46745b;margin:5px 0 0}
+.minimal-cycle-info-sheet .minimal-cycle-disclaimer{font-size:10px;color:#927184}
+.minimal-cycle-info-close{width:100%;min-height:43px;background:#dd1768!important;color:#fff!important}
+@media(max-width:360px){.minimal-cycle-feature{padding:12px!important}.minimal-cycle-feature h3{font-size:19px!important}.minimal-cycle-phase-icon{flex-basis:44px;width:44px;height:44px}}
