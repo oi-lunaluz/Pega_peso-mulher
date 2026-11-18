@@ -1,6 +1,7 @@
 <script setup>
 import { inject } from 'vue'
 import AppIcon from '../AppIcon.vue'
+defineProps({showManageLink:{type:Boolean,default:true}})
 const {
   state,view,weeklyStrengthCards,currentWeekLabel,currentDayLabel,
   cardioPlacement,cardioForWorkout,toggleStrengthCard,
@@ -16,9 +17,9 @@ const {
     </div>
     <div class="week-cards-heading">
       <div><span class="eyebrow">SEU PLANO DE FORÇA</span><h3>{{weeklyStrengthCards.filter(w=>w.completed).length}} de {{weeklyStrengthCards.length}} treinos feitos</h3></div>
-      <button type="button" class="week-edit-fichas" @click="view='list'">Minhas fichas</button>
+      <button v-if="showManageLink" type="button" class="week-edit-fichas" @click="view='list'">Ver treinos</button>
     </div>
-    <p class="week-card-explain">Faça na ordem que preferir. O check pertence à ficha nesta semana, não a um dia fixo.</p>
+    
     <div v-if="weeklyStrengthCards.length" class="week-card-stack">
       <article v-for="card in weeklyStrengthCards" :key="card.name" class="week-strength-card" :class="{completed:card.completed}">
         <div class="week-card-main">
