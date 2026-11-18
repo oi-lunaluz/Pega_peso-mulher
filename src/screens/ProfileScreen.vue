@@ -64,19 +64,21 @@ function removePhoto(){photoError.value='';profile.value.photoDataUrl=''}
         <img v-if="profile.photoDataUrl" :src="profile.photoDataUrl" alt="Foto de perfil cadastrada"/>
         <AppIcon v-else name="user" :size="37"/>
       </div>
-      <label class="profile-photo-edit" for="profile-photo-input" aria-label="Escolher foto de perfil">
-        <AppIcon name="pencil" :size="15"/>
-      </label>
-      <input id="profile-photo-input" class="profile-hidden-upload" type="file" accept="image/*" aria-label="Escolher imagem de perfil" :disabled="photoBusy" @change="choosePhoto"/>
+
     </div>
     <strong>{{profile.nickname||'Mulher poderosa!'}}</strong>
     <p>Foto e nome aparecem na sua conta.</p>
-    <div class="profile-photo-actions">
-      <label class="profile-photo-choose" for="profile-photo-input">{{photoBusy?'Preparando foto...':'Adicionar ou trocar foto'}}</label>
-      <button v-if="profile.photoDataUrl" type="button" class="profile-remove-photo" @click="removePhoto">Remover</button>
+    <div class="profile-photo-upload">
+      <label for="profile-photo-input">Escolher foto da galeria</label>
+      <input id="profile-photo-input" type="file" accept="image/*" :disabled="photoBusy"
+        aria-label="Selecionar foto da galeria do celular" @change="choosePhoto"/>
+      <span v-if="photoBusy" class="profile-photo-upload-status" role="status">Preparando sua foto...</span>
+    </div>
+    <div v-if="profile.photoDataUrl" class="profile-photo-actions">
+      <button type="button" class="profile-remove-photo" @click="removePhoto">Remover foto</button>
     </div>
     <small v-if="photoError" class="profile-photo-error" role="alert">{{photoError}}</small>
-    <small v-else class="profile-photo-hint">Escolha uma foto da galeria ou câmera (até 20 MB). Ela será reduzida automaticamente.</small>
+    <small v-else class="profile-photo-hint">Selecione uma foto normal da galeria (JPG, PNG ou WebP). Ela será ajustada para o perfil.</small>
   </section>
 
   <section class="profile-settings">
