@@ -329,15 +329,12 @@ export function useAppState({accountId,accountName,initialCloud=null,cloudRevisi
       const day=dateISO(d)
       const actual=isActualPeriodDate(cycle.value,day)
       const predicted=!actual&&projectedPeriodDate(cycle.value,day)
-      let fertile=false
-      if(cycle.value.start&&fromDateKey(cycle.value.start)&&!periodMonthEdited(cycle.value,day)&&day>=cycle.value.start){
-        const n=Math.max(1,Number(cycle.value.length)||28)
-        const startDate=fromDateKey(cycle.value.start)
-        const diff=Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(startDate.getFullYear(),startDate.getMonth(),startDate.getDate()))/86400000)
-        fertile=Math.abs(diff%n-(n-14))<=2
-      }
-      const phase=actual?'period-actual':predicted?'period-estimated':fertile?'fertile':''
-      return {date:day,number:d.getDate(),outside:d.getMonth()!==cycleCalendarMonth.value,phase,
+      // Cada célula recebe uma fase estimada, com prioridade para os dias
+      // de menstruação efetivamente registrados pela usuária.
+      const phaseInfo=estimatedCyclePhase(cycle.value,d)
+      const phaseKey=phaseInfo?.key||''
+      const phase=phaseKey?'phase-'+phaseKey:''
+      return {date:day,number:d.getDate(),outside:d.getMonth()!==cycleCalendarMonth.value,phase,phaseKey,
         actual,predicted,today:day===now,future:day>now}
     })
   })
