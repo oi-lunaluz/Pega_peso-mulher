@@ -45,6 +45,19 @@ const showPhaseInfo=ref(false)
         {{homeWeek.goal-homeWeek.done}} {{homeWeek.goal-homeWeek.done===1?'treino':'treinos'}} para fechar a semana.
       </p>
       <p v-if="homeStreak===0&&homeWeek.goal" class="minimal-home-helper">Complete a meta para iniciar sua ofensiva de semanas.</p>
+      <div class="minimal-home-cardio-goal">
+        <div class="minimal-home-cardio-goal-heading">
+          <span><AppIcon name="timer" :size="16"/> Cardio</span>
+          <strong>{{weeklyCardio}} <small>/ {{cardioWeeklyTarget}} min</small></strong>
+        </div>
+        <div class="minimal-cardio-progress" role="progressbar"
+          :aria-label="'Cardio da semana: '+weeklyCardio+' de '+cardioWeeklyTarget+' minutos'"
+          :aria-valuenow="Math.min(weeklyCardio,cardioWeeklyTarget)"
+          :aria-valuemin="0" :aria-valuemax="cardioWeeklyTarget">
+          <span :style="{width:Math.min(100,weeklyCardio/cardioWeeklyTarget*100)+'%'}"></span>
+        </div>
+        <p>{{weeklyCardio>=cardioWeeklyTarget?'Meta de cardio atingida!':(cardioWeeklyTarget-weeklyCardio)+' min restantes'}}</p>
+      </div>
     </section>
 
     <section class="minimal-home-sequence">
@@ -94,16 +107,9 @@ const showPhaseInfo=ref(false)
     </section>
 
     <div class="minimal-home-wellness" aria-label="Ciclo e cardio da semana">
-      <section class="minimal-cardio-feature" aria-label="Meta semanal de cardio">
+      <section class="minimal-cardio-feature minimal-cardio-launch" aria-label="Iniciar treino de cardio">
         <div class="minimal-cardio-kicker"><AppIcon name="timer" :size="17"/> CARDIO</div>
-        <h3>{{weeklyCardio}} <small>/ {{cardioWeeklyTarget}} min</small></h3>
-        <div class="minimal-cardio-progress" role="progressbar"
-          :aria-label="'Cardio da semana: '+weeklyCardio+' de '+cardioWeeklyTarget+' minutos'"
-          :aria-valuenow="Math.min(weeklyCardio,cardioWeeklyTarget)"
-          :aria-valuemin="0" :aria-valuemax="cardioWeeklyTarget">
-          <span :style="{width:Math.min(100,weeklyCardio/cardioWeeklyTarget*100)+'%'}"></span>
-        </div>
-        <p>{{weeklyCardio>=cardioWeeklyTarget?'Meta semanal atingida!':(cardioWeeklyTarget-weeklyCardio)+' min para sua meta'}}</p>
+        <div class="minimal-cardio-launch-icon"><AppIcon name="activity" :size="26"/></div>
         <button type="button" class="minimal-cardio-start" @click="openCardioModal">
           <AppIcon name="arrow" :size="15"/> Iniciar cardio
         </button>
