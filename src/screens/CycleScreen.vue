@@ -1,5 +1,6 @@
 <script setup>
-import { inject } from 'vue'
+import { inject, ref, computed } from 'vue'
+import { PHASES } from '../lib/cyclePhase.js'
 import AppIcon from '../AppIcon.vue'
 
 const {
@@ -19,7 +20,22 @@ const {
   noteEnergy,
   noteSymptoms,
   noteDifficulty,
-} = inject('pegaPesoApp')
+ } = inject('pegaPesoApp')
+const phasePopup=ref(null)
+const phasePopupInfo=computed(()=>phasePopup.value?PHASES[phasePopup.value.key]:null)
+const phaseLegend=[
+  {key:'menstrual',name:'Menstrual',summary:'Dias de sangramento; pode haver cólicas ou cansaço.'},
+  {key:'follicular',name:'Folicular',summary:'Depois da menstruação; a disposição pode variar.'},
+  {key:'ovulatory',name:'Ovulatória',summary:'Próxima da ovulação estimada; sinais variam.'},
+  {key:'luteal',name:'Lútea',summary:'Antes da menstruação; podem ocorrer sintomas pré-menstruais.'}
+]
+function onCalendarDay(day){
+  if(cycleEditing.value){toggleCycleCalendarDate(day.date);return}
+  if(day.phaseKey)phasePopup.value={key:day.phaseKey,date:day.date,actual:day.actual,predicted:day.predicted}
+}
+function openPhase(key){
+  phasePopup.value={key,date:'',actual:false,predicted:false}
+}
 </script>
 
 <template>
@@ -43,19 +59,47 @@ const {
     <button v-for="d in cycleCalendarDays" :key="d.date" type="button"
       class="calendar-cell cycle-calendar-day"
       :class="[d.phase,{outside:d.outside,today:d.today,editing:cycleEditing,recorded:d.actual,disabled:cycleEditing&&d.future}]"
-      :disabled="!cycleEditing||d.future"
+      :disabled="cycleEditing&&d.future"
       :aria-pressed="cycleEditing?d.actual:undefined"
-      :aria-label="d.date+(d.actual?' · Menstruação registrada':d.predicted?' · Menstruação estimada':'')"
-      @click="toggleCycleCalendarDate(d.date)">{{d.number}}</button>
+      :aria-label="d.date+(d.phaseKey?' · Fase '+PHASES[d.phaseKey].name:'')+(d.actual?' · Menstruação registrada':d.predicted?' · Menstruação prevista':'')"
+      @click="onCalendarDay(d)">{{d.number}}</button>
+  </div>
+  <div class="cycle-phase-legend" aria-label="Cores das fases do ciclo">
+    <button v-for="phase in phaseLegend" :key="phase.key" type="button"
+      class="cycle-phase-legend-item"
+      @click="openPhase(phase.key)">
+      <i :class="'cycle-phase-dot phase-'+phase.key" aria-hidden="true"></i>
+      <span><strong>{{phase.name}}</strong><small>{{phase.summary}}</small></span>
+      <AppIcon name="chevron" :size="15"/>
+    </button>
   </div>
   <div class="calendar-legend cycle-calendar-legend">
-    <span><i class="cycle-legend-actual"></i> Registrada</span>
-    <span><i class="cycle-legend-estimated"></i> Prevista</span>
-    <span><AppIcon name="leaf" :size="15"/> Janela fértil estimada</span>
+    <span><i class="cycle-legend-actual"></i> Menstruação registrada</span>
+    <span><i class="cycle-legend-estimated"></i> Menstruação prevista</span>
   </div>
   <p v-if="cycleEditing&&cycleEditFeedback" class="cycle-edit-feedback" role="status">{{cycleEditFeedback}}</p>
   <p v-else-if="cycleEditing" class="cycle-edit-count">{{cycleRecordedCount}} dias registrados no calendário</p>
 </section>
+<div v-if="phasePopup&&phasePopupInfo" class="modal-backdrop" @click.self="phasePopup=null">
+  <div class="modal-sheet cycle-phase-popup" role="dialog" aria-modal="true"
+    aria-labelledby="cycle-phase-popup-heading" aria-describedby="cycle-phase-popup-description">
+    <div class="cycle-phase-popup-head">
+      <span :class="'cycle-phase-popup-dot phase-'+phasePopup.key"><AppIcon name="flower" :size="20"/></span>
+      <button type="button" aria-label="Fechar informações" @click="phasePopup=null">
+        <AppIcon name="close" :size="19"/>
+      </button>
+    </div>
+    <h2 id="cycle-phase-popup-heading">Fase {{phasePopupInfo.name.toLowerCase()}}</h2>
+    <p v-if="phasePopup.date" class="cycle-phase-popup-date">{{new Date(phasePopup.date+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})}} · {{phasePopup.actual?'Menstruação registrada':'Fase estimada'}}</p>
+    <p id="cycle-phase-popup-description">{{phasePopupInfo.description}}</p>
+    <div class="cycle-phase-popup-training">
+      <AppIcon name="dumbbell" :size="18"/>
+      <div><strong>Nos treinos</strong><p>{{phasePopupInfo.training}}</p></div>
+    </div>
+    <p class="cycle-phase-popup-disclaimer">As fases são previsões baseadas nos dados informados. Não servem para confirmar ovulação, prever dias férteis com segurança ou fazer diagnóstico.</p>
+    <button type="button" class="cycle-phase-popup-close" @click="phasePopup=null">Entendi</button>
+  </div>
+</div>
 <div class="cycle-info"><strong><AppIcon name="flower" :size="17"/> {{cycleDay?'Dia '+cycleDay+' do ciclo':'Vamos começar?'}}</strong><span>As fases são estimativas; não use para contracepção ou diagnóstico.</span></div>
 <div class="brazil-row-title"><h3>Informações do ciclo</h3></div>
 <p class="cycle-settings-note">Esses números são suas médias. Marcar dias no calendário não altera a duração média cadastrada.</p>
